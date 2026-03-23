@@ -1,0 +1,8 @@
+&INPUT
+  asr = 'crystal'
+  flfrc = 'mgb2h2r.fc'
+  dos = .true.
+  fldos = 'mgb2h2r.phdos'
+  nk1 = 8, nk2 = 8, nk3 = 6
+  deltaE = 1.0
+/

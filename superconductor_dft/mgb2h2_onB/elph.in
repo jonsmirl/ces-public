@@ -1,0 +1,14 @@
+Electron-phonon coupling for MgB2H2
+&INPUTPH
+  prefix = 'mgb2h2'
+  outdir = './tmp/'
+  fildyn = 'mgb2h2r.dyn'
+  fildvscf = 'dvscf'
+  ldisp = .true.
+  nq1 = 2, nq2 = 2, nq3 = 2
+  tr2_ph = 1.0d-12
+  search_sym = .false.
+  electron_phonon = 'interpolated'
+  el_ph_sigma = 0.005
+  el_ph_nsigma = 10
+/

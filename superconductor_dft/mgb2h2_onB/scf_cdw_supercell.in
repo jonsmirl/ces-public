@@ -1,0 +1,55 @@
+&CONTROL
+  calculation = 'scf',
+  outdir = './tmp_cdw/',
+  prefix = 'mgb2h2_cdw',
+  pseudo_dir = '/home/jonsmirl/thesis/superconductor_dft/pseudo/',
+/
+&SYSTEM
+  degauss = 0.02,
+  ecutrho = 480,
+  ecutwfc = 60,
+  nosym = .TRUE.,
+  occupations = 'smearing',
+  smearing = 'mp',
+  ibrav = 0,
+  nat = 20,
+  ntyp = 3,
+/
+&ELECTRONS
+  conv_thr = 1d-10,
+/
+&IONS
+/
+&CELL
+/
+ATOMIC_SPECIES
+  B  10.8110 B.pbe-n-kjpaw_psl.1.0.0.UPF
+  H  1.0079 H.pbe-kjpaw.UPF
+  Mg  24.3050 Mg.pbe-n-kjpaw_psl.0.3.0.UPF
+ATOMIC_POSITIONS crystal
+  Mg 0.001147 0.994791 -0.010067
+  Mg 0.001321 0.494950 0.990898
+  Mg 0.501152 -0.005159 0.990299
+  Mg 0.501633 0.495013 0.990885
+  B 0.167874 0.325094 0.397835
+  B 0.166897 0.826021 0.399205
+  B 0.668679 0.329901 0.400591
+  B 0.666537 0.829275 0.398874
+  B 0.335638 0.160155 0.398840
+  B 0.333656 0.659482 0.399728
+  B 0.835490 0.163635 0.399261
+  B 0.834460 0.664314 0.399075
+  H 0.168769 0.320542 0.730915
+  H 0.166892 0.822860 0.732910
+  H 0.671031 0.334915 0.734480
+  H 0.664013 0.832208 0.732762
+  H 0.337590 0.157005 0.732793
+  H 0.330584 0.653596 0.733555
+  H 0.835555 0.166506 0.733049
+  H 0.833279 0.668605 0.732620
+K_POINTS automatic
+  6 6 8 0 0 0
+CELL_PARAMETERS angstrom
+  6.427934 -0.004851 0.001346
+  -3.218161 5.563316 0.001055
+  0.000827 0.001224 3.943168

@@ -1,0 +1,31 @@
+&CONTROL
+  calculation = 'scf'
+  prefix = 'mgb2h2_k12x12x8'
+  pseudo_dir = '/home/jonsmirl/thesis/superconductor_dft/pseudo/'
+  outdir = './tmp_k12x12x8/'
+/
+&SYSTEM
+  ibrav = 0, nat = 5, ntyp = 3
+  ecutwfc = 60.0, ecutrho = 480.0
+  occupations = 'smearing', smearing = 'mp', degauss = 0.02
+  nosym = .true.
+/
+&ELECTRONS
+  conv_thr = 1.0d-10, mixing_beta = 0.5
+/
+CELL_PARAMETERS {angstrom}
+  3.213000  0.000000  0.000000
+ -1.606500  2.781924  0.000000
+  0.000000  0.000000  3.941000
+ATOMIC_SPECIES
+  Mg  24.305  Mg.pbe-n-kjpaw_psl.0.3.0.UPF
+  B   10.811  B.pbe-n-kjpaw_psl.1.0.0.UPF
+  H    1.008  H.pbe-kjpaw.UPF
+ATOMIC_POSITIONS {crystal}
+  Mg -0.00000  0.00000 -0.00352
+  B   0.33333  0.66667  0.40412
+  B   0.66667  0.33333  0.40412
+  H   0.33333  0.66667  0.73764
+  H   0.66667  0.33333  0.73764
+K_POINTS {automatic}
+  12 12 8  0 0 0

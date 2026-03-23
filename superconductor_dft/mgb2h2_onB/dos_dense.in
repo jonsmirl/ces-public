@@ -1,0 +1,7 @@
+&DOS
+  prefix = 'mgb2h2_dense'
+  outdir = './tmp_dense/'
+  fildos = 'dos_dense.dat'
+  DeltaE = 0.05
+  degauss = 0.02
+/

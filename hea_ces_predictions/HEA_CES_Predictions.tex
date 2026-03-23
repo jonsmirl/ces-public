@@ -1,0 +1,1946 @@
+\documentclass[12pt,letterpaper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{caption}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\emergencystretch=1em
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  citecolor=blue!60!black,
+  urlcolor=blue!60!black
+}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{prediction}[theorem]{Prediction}
+\newtheorem{remark}[theorem]{Remark}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\CV}{CV}
+
+\title{$q$-Thermodynamics of High-Entropy Alloys:\\
+The CES Partition Function on the Lattice}
+
+\author{Jon Smirl\thanks{Independent Researcher. Email: \texttt{jonsmirl@gmail.com}.}}
+
+\date{March 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+High-entropy alloys (HEAs) exhibit four ``core effects''---phase stabilization, lattice distortion strengthening, sluggish diffusion, and the cocktail effect---that the field treats as separate phenomena.  This paper shows they are four projections of a single object: the curvature $K = (1 - q)(1 - H)$ of the $q$-exponential family on the composition simplex, where $q$ is a complementarity parameter and $H = \sum a_j^2$ is the Herfindahl index of atomic fractions.  The mathematical framework is not an analogy to statistical mechanics---it \emph{is} statistical mechanics.  The CES partition function $Z_q = \sum a_j x_j^q$ generates the alloy aggregate (as $Z_q^{1/q}$), the effective property shares (as the escort distribution), and the lattice distortion metric (as the Fisher information), from a single generating function.  Unlike the CES mapping to machine learning---which failed because neural networks lack conservation laws, real temperature, and lattice constraints---HEAs satisfy every structural requirement: atoms are conserved, temperature is thermodynamic, and the lattice imposes the correlations that make $q \neq 1$.  The framework explains three established results---the Yang--Zhang $\Omega$-$\delta$ phase stability rule, the misfit-volume scaling of solid-solution strengthening, and the superior radiation tolerance of equimolar compositions---from a single parameter.  It generates discriminating predictions against standard entropy-based theory, testable with existing composition--property databases.  Four novel HEA compositions are proposed for spaceflight applications---nuclear thermal propulsion cladding (WMoTaNbZr), ion thruster grids (CrMoNbTaV), an ``operating-temperature alloy'' (WMoTaCrHf) that tests the $q$-entropy prediction by deliberately exceeding the standard $\delta \leq 6.6\%$ design limit, and a self-protecting radiation-cooled rocket nozzle alloy (WTaNbHfZr) that uses escort-distribution-driven surface evolution to spontaneously form an HfO$_2$-ZrO$_2$ thermal barrier coating, potentially replacing the rhenium/iridium system at 39\% lower density and an order of magnitude lower cost.  Three high-entropy ceramics are proposed for thermal protection: a UHTC diboride for leading edges, a rare-earth zirconate foam tile for large-acreage TPS, and---motivated by a heat-transfer analysis showing that radiative transport through pores dominates foam conductivity above 1400$^\circ$C---an optimized dual-sublattice nanofiber tile (La,Gd,Y)$_2$(Zr,Hf)$_2$O$_7$ that exploits the Zr/Hf mass ratio (1.96:1) for extreme phonon scattering and uses HE sintering suppression to preserve nanofiber morphology at operating temperature, achieving a predicted areal density of 2--4~kg/m$^2$---one-tenth of Space Shuttle HRSI tiles.
+\end{abstract}
+
+\tableofcontents
+
+%% ================================================================
+\section{Introduction}
+%% ================================================================
+
+Since the independent discoveries by Yeh et al.\ (2004) and Cantor et al.\ (2004), the field of high-entropy alloys has grown exponentially.  HEAs---alloys with $J \geq 5$ principal elements in near-equimolar proportions---form simple solid-solution phases and exhibit four ``core effects'':
+
+\begin{enumerate}[label=(\roman*)]
+  \item \textbf{Phase stabilization}: single-phase solid solutions at high temperature.
+  \item \textbf{Lattice distortion strengthening}: diverse atomic radii impede dislocation motion.
+  \item \textbf{Modified diffusion}: complex local environments alter diffusion kinetics.
+  \item \textbf{Cocktail effect}: properties deviate from rule-of-mixtures predictions.
+\end{enumerate}
+
+The standard explanation invokes configurational entropy $\Delta S_{\mathrm{mix}} = -R\sum x_j \ln x_j$ for effect~(i) and offers separate, ad~hoc mechanisms for~(ii)--(iv).  No unified framework explains why the four effects arise together, why they are strongest at equimolar compositions, or how they relate quantitatively.
+
+This paper proposes that the four effects are manifestations of a single mathematical object: the curvature of the $q$-exponential family defined by the alloy's partition function on the composition simplex.  The framework rests on a proven mathematical identity---the information geometry bridge---which shows that the CES (Constant Elasticity of Substitution) aggregate and the statistical mechanics partition function are the same generating function, viewed from two directions.
+
+\subsection{Why statistical mechanics, not just an analogy}
+
+A prior attempt to apply this CES framework to machine learning produced mixed results (62 confirmed, 85 inconsistent out of 154 predictions).  The failures were systematic: neural networks lack the structural prerequisites for the theory.  HEAs satisfy every one:
+
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Structural requirement} & \textbf{Neural networks} & \textbf{HEAs} \\
+\midrule
+Conservation law (atoms/inputs conserved) & No & Yes \\
+Real thermodynamic temperature & No ($\eta/B$ metaphor) & Yes \\
+Lattice constraints (site occupancy) & No & Yes \\
+Well-defined thermodynamic limit & Unclear & Yes ($N \to \infty$) \\
+Equilibrium = free energy minimum & Forced & Natural \\
+Long-range correlations (elastic strain) & No & Yes ($\sim 1/r^2$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The lesson from the ML failure: the mathematics is correct, but the \emph{physics must support it}.  In HEAs, it does.
+
+%% ================================================================
+\section{$q$-Thermodynamics on the Alloy Lattice}
+%% ================================================================
+
+\subsection{The $q$-partition function}
+
+Consider $J$ elements with atomic fractions $\mathbf{a} = (a_1, \ldots, a_J)$, $\sum a_j = 1$.  For a property of interest (atomic radius, shear modulus, melting point, etc.), let $x_j$ denote element~$j$'s value.  Define the \emph{$q$-partition function}:
+\begin{equation}\label{eq:Zq}
+  Z_q(\mathbf{a}, \mathbf{x}) = \sum_{j=1}^{J} a_j \, x_j^q,
+\end{equation}
+where $q \leq 1$ is the \emph{complementarity parameter}: $q = 1$ (perfect substitutes, rule of mixtures), $q \to 0$ (geometric mean), $q \to -\infty$ (bottleneck, Leontief).
+
+From $Z_q$ alone, three objects emerge:
+
+\begin{enumerate}
+  \item \textbf{Alloy aggregate property}: $F = Z_q^{1/q} = \bigl(\sum a_j x_j^q\bigr)^{1/q}$.
+  \item \textbf{Escort distribution} (effective property share of element~$j$):
+    \begin{equation}\label{eq:escort}
+      P_j = \frac{a_j \, x_j^q}{Z_q}.
+    \end{equation}
+  \item \textbf{$q$-free energy} (CES potential): $\Phi_q = -\tfrac{1}{q} \log Z_q = -\log F$.
+\end{enumerate}
+
+The escort distribution $P_j$ is \emph{not} the atomic fraction $a_j$.  It is the fraction of the aggregate property attributable to element~$j$, weighted by both abundance and property value raised to power~$q$.  When $q < 1$, the escort distribution upweights elements with small~$x_j$---it pays attention to the bottleneck.
+
+\begin{remark}[The ten-way identity]
+The formula $P_j = a_j x_j^q / Z_q$ appears independently in at least ten fields: as factor shares in production economics, escort probabilities in information geometry, Gibbs weights in statistical mechanics, logit probabilities in discrete choice, softmax outputs in machine learning, contest shares in game theory, allocation weights in portfolio theory, cost shares in cost minimization, replicator weights in evolutionary dynamics, and escort distributions in R\'enyi entropy.  The $q$-locking theorem (proved in Lean~4) forces $q = \rho$: the exponent must match across all ten contexts.  These fields discovered the same mathematical object independently.
+\end{remark}
+
+\subsection{Physical basis: why $q \neq 1$ on a lattice}
+
+Standard alloy thermodynamics uses Boltzmann statistics ($q = 1$), which assumes independent degrees of freedom, short-range interactions, and extensive entropy.  In an HEA, all three assumptions fail:
+
+\begin{enumerate}
+  \item \textbf{Correlated positions}.  Each atom's local environment depends on its neighbors.  In equimolar CoCrFeMnNi with coordination $Z = 12$, each site samples from 5~elements.  Local strain depends on the specific neighbor configuration, creating correlations.
+
+  \item \textbf{Long-range elastic interactions}.  Atomic size mismatch creates strain fields decaying as $1/r^2$ (elastic dipoles).  These are precisely the conditions under which Tsallis $q$-statistics replaces Boltzmann statistics.
+
+  \item \textbf{Non-extensive mixing}.  The interaction energy at the interface of two HEA subsystems creates excess entropy, violating $S(A + B) = S(A) + S(B)$.
+\end{enumerate}
+
+The physical picture: in a conventional alloy (one base element $+$ trace solutes), solute atoms act as perturbations to the base lattice.  Their interactions are weak and approximately independent: $q \approx 1$.  In an equimolar HEA, every atom has a chemically diverse neighborhood with strong, correlated interactions: $q < 1$.
+
+\subsection{The information geometry bridge on the lattice}
+
+The CES-partition identity connects the economic and statistical views:
+\begin{equation}\label{eq:bridge}
+  q \cdot \log F = \log Z_q.
+\end{equation}
+The Hessian of $\log Z_q$ decomposes into two orthogonal projections:
+\begin{itemize}
+  \item \textbf{The $x$-direction}: curvature of $\log Z_q$ as inputs change $\to$ alloy property curvature~$K$.
+  \item \textbf{The $q$-direction}: curvature of $\log Z_q$ as the parameter changes $\to$ Fisher information $I(q)$.
+\end{itemize}
+
+Both are projections of the Hessian of the \emph{same} generating function.  At symmetric equilibrium ($x_j = c$, $a_j = 1/J$), the bridge theorem gives:
+\begin{equation}\label{eq:hessian_bridge}
+  \frac{\partial^2 \Phi_q}{\partial x_i \, \partial x_j}\bigg|_{\mathrm{sym}} = -\frac{(1-q)F}{c^2}\left(\delta_{ij} - \frac{1}{J}\right) = -\frac{\text{Fisher information}}{J}.
+\end{equation}
+
+This is not an analogy.  It is an algebraic identity, proved in Lean~4 with zero axioms.
+
+\subsection{The curvature $K$ and the Herfindahl}
+
+The \emph{CES curvature} at general composition is:
+\begin{equation}\label{eq:curvature}
+  K(q, \mathbf{a}) = (1 - q)(1 - H), \qquad H = \sum_{j=1}^{J} a_j^2.
+\end{equation}
+At equimolar ($a_j = 1/J$, $H = 1/J$):
+\begin{equation}\label{eq:K_equimolar}
+  K = (1-q)\,\frac{J-1}{J}.
+\end{equation}
+
+Key properties:
+\begin{itemize}
+  \item $K(J = 1) = 0$: a pure element has zero curvature.
+  \item $K$ is maximized at equimolar (minimum $H$) for fixed~$J$ and~$q$.
+  \item $K$ is monotonically increasing and concave in~$J$, bounded above by $(1 - q)$.
+  \item The per-element surplus $\pi_K(J) = K/J = (1-q)(J-1)/J^2$ peaks at $J = 2$.
+\end{itemize}
+
+\subsection{Determining $q$ from elemental properties}
+
+The parameter $q$ must come from the physics.  The Hume--Rothery rules for solid solubility---similar atomic radius, electronegativity, valence, crystal structure---are conditions for high substitutability ($q \approx 1$).  Each violation pushes $q$ below~1:
+\begin{equation}\label{eq:q_estimate}
+  q \approx 1 - \alpha\,\delta^2 - \beta\,(\Delta\chi)^2 - \gamma\,(\Delta\mathrm{VEC})^2,
+\end{equation}
+where $\delta = \sqrt{\sum c_i(1 - r_i/\bar{r})^2}$ is the atomic size mismatch, $\Delta\chi$ is the electronegativity spread, $\Delta\mathrm{VEC}$ is the valence electron concentration spread, and $\alpha, \beta, \gamma$ are calibration constants.
+
+\textbf{Calibration of $\alpha$.}  For refractory BCC HEAs where $\delta$ dominates the mismatch (small $\Delta\chi$, small $\Delta\mathrm{VEC}$), the curvature values $K \approx 0.22$ (WMoTaNbZr, $\delta = 5.25\%$) and $K \approx 0.41$ (WMoTaCrHf, $\delta = 7.17\%$) consistently give $\alpha \approx 100$ when back-calculated from $K = (1-q)(1-H)$ with $q \approx 1 - \alpha\delta^2$.  At the Yang--Zhang stability limit $\delta_{\max} = 6.6\%$, this gives $q \approx 0.56$---the alloy retains substantial complementarity at the boundary.  It is the enthalpy factor in $K_{\mathrm{eff}}$ (equation~\ref{eq:Keff}) that drives the stability limit, not $q \to 0$.
+
+Alternatively, $q$ can be estimated model-free from composition--property data by nonlinear least squares:
+\begin{equation}\label{eq:q_NLS}
+  \hat{q} = \arg\min_q \sum_{\text{compositions}} \left[P_{\text{obs}}(\mathbf{a}) - \left(\sum_j a_j P_j^q\right)^{1/q}\right]^2.
+\end{equation}
+
+This replaces the CALPHAD approach of fitting $J(J-1)/2$ pairwise interaction parameters $\Omega_{ij}$ with a single parameter~$q$.  For a five-element HEA, that is 1~parameter vs.~10.
+
+\subsection{Effective medium theory and the Voigt--Reuss connection}
+
+For mechanical properties, the CES power mean has a direct physical interpretation via composite mechanics.  For elastic modulus $E_j$ of each element:
+\begin{itemize}
+  \item $q = 1$ (Voigt bound): uniform strain, $E_{\mathrm{eff}} = \sum a_j E_j$.
+  \item $q = -1$ (Reuss bound): uniform stress, $1/E_{\mathrm{eff}} = \sum a_j / E_j$.
+  \item General $q \in (-1, 1)$: interpolates between Voigt and Reuss.
+\end{itemize}
+
+The CES power mean thus parameterizes a physically grounded family of effective medium approximations.  The value of $q$ is determined by the contrast between elemental properties and the microstructural geometry---more contrast (more complementary elements) pushes $q$ further below~1.
+
+A key prediction follows: the structural parameter~$q$ that determines mechanical property aggregation (from effective medium theory) should be \emph{related to} the $q$ that determines mixing entropy (from $q$-thermostatistics), because the information geometry bridge shows both are derived from the same partition function.  However, computational validation (Section~\ref{sec:validation}) shows that while both are controlled by the same lattice disorder~$\delta$, the effective~$q$ differs across property channels due to property-specific coupling constants.  The bridge is validated at the level of the \emph{structural parameter}~$K$, not at the level of a single numerical~$q$.
+
+
+%% ================================================================
+\section{The Four Core Effects as $q$-Thermodynamic Identities}
+%% ================================================================
+
+Each core effect follows as a mathematical identity of $Z_q$---not an analogy, but a theorem.
+
+\subsection{Effect~1: Phase stabilization via $q$-entropy}
+
+The $q$-entropy (Tsallis) of the composition:
+\begin{equation}\label{eq:Sq}
+  S_q = k_B \frac{1 - \sum_j a_j^q}{q - 1}.
+\end{equation}
+At equimolar ($a_j = 1/J$):
+\begin{equation}
+  S_q = k_B \frac{1 - J^{1-q}}{q - 1}.
+\end{equation}
+Expanding for $q$ near~1:
+\begin{equation}
+  S_q = k_B \ln J + k_B \frac{(1-q)}{2}(\ln J)^2 + O((1-q)^2).
+\end{equation}
+
+\begin{mdframed}
+\textbf{Key result.}  For $q < 1$, the $q$-entropy exceeds the Shannon entropy by a term proportional to $(1-q)(\ln J)^2$.  The entropic stabilization is \emph{stronger} than standard theory predicts.
+\end{mdframed}
+
+The free energy of mixing:
+\begin{equation}
+  \Delta G_q = \Delta H_{\mathrm{mix}} - T \Delta S_q < \Delta H_{\mathrm{mix}} - T \Delta S_1 = \Delta G_{\mathrm{standard}}.
+\end{equation}
+Phase stability requires the effective curvature to remain positive:
+\begin{equation}\label{eq:Keff}
+  K_{\mathrm{eff}}(\mathbf{a}, T) = (1-q)(1-H) \cdot \left(1 - \frac{\Omega}{T}\right)^+,
+\end{equation}
+where $\Omega$ is the effective ordering energy.  Above the critical temperature $T^* = \Omega$, the single-phase solid solution is stable ($K_{\mathrm{eff}} > 0$).  Below~$T^*$, the alloy decomposes ($K_{\mathrm{eff}} = 0$).
+
+The composition dependence of phase stability goes through $H = \sum a_j^2$ (quadratic), not through $\Delta S_{\mathrm{mix}} = -R\sum a_j \ln a_j$ (logarithmic).  These differ for non-equimolar compositions: $H$ penalizes asymmetry more steeply.
+
+\subsection{Effect~2: Lattice distortion as Fisher information}
+
+The \emph{Variance-Response Identity} (VRI), proved in Lean~4:
+\begin{equation}\label{eq:VRI}
+  \frac{d^2}{dq^2} \log Z_q = \Var_P[\log x_j] = \sum_j P_j (\log x_j - \langle \log x \rangle_P)^2.
+\end{equation}
+
+The second cumulant of the log-partition function equals the variance of log-properties under the escort distribution.
+
+For atomic radii $x_j = r_j$, this becomes a natural lattice distortion metric:
+\begin{equation}\label{eq:delta_q}
+  \delta_q = \sqrt{\Var_P[\log r]} = \sqrt{\sum_j P_j (\log r_j - \langle \log r \rangle_P)^2}.
+\end{equation}
+
+Compare with the standard HEA size mismatch parameter:
+\begin{equation}
+  \delta_{\mathrm{std}} = \sqrt{\sum_i c_i \left(1 - \frac{r_i}{\bar{r}}\right)^2}.
+\end{equation}
+
+The $q$-distortion $\delta_q$ differs from $\delta_{\mathrm{std}}$ in two ways:
+\begin{enumerate}
+  \item \textbf{Escort weighting} ($P_j$) instead of atomic fractions ($c_j$).  For non-equimolar alloys, elements that contribute more to the aggregate property receive more weight.  A minority element with extreme radius gets upweighted when $q < 1$ (bottleneck emphasis).
+  \item \textbf{Log-deviations} ($\log r_j$) instead of fractional deviations ($r_j/\bar{r}$).  For multiplicative effects like lattice strain ($\varepsilon \propto \Delta r / r$), log-deviations are the natural measure.
+\end{enumerate}
+
+The connection to strengthening: lattice distortion creates a spatially varying Peierls potential that impedes dislocation motion.  The amplitude of this variation is the Fisher information $I(q) = \Var_P[\log x]$, and the resulting strengthening increment is proportional to~$K \cdot I(q)$.
+
+\subsection{Effect~3: Diffusion modification}
+
+The early HEA literature claimed universally ``sluggish'' diffusion.  Subsequent work has shown the picture is more nuanced: some elements diffuse normally or even faster in HEAs, while others are genuinely slowed.  The effect is element-specific and composition-dependent.
+
+The $q$-framework gives a precise account.  In a pure metal, every lattice site presents the same activation barrier~$E_0$ for diffusion.  In an HEA, each site presents a different barrier depending on the local chemical environment.  The distribution of barriers has:
+\begin{itemize}
+  \item \textbf{Mean}: $\langle E \rangle = \sum_j a_j E_j$ (approximately rule of mixtures).
+  \item \textbf{Variance}: $\Var[E] \propto \delta_q^2$ (Fisher information of the escort distribution).
+\end{itemize}
+
+The effective diffusion rate involves averaging $\exp(-E/k_BT)$ over this distribution.  By Jensen's inequality for the convex exponential:
+\begin{equation}
+  \langle \exp(-E/k_BT) \rangle \geq \exp(-\langle E \rangle / k_BT).
+\end{equation}
+
+A broad barrier distribution should therefore \emph{increase} the average jump rate.  This predicts that average diffusion in HEAs should be \emph{faster} than the rule-of-mixtures barrier would suggest---at odds with the ``sluggish'' label.
+
+The resolution lies in \emph{percolation}: long-range diffusion requires a connected path of accessible sites, not just a high average jump rate.  Individual fast channels (low-barrier sites) help only if they form a percolating network.  The effective long-range barrier is set by the \emph{percolation threshold} of the barrier distribution, which increases with $\Var[E]$ (more diverse environments $\to$ fewer percolating paths at any given energy).
+
+The $q$-framework prediction is therefore:
+\begin{enumerate}
+  \item The \emph{element-specific} diffusion coefficients span a range proportional to $\delta_q$: more diverse alloys show larger element-to-element variation.
+  \item The \emph{average} diffusion rate depends on a competition between the Jensen speed-up (fast local jumps) and the percolation slow-down (broken fast paths).  The net sign depends on the system.
+  \item The \emph{distribution} of tracer diffusion coefficients across elements follows the escort distribution $P_j$---elements with higher escort weight (larger effective contribution) diffuse more slowly because they are more tightly integrated into the lattice structure.
+\end{enumerate}
+
+This is consistent with the experimental record: in CoCrFeMnNi, Tsai et al.\ (2013) found that tracer diffusion spans about one order of magnitude across the five elements, with element-specific rates that do not follow a simple size or mass ordering.
+
+\subsection{Effect~4: The cocktail effect as curvature-driven diversity bonus}
+
+The cocktail effect---alloy properties deviating from rule-of-mixtures predictions---requires careful analysis.  The CES power mean with $q < 1$ gives $F_{\mathrm{CES}} \leq F_{\mathrm{ROM}}$ (below rule of mixtures), so the CES aggregate itself does \emph{not} produce properties exceeding ROM.
+
+The cocktail effect arises instead from \emph{additional mechanisms activated by diversity}.  The key distinction:
+
+\begin{itemize}
+  \item \textbf{Intrinsic properties} (elastic modulus, density, lattice parameter): determined by averaging elemental values.  The CES aggregate with $q < 1$ predicts values between the Reuss lower bound and the Voigt upper bound---\emph{below} ROM.  This is confirmed experimentally: HEA elastic moduli approximately follow ROM.
+  \item \textbf{Performance properties} (hardness, yield strength, radiation tolerance): determined by defect interactions with the lattice.  The interaction strength scales with lattice heterogeneity, which is the Fisher information $\delta_q^2$.  These mechanisms \emph{add} to the ROM baseline.
+\end{itemize}
+
+For a performance property~$P$:
+\begin{equation}\label{eq:cocktail}
+  P_{\mathrm{alloy}} = P_{\mathrm{ROM}} + \Delta P_{\mathrm{diversity}}, \qquad \Delta P_{\mathrm{diversity}} \propto K \cdot \delta_q^2.
+\end{equation}
+
+The curvature bonus $\Delta P_{\mathrm{diversity}}$ is proportional to $K \times \text{Fisher information}$:
+\begin{itemize}
+  \item Zero for a pure element ($K = 0$).
+  \item Maximum at equimolar composition (maximum~$K$) with maximum elemental diversity (maximum~$\delta_q^2$).
+  \item Same $K$ controls all performance properties simultaneously.
+\end{itemize}
+
+This resolves a subtle point: the cocktail effect for \emph{resistance} properties (hardness, strength) is positive because diversity creates obstacles.  For \emph{transport} properties (thermal/electrical conductivity), the same diversity creates scattering centers---the cocktail effect is \emph{negative} (conductivity below ROM).  Both directions are controlled by the same~$K$: the curvature that enhances hardness simultaneously degrades conductivity.
+
+\textbf{Important limitation for transport properties.}  The CES power mean bounds ($q = -1$ Reuss to $q = 1$ Voigt) set the range of aggregation effects.  However, measured thermal conductivities in HEAs often fall \emph{below} the Reuss harmonic mean (e.g., CoCrFeMnNi: $\kappa_{\mathrm{measured}} \approx 12$~W/mK vs.\ $\kappa_{\mathrm{Reuss}} \approx 22$~W/mK\@).  This additional deficit arises from Nordheim-type alloy scattering---phonon scattering from mass and force-constant disorder---which is a \emph{multiplicative} mechanism independent of the CES aggregation.  The complete model for transport properties is:
+\begin{equation}\label{eq:kappa_layered}
+  \kappa_{\mathrm{HEA}} = \kappa_{\mathrm{CES}}(q) \cdot \mathcal{R}(\delta_{\mathrm{mass}}, \delta_{\mathrm{force}}),
+\end{equation}
+where $\kappa_{\mathrm{CES}}(q) = (\sum a_j \kappa_j^q)^{1/q}$ is the CES aggregate and $\mathcal{R} < 1$ is the Nordheim reduction factor from phonon--disorder scattering.  The CES framework captures the compositional weighting; the Nordheim factor captures the scattering physics that lies outside the partition function.  The curvature~$K$ correlates with the conductivity deficit ($r \approx 0.99$ across Cantor subsystems) because both are driven by compositional disorder, but $K$ alone \emph{underpredicts} the magnitude.
+
+
+%% ================================================================
+\section{Three Known Results Explained}
+%% ================================================================
+
+\subsection{Result~1: The Yang--Zhang $\Omega$-$\delta$ phase stability rule}
+
+\subsubsection{The known result}
+
+Yang and Zhang (2012) compiled data for $\sim$100 HEA compositions and found an empirical two-parameter rule for single-phase solid solution formation:
+\begin{equation}
+  \Omega = \frac{T_m \cdot \Delta S_{\mathrm{mix}}}{|\Delta H_{\mathrm{mix}}|} \geq 1.1 \qquad \text{and} \qquad \delta \leq 6.6\%.
+\end{equation}
+Alloys satisfying both conditions form single-phase solid solutions; those violating either form intermetallics or multi-phase mixtures.
+
+This rule is the workhorse of HEA design, but it is empirical---no theory explains why these two parameters matter, why the thresholds take these values, or why both conditions are needed simultaneously.
+
+\subsubsection{The $q$-thermodynamic explanation}
+
+Phase stability requires $K_{\mathrm{eff}} > 0$ (equation~\ref{eq:Keff}).  At equimolar:
+\begin{equation}
+  K_{\mathrm{eff}} = (1-q)\frac{J-1}{J} \cdot \left(1 - \frac{|\Delta H_{\mathrm{mix}}|}{RT_m}\right)^+.
+\end{equation}
+
+The two Yang--Zhang conditions emerge as two independent requirements for $K_{\mathrm{eff}} > 0$:
+
+\textbf{The $\Omega$ condition} ($\Omega \geq 1.1$): The enthalpy factor requires
+\begin{equation}
+  |\Delta H_{\mathrm{mix}}| < RT_m,
+\end{equation}
+which is equivalent to $\Omega > \Delta S_{\mathrm{mix}} / R$.  At equimolar with $J = 5$: $\Delta S_{\mathrm{mix}} = R\ln 5 = 1.609R$, so the standard theory requires $\Omega > 1.609$.  The empirical threshold $\Omega \geq 1.1$ is \emph{lower} than this.
+
+The $q$-theory explains the discrepancy: replacing Shannon entropy with $q$-entropy:
+\begin{equation}
+  \Omega_q = \frac{T_m \cdot \Delta S_q}{|\Delta H_{\mathrm{mix}}|} > \Omega,
+\end{equation}
+since $\Delta S_q > \Delta S_1$ for $q < 1$.  The enhanced entropic stabilization from $q$-statistics lowers the effective stability threshold, consistent with the empirical $\Omega \geq 1.1$ being below the standard-theory prediction.
+
+\textbf{The $\delta$ condition} ($\delta \leq 6.6\%$): Larger size mismatch $\delta$ increases both $K$ (beneficial: higher curvature from lower~$q$) \emph{and} $|\Delta H_{\mathrm{mix}}|$ (harmful: elastic strain energy scales as~$\delta^2$).  The net effect:
+\begin{equation}
+  K_{\mathrm{eff}} \propto \underbrace{f(\delta)}_{\text{curvature benefit}} \cdot \left(1 - \frac{c' \delta^2}{RT_m}\right)^+,
+\end{equation}
+where $f(\delta) \sim \delta^2$ (through $q \approx 1 - \alpha\delta^2$) and $c'$ is the elastic strain energy coefficient.
+
+This has a maximum at $\delta^* = \sqrt{RT_m / (2c')}$ and goes to zero at
+\begin{equation}
+  \delta_{\max} = \sqrt{RT_m / c'}.
+\end{equation}
+
+The empirical $\delta_{\max} = 6.6\%$ calibrates $c' = RT_m / (0.066)^2 \approx 2.9 \times 10^6$~J/mol for $T_m \approx 1500$~K.  This is the correct order of magnitude for elastic strain energy per mole in metallic bonds, providing quantitative support.
+
+\begin{mdframed}
+\textbf{Unification.}  The Yang--Zhang rule is not two independent empirical conditions.  It is a single condition---$K_{\mathrm{eff}} > 0$---projected onto the $(\Omega, \delta)$ plane.  The $\Omega$ condition controls the enthalpy factor; the $\delta$ condition controls the curvature-vs-strain tradeoff.  Both arise from the same effective curvature.
+\end{mdframed}
+
+
+\subsection{Result~2: Solid-solution strengthening and the VLGC model}
+
+\subsubsection{The known result}
+
+Varvenne, Leyson, Ghazisaeidi, and Curtin (2016) derived a parameter-free model for solid-solution strengthening in random FCC HEAs:
+\begin{equation}\label{eq:VLGC}
+  \Delta\tau_y \propto \left(\sum_i c_i \, \overline{\Delta V}_i^{\,2}\right)^{2/3},
+\end{equation}
+where $\overline{\Delta V}_i$ is the average misfit volume of element~$i$ and $c_i$ are atomic fractions.  This model has been validated against measured yield strengths in CoCrFeMnNi and its subsystems with good agreement.
+
+The key empirical finding: strengthening scales with the composition-weighted variance of misfit volumes.  The $2/3$ exponent comes from Labusch-type dislocation-solute interaction theory.
+
+\subsubsection{The $q$-thermodynamic explanation}
+
+The CES framework predicts that the diversity-driven strengthening increment is:
+\begin{equation}\label{eq:CES_strength}
+  \Delta\sigma \propto K \cdot \Var_P[\Delta V] = (1-q)(1-H) \cdot \sum_j P_j (\Delta V_j - \langle \Delta V \rangle_P)^2,
+\end{equation}
+where $P_j$ is the escort distribution (equation~\ref{eq:escort}) and $\Var_P[\Delta V]$ is the Fisher information of the misfit volume distribution.
+
+At equimolar composition with equal escort weights ($P_j = c_j = 1/J$), this reduces to:
+\begin{equation}
+  \Delta\sigma \propto (1-q)\frac{J-1}{J} \cdot \frac{1}{J}\sum_j \overline{\Delta V}_j^{\,2}.
+\end{equation}
+
+The agreement with the VLGC model:
+\begin{enumerate}
+  \item \textbf{Variance of misfit volumes}: Both models predict strengthening proportional to $\sum c_i \overline{\Delta V}_i^{\,2}$ at equimolar.  This is the Fisher information of the escort distribution. \checkmark
+  \item \textbf{Zero for pure elements}: Both predict $\Delta\sigma = 0$ when $J = 1$ (no diversity, $K = 0$). \checkmark
+  \item \textbf{Maximum at equimolar}: Both predict maximum strengthening at equimolar composition ($H$ minimized). \checkmark
+  \item \textbf{Monotone in $J$}: Both predict increasing total strengthening with more elements (increasing $K$). \checkmark
+\end{enumerate}
+
+The disagreement:
+\begin{enumerate}
+  \item \textbf{Exponent}: VLGC gives $(\sum c_i \overline{\Delta V}_i^{\,2})^{2/3}$; CES gives $(\sum P_j \overline{\Delta V}_j^{\,2})^{1}$.  The $2/3$ exponent arises from dislocation line tension physics (the Labusch model), which the CES framework does not contain.  The CES framework captures the \emph{composition dependence} correctly but not the \emph{microscopic mechanism} that sets the exponent.
+  \item \textbf{Composition weighting}: VLGC uses atomic fractions $c_j$; CES uses escort weights $P_j$.  At equimolar, these coincide.  For non-equimolar compositions, the escort weighting provides a discriminating test.
+\end{enumerate}
+
+\begin{prediction}[Escort weighting for non-equimolar alloys]
+For non-equimolar HEA compositions, the VLGC strengthening model's accuracy improves when atomic fractions $c_j$ are replaced by escort weights $P_j = c_j r_j^q / \sum c_k r_k^q$ in the misfit volume variance.  The improvement is largest when one element exceeds 40\% atomic fraction.
+\end{prediction}
+
+\textbf{Why the per-element contribution peaks at $J = 2$.}  The $q$-theory makes an additional prediction not contained in the VLGC model.  The per-element strengthening contribution:
+\begin{equation}
+  \pi_K(J) = \frac{K}{J} = (1-q)\frac{J-1}{J^2},
+\end{equation}
+peaks at $J = 2$ with value $(1-q)/4$ and declines for $J > 2$.  Total strengthening keeps increasing with~$J$ (since $K$ is monotone), but the marginal return per element decreases.  The single most impactful compositional change is going from a pure element to a binary alloy---not crossing the $J \geq 5$ HEA threshold.
+
+
+\subsection{Result~3: Radiation tolerance of equimolar HEAs}
+
+\subsubsection{The known result}
+
+Multiple irradiation studies have demonstrated superior radiation tolerance of equimolar HEAs:
+\begin{itemize}
+  \item Zhang et al.\ (2015): irradiated NiFe, NiCoCr, NiCoFeCr, and NiCoFeCrMn with 3~MeV Ni ions.  Defect cluster density \emph{decreased} systematically with the number of elements.
+  \item Lu et al.\ (2016): NiCoFeCrMn showed $\sim$70\% less swelling than pure Ni after ion irradiation.
+  \item El-Atwani et al.\ (2019): W-based HEAs showed improved radiation tolerance vs.\ pure W.
+\end{itemize}
+
+Standard entropy theory offers no explanation: configurational entropy controls phase stability, not radiation damage response.  The field has no unified theory for why equimolar compositions resist radiation better.
+
+\subsubsection{The $q$-thermodynamic explanation}
+
+Radiation damage occurs when an energetic particle displaces a lattice atom, creating a vacancy-interstitial (Frenkel) pair.  The net damage depends on how many Frenkel pairs survive recombination.
+
+In a pure metal, displaced atoms return to equivalent lattice sites---the energy landscape has a single characteristic barrier, and recombination pathways are limited.  In an HEA, the chemically diverse environment around each defect provides multiple recovery pathways: the displaced atom can recombine with any of $J$ types of neighboring vacancies, each offering a different energy pathway.
+
+This is \textbf{knockout robustness}: in a high-$K$ system, removing or displacing one component has reduced marginal impact because the diverse environment provides redundancy.  The additional recovery rate scales with~$K$:
+\begin{equation}
+  R_{\mathrm{total}} = R_{\mathrm{intrinsic}} + c \cdot K,
+\end{equation}
+where $R_{\mathrm{intrinsic}}$ is the baseline recombination rate (present even in pure metals) and $c \cdot K$ is the diversity-enhanced recovery.
+
+The damage survival fraction:
+\begin{equation}\label{eq:rad_damage}
+  D \propto \frac{1}{R_{\mathrm{intrinsic}} + c \cdot K(\mathbf{a})} = \frac{1}{R_{\mathrm{intrinsic}} + c(1-q)(1-H)}.
+\end{equation}
+
+\textbf{Quantitative check.}  Lu et al.\ found $\sim$70\% less swelling in CoCrFeMnNi vs.\ pure Ni, meaning $D_{\mathrm{HEA}}/D_{\mathrm{pure}} \approx 0.3$, or $D_{\mathrm{pure}}/D_{\mathrm{HEA}} \approx 3.3$.  This requires:
+\begin{equation}
+  \frac{R_{\mathrm{intrinsic}} + c \cdot K_{\mathrm{HEA}}}{R_{\mathrm{intrinsic}}} = 1 + \frac{c \cdot K_{\mathrm{HEA}}}{R_{\mathrm{intrinsic}}} \approx 3.3.
+\end{equation}
+At equimolar $J = 5$: $K = (1-q) \cdot 0.8$.  The ratio $cK/R_{\mathrm{intrinsic}} \approx 2.3$ is a reasonable single-parameter fit.
+
+\textbf{Scaling with $J$.}  The Zhang et al.\ (2015) data show defect cluster density decreasing systematically from NiFe ($J = 2$) through NiCoCr ($J = 3$), NiCoFeCr ($J = 4$), to NiCoFeCrMn ($J = 5$).  The CES prediction: damage scales as $1/(R_0 + c(1-q)(J-1)/J)$, which decreases monotonically with~$J$ and has its steepest drop from $J = 1$ to $J = 2$ (per-element curvature peaks at $J = 2$).
+
+\begin{mdframed}
+\textbf{Key insight.}  Standard entropy theory is silent on radiation tolerance.  The $q$-framework predicts it naturally through knockout robustness: the same curvature~$K$ that stabilizes the phase and strengthens the lattice also provides recovery pathways for radiation damage.  This is a \emph{unification}---not a separate explanation for each effect.
+\end{mdframed}
+
+
+%% ================================================================
+\section{New Predictions}
+%% ================================================================
+
+\subsection{Prediction~1: The Herfindahl test}
+
+\begin{prediction}[Discriminating composition dependence]\label{pred:H_vs_S}
+For non-equimolar compositions, alloy performance properties correlate better with $(1 - H) = 1 - \sum a_j^2$ than with $\Delta S_{\mathrm{mix}} / R = -\sum a_j \ln a_j$.
+\end{prediction}
+
+Both quantities peak at equimolar, but they have different shapes:
+
+\begin{center}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Composition (5-element) & $H$ & $1 - H$ & $\Delta S/R$ \\
+\midrule
+$(0.20, 0.20, 0.20, 0.20, 0.20)$ & 0.200 & 0.800 & 1.609 \\
+$(0.30, 0.25, 0.20, 0.15, 0.10)$ & 0.225 & 0.775 & 1.565 \\
+$(0.50, 0.20, 0.15, 0.10, 0.05)$ & 0.340 & 0.660 & 1.376 \\
+$(0.80, 0.08, 0.06, 0.04, 0.02)$ & 0.653 & 0.347 & 0.822 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+From equimolar to $(0.80, 0.08, 0.06, 0.04, 0.02)$: $(1-H)$ drops 57\% while $\Delta S/R$ drops 49\%.  The Herfindahl penalizes concentration more steeply because it is quadratic in~$a_j$, while entropy is logarithmic.
+
+\textbf{Test.}  Regress hardness, phase stability temperature, and radiation tolerance on $(1-H)$ vs.\ $\Delta S_{\mathrm{mix}}/R$ across non-equimolar compositions within the same element family.
+
+\subsection{Prediction~2: Fluctuation-dissipation for composition}
+
+\begin{prediction}[VRI on the lattice]\label{pred:VRI}
+Compositional fluctuations measured by atom probe tomography (APT) in single-phase HEAs satisfy:
+\begin{equation}
+  \langle (\delta a_j)^2 \rangle \propto \frac{k_B T}{(1-q)(1-H)}.
+\end{equation}
+More complementary alloys (lower~$q$, higher~$K$) show smaller compositional fluctuations---the curvature of the free energy landscape suppresses deviations.
+\end{prediction}
+
+This connects two independently measurable quantities: compositional fluctuations (APT) and the property response function (interdiffusion), with their ratio fixed by~$K$.
+
+\subsection{Prediction~3: Conductivity--hardness anticorrelation}
+
+\begin{prediction}[Two-sided curvature effect]\label{pred:twosided}
+The same $K$ that enhances resistance properties (hardness, yield strength) degrades transport properties (thermal conductivity, electrical conductivity).  Across HEA families with varying~$J$ and~$H$:
+\begin{equation}
+  \frac{\Delta\sigma_y}{\sigma_{y,\mathrm{ROM}}} \approx -\lambda\,\frac{\Delta\kappa}{\kappa_{\mathrm{ROM}}}, \qquad \text{both} \propto K,
+\end{equation}
+where $\lambda$ is a materials-class-specific coupling ratio.  The key prediction is the \emph{sign}---resistance and transport properties deviate from ROM in opposite directions---and the common proportionality to~$K$.  The coupling ratio $\lambda$ reflects the different physical mechanisms: hardness excess from dislocation-lattice interactions scales with local strain variance, while conductivity deficit includes phonon--mass-disorder scattering (Nordheim contribution) that can dominate over the CES curvature term alone.  For Cantor-type FCC alloys, computational validation (Section~\ref{sec:validation}) finds $\lambda \approx 3$--$4$ with correlation $r \approx -0.89$.
+\end{prediction}
+
+\subsection{Prediction~4: Decomposition kinetics via Kramers escape}
+
+\begin{prediction}[Kinetic prediction]\label{pred:kramers}
+The time to decompose from a metastable single-phase HEA follows:
+\begin{equation}
+  \tau_{\mathrm{decomp}} \sim \exp\left(\frac{\Delta\Phi_q}{k_B T}\right),
+\end{equation}
+where $\Delta\Phi_q = \Phi_q(\mathbf{a}_{\mathrm{saddle}}) - \Phi_q(\mathbf{a}_{\mathrm{eq}})$ is computable from the CES potential.  The Arrhenius slope $\Delta\Phi_q / k_B$ is a function of~$q$ and~$J$ only (no free parameters once $q$ is calibrated from property data).
+\end{prediction}
+
+\subsection{Prediction~5: Four effects are quantitatively correlated}
+
+\begin{prediction}[Unification test]\label{pred:unification}
+Across HEA families, the four core effects should be \emph{correlated} and each proportional to the curvature~$K$, though with property-class-specific coupling constants.  Specifically:
+\begin{itemize}
+  \item For \emph{intrinsic properties} (elastic modulus, density), the CES power mean with a single structural $q$ from $\delta$ should interpolate between Voigt and Reuss bounds.
+  \item For \emph{performance properties} (hardness, radiation tolerance), the diversity bonus $\Delta P \propto K \cdot \delta_q^2$ should scale with~$K$.
+  \item For \emph{transport properties} (thermal/electrical conductivity), the CES curvature sets the \emph{floor} of the deficit, but additional scattering mechanisms (Nordheim, electron--phonon) contribute a multiplicative correction beyond the CES framework.
+\end{itemize}
+The prediction is not that a single numerical~$q$ fits all properties simultaneously---computational validation (Section~\ref{sec:validation}) shows it does not, particularly for transport properties dominated by alloy scattering.  The prediction is that all four effects are \emph{controlled by the same underlying lattice disorder}~$\delta$, with~$K$ as the unifying structural parameter, even though each property channel couples to that disorder with different sensitivity.
+\end{prediction}
+
+
+%% ================================================================
+\section{Comparison with Standard Approaches}
+%% ================================================================
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Feature} & \textbf{Standard / CALPHAD} & \textbf{$q$-Thermodynamic} \\
+\midrule
+Mixing entropy & Shannon: $-R \sum a_j \ln a_j$ & Tsallis: $R(1 - \sum a_j^q)/(q-1)$ \\
+Excess energy & $J(J-1)/2$ pairwise $\Omega_{ij}$ & Structural parameter $K(q, H)$ \\
+Property aggregate & Rule of mixtures & CES: $(\sum a_j x_j^q)^{1/q}$ + scattering \\
+Distortion metric & $\delta = \sqrt{\sum c_i(1-r_i/\bar{r})^2}$ & $\delta_q = \sqrt{\Var_P[\log r]}$ \\
+Phase boundary & $\Delta G = 0$ & $K_{\mathrm{eff}} = 0$ \\
+Core effects & Separate explanations & All from $K = (1-q)(1-H)$ \\
+Parameters ($J = 5$) & $\geq 10$ (pairwise) & 1 ($q$) \\
+Radiation tolerance & Not addressed & Knockout robustness $\propto K$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+
+%% ================================================================
+\section{Where This Could Fail}
+%% ================================================================
+
+Transparency about failure modes, informed by the ML experience and computational validation (Section~\ref{sec:validation}):
+
+\begin{enumerate}
+  \item \textbf{$q$ is not constant across compositions.}  If $q = q(\mathbf{a})$, the single-parameter parsimony is lost and the theory degenerates toward fitting.  \emph{Test}: estimate $q$ from binary subsystems and check if it predicts ternary/quaternary/quinary properties without refitting.  \emph{Status}: computational testing shows $q$ fitted from NiFe elastic data ($q \approx 0.87$) predicts NiCoCr modulus with $\sim$7\% error, suggesting partial but imperfect transferability across subsystems.
+
+  \item \textbf{Property-dependent $q$.}  Hardness, melting point, and corrosion resistance may require different~$q$ values for the same alloy.  \emph{Status}: \textbf{confirmed as a real limitation}.  For the Cantor alloy, $q_{\mathrm{elastic}} \approx 0.87$, $q_{\mathrm{thermal}}$ is undefined (measured $\kappa$ below Reuss bound), $q_{\mathrm{strength}}$ varies with test condition, and $q_{\delta} \approx 0.99$.  A single numerical~$q$ does not fit all properties simultaneously.  However, all deviations from ROM are \emph{correlated with}~$K$ (Section~\ref{sec:validation}), preserving the structural unification even though the coupling constants are property-specific.  The revised claim (Prediction~\ref{pred:unification}) is that $K$ is the \emph{structural parameter} controlling all four effects, not that a single $q$ serves as a universal fitting parameter.
+
+  \item \textbf{Transport properties require Nordheim layering.}  The CES power mean bounds ($q \in [-1, 1]$) cannot explain measured thermal conductivities that fall below the Reuss harmonic mean.  This is the case for CoCrFeMnNi ($\kappa_{\mathrm{measured}} = 12$~W/mK $< \kappa_{\mathrm{Reuss}} = 22$~W/mK).  The dominant mechanism is Nordheim-type phonon scattering from mass/force-constant disorder, which acts multiplicatively on top of the CES aggregate (equation~\ref{eq:kappa_layered}).  The CES framework sets the compositional weighting; it does not replace phonon scattering theory.
+
+  \item \textbf{Short-range order.}  Real HEAs often develop short-range order (SRO) that violates the random mixing assumption.  SRO means certain neighbor pairs are preferred, which changes the effective~$q$.  The theory needs extension to incorporate SRO.
+
+  \item \textbf{CALPHAD may simply fit better.}  With 10$+$ parameters vs.~1, the CALPHAD approach may outperform~$q$ on pure fitting accuracy.  The $q$-theory's advantage is parsimony and unification, not fitting power.  If CALPHAD with 1~parameter ($\Omega_{ij}$ all equal) also fits well, the $q$-theory offers no advantage.
+
+  \item \textbf{The $2/3$ exponent.}  The VLGC strengthening model's $2/3$ exponent comes from dislocation physics that the CES framework does not contain.  The framework captures composition dependence but not microscopic mechanisms.  It is a thermodynamic theory, not a defect theory.
+
+  \item \textbf{Low-$\delta$ alloys are poor tests.}  For alloys with $\delta < 2\%$ (e.g., CoCrFeMnNi with $\delta = 1.12\%$), $q \approx 0.99$ and $K \approx 0.01$, making CES indistinguishable from ROM.  The theory has almost no predictive power in this regime: measured property deviations are dominated by mechanisms outside the CES framework.  High-$\delta$ refractory HEAs ($\delta > 4\%$) are the proper testing ground, though less experimental data exists for these alloys.
+
+  \item \textbf{Phase classification.}  The bare geometric curvature $K = (1-q)(1-H)$ alone cannot predict phase stability.  However, the full $K_{\mathrm{eff}}$ including the enthalpy correction $(1 - |\Delta H_{\mathrm{mix}}|/RT_m)^+$ achieves $\sim$94\% accuracy on a 16-alloy benchmark, matching the empirical $\Omega$-$\delta$ rule.  This confirms the Yang--Zhang unification claim, but the thermochemical input ($\Delta H_{\mathrm{mix}}$) is essential.
+\end{enumerate}
+
+
+%% ================================================================
+\section{Nine Proposed Materials for Spaceflight Applications}
+%% ================================================================
+
+Spaceflight materials face demands that map directly onto the $q$-thermodynamic framework: radiation tolerance (knockout robustness $\propto K$), performance at extreme temperatures (phase stability via $K_{\mathrm{eff}}$), and resistance to surface degradation (diversity-driven self-hardening).  Three alloys are proposed, each targeting a specific spaceflight problem, with progressively bolder theoretical predictions.
+
+\subsection{Design principles}
+
+The theory provides three design rules:
+
+\begin{enumerate}
+  \item \textbf{Maximize $K = (1-q)(1-H)$}: use equimolar compositions ($H = 1/J$) with complementary elements (low~$q$, high~$\delta$).
+  \item \textbf{Target $\delta \approx \delta^*$}: the effective curvature $K_{\mathrm{eff}} \propto \delta^2(1 - c'\delta^2/RT)$ is maximized at $\delta^* = \sqrt{RT/(2c')}$, not at the stability limit $\delta_{\max} = \sqrt{RT/c'}$.  With $c'$ calibrated from the Yang--Zhang limit ($\delta_{\max} = 6.6\%$ at $T_{\mathrm{ref}} \approx 1800$~K), the optimal mismatch is $\delta^* \approx 4.7\%$ at $T_{\mathrm{ref}}$.
+  \item \textbf{$\delta_{\max}$ is temperature-dependent}: since $\delta_{\max} \propto \sqrt{T}$, alloys with $\delta > 6.6\%$ can be stable at elevated temperatures.  At $T = 2500$~K: $\delta_{\max} \approx 6.6\% \times \sqrt{2500/1800} = 7.8\%$.  This enables ``operating-temperature alloys''---compositions deliberately designed to be stable only at their service temperature.
+\end{enumerate}
+
+
+\subsection{HEA-1: WMoTaNbZr --- Neutron-transparent NTP cladding}
+
+\subsubsection{Application}
+
+Nuclear thermal propulsion (NTP) is the leading technology for crewed Mars missions (NASA DRACO program, 2027 flight test).  The reactor core operates at $\sim$2500~K under intense neutron and gamma radiation.  The fuel element cladding must be refractory, radiation-tolerant, and---critically---neutron-transparent to avoid parasitic absorption that degrades reactor efficiency.
+
+\textbf{Current solution}: W-3\%Re.  Limitations: Re costs $\sim$\$4,000/kg with constrained global supply ($\sim$50 tonnes/year); W-Re is a binary alloy with low $K$; density 19.7~g/cm$^3$ imposes mass penalties on a mass-constrained spacecraft.
+
+\subsubsection{Proposed composition}
+
+\begin{center}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Element & $r$ (pm) & $T_m$ (K) & $\rho$ (g/cm$^3$) & VEC & $\sigma_a$ (barn) \\
+\midrule
+W  & 139 & 3695 & 19.25 & 6 & 18.3 \\
+Mo & 139 & 2896 & 10.28 & 6 & 2.48 \\
+Ta & 146 & 3290 & 16.65 & 5 & 20.6 \\
+Nb & 146 & 2750 & 8.57  & 5 & 1.15 \\
+Zr & 160 & 2128 & 6.52  & 4 & 0.185 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Here $\sigma_a$ is the thermal neutron absorption cross-section.  Zr has the lowest $\sigma_a$ among refractory metals by two orders of magnitude---it is the standard cladding material in water-cooled fission reactors precisely for this reason.
+
+\textbf{Calculated parameters} (equimolar):
+\begin{itemize}
+  \item $\bar{r} = 146.0$~pm, \quad $\delta = 5.25\%$ \quad (within the optimal band $\delta^* \approx 4.7$--$5.5\%$).
+  \item Average density: 12.25~g/cm$^3$ \quad (\textbf{38\% lighter than W-Re}).
+  \item Average $T_m$: 2952~K \quad (adequate for 2500~K operation).
+  \item VEC = 5.2 $\to$ BCC.
+  \item Estimated $|\Delta H_{\mathrm{mix}}| \approx 3$~kJ/mol (small, favorable mixing).
+  \item $\Omega = T_m \cdot \Delta S_{\mathrm{mix}} / |\Delta H_{\mathrm{mix}}| \approx 13.6 \gg 1.1$ \quad (strongly stable).
+\end{itemize}
+
+\subsubsection{$q$-theory predictions}
+
+Curvature: $K = (1-q) \times 4/5$.  With $q \approx 1 - \alpha\delta^2$ and $\delta = 5.25\%$:
+\begin{equation}
+  K_{\mathrm{WMoTaNbZr}} \approx 0.22.
+\end{equation}
+
+For comparison, W-3\%Re is effectively a dilute binary with $H \approx 0.94$ and $K \approx (1-q_{\mathrm{W\text{-}Re}}) \times 0.06 \approx 0.01$--$0.03$.
+
+\begin{prediction}[NTP cladding radiation tolerance]
+WMoTaNbZr should exhibit $\sim$4$\times$ better radiation tolerance (measured by swelling, defect cluster density, or ductility retention at equivalent dose) compared to W-3\%Re, due to $K_{\mathrm{HEA}}/K_{\mathrm{W\text{-}Re}} \approx 7$--$22$.  The improvement comes from knockout robustness: the diverse five-element lattice provides multiple defect recovery pathways unavailable in binary W-Re.
+\end{prediction}
+
+\textbf{Additional advantage}: the average neutron absorption cross-section $\bar{\sigma}_a = (18.3 + 2.48 + 20.6 + 1.15 + 0.185)/5 = 8.5$~barn, compared to $\sigma_a = 18.1$~barn for W-3\%Re.  The HEA absorbs $\sim$53\% fewer neutrons per unit volume, and its 38\% lower density further reduces absorption per unit area.  Combined, this predicts $\sim$70\% reduction in parasitic neutron absorption---a substantial improvement in reactor efficiency.
+
+
+\subsection{HEA-2: CrMoNbTaV---Sputter-resistant ion thruster grid}
+
+\subsubsection{Application}
+
+Ion thrusters (NEXT-C, HERMeS) are the primary propulsion for deep-space missions.  The accelerator grid, which extracts and focuses the ion beam, erodes from sputtering by charge-exchange ions impacting the downstream grid surface.  Grid erosion limits thruster lifetime to $\sim$50,000 hours and is the primary life-limiting failure mode.
+
+\textbf{Current solution}: pure molybdenum grids (Mo, $\rho = 10.28$~g/cm$^3$).  Every surface atom has the same sputtering threshold; erosion is uniform and predictable but relentless.
+
+\subsubsection{Proposed composition}
+
+\begin{center}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Element & $r$ (pm) & $T_m$ (K) & $\rho$ (g/cm$^3$) & Mass (amu) \\
+\midrule
+Cr & 128 & 2180 & 7.19  & 52.0 \\
+Mo & 139 & 2896 & 10.28 & 95.9 \\
+Nb & 146 & 2750 & 8.57  & 92.9 \\
+Ta & 146 & 3290 & 16.65 & 180.9 \\
+V  & 134 & 2183 & 6.11  & 50.9 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Calculated parameters} (equimolar):
+\begin{itemize}
+  \item $\bar{r} = 138.6$~pm, \quad $\delta = 5.03\%$.
+  \item Average density: 9.76~g/cm$^3$ \quad (5\% lighter than pure Mo).
+  \item Average $T_m$: 2660~K.
+  \item VEC = 5.4 $\to$ BCC.
+\end{itemize}
+
+\subsubsection{$q$-theory predictions}
+
+The sputtering process at the HEA surface is qualitatively different from a pure metal.  In pure Mo, every surface site has identical binding energy $E_b$ and identical sputtering threshold.  In the HEA, surface sites present a \emph{distribution} of binding energies determined by the local chemical environment.
+
+The $q$-theory predicts a \textbf{self-hardening surface} via the escort distribution:
+
+\begin{enumerate}
+  \item Heavy atoms (Ta at 181~amu) have higher sputtering thresholds than light atoms (V at 51~amu) due to momentum transfer kinematics: $E_{\mathrm{threshold}} \propto M_{\mathrm{target}}$ at fixed ion energy.
+  \item Preferential sputtering of light atoms enriches the surface in heavy atoms (Ta, Mo, Nb).
+  \item The surface escort distribution $P_j^{\mathrm{surface}}$ shifts toward high-threshold elements, creating a surface composition that is self-optimized for sputter resistance.
+  \item This enrichment continues until the surface reaches a steady state where all elements sputter at equal rates---the surface equivalent of economic equilibrium.
+\end{enumerate}
+
+\begin{prediction}[Ion thruster grid lifetime]
+A CrMoNbTaV grid should achieve ${\sim}30\%$ lower equilibrium sputter yield than pure Mo, extending grid lifetime proportionally.  The mass diversity (factor of $3.5{\times}$ from V to Ta) provides a large dynamic range for surface self-optimization.  The initial transient (surface enrichment) should complete within ${\sim}1000$ hours of operation.
+\end{prediction}
+
+The 4:1 mass ratio between Ta (181~amu) and V (51~amu) is the key design feature.  In a pure-Mo grid, there is no compositional degree of freedom---every atom sputters equally.  In the HEA, the escort distribution creates a surface that \emph{adapts} to the erosion environment, preferentially retaining the most resistant atoms.
+
+
+\subsection{HEA-3: WMoTaCrHf --- Operating-temperature NTP alloy}
+
+\subsubsection{Application}
+
+Same as HEA-1 (NTP fuel cladding), but this is a \textbf{bolder design} that directly tests the $q$-entropy prediction.  Where HEA-1 is safely within the standard phase stability window, HEA-3 is designed to be stable \emph{only at its operating temperature}---a concept that standard theory does not support.
+
+\subsubsection{Proposed composition}
+
+\begin{center}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Element & $r$ (pm) & $T_m$ (K) & $\rho$ (g/cm$^3$) & VEC \\
+\midrule
+W  & 139 & 3695 & 19.25 & 6 \\
+Mo & 139 & 2896 & 10.28 & 6 \\
+Ta & 146 & 3290 & 16.65 & 5 \\
+Cr & 128 & 2180 & 7.19  & 6 \\
+Hf & 159 & 2506 & 13.31 & 4 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Calculated parameters} (equimolar):
+\begin{itemize}
+  \item $\bar{r} = 142.2$~pm, \quad $\delta = 7.17\%$ \quad (\textbf{exceeds the 6.6\% Yang--Zhang limit}).
+  \item Average density: 13.34~g/cm$^3$.
+  \item Average $T_m$: 2913~K.
+  \item VEC = 5.4 $\to$ BCC.
+\end{itemize}
+
+\subsubsection{The operating-temperature concept}
+
+Standard HEA design rules say $\delta \leq 6.6\%$ is required for single-phase stability.  The $q$-theory says this threshold is \emph{temperature-dependent}:
+\begin{equation}
+  \delta_{\max}(T) = \delta_{\max}(T_{\mathrm{ref}}) \times \sqrt{T / T_{\mathrm{ref}}}.
+\end{equation}
+
+With $\delta_{\max}(1800\text{~K}) = 6.6\%$:
+\begin{align}
+  \delta_{\max}(2500\text{~K}) &= 6.6\% \times \sqrt{2500/1800} = 7.78\%, \\
+  \delta_{\max}(2130\text{~K}) &= 6.6\% \times \sqrt{2130/1800} = 7.18\%.
+\end{align}
+
+WMoTaCrHf with $\delta = 7.17\%$ is predicted to be:
+\begin{itemize}
+  \item \textbf{Unstable} below $\sim$2130~K (decomposes into multi-phase mixture).
+  \item \textbf{Stable} above $\sim$2130~K (single-phase BCC solid solution).
+  \item \textbf{Optimal} at its NTP operating temperature of 2500~K, where $\delta < \delta_{\max} = 7.78\%$.
+\end{itemize}
+
+This is an \textbf{operating-temperature alloy}: it exists as a single-phase solid solution only at its service temperature.  Fabrication would require hot processing above 2130~K (hot isostatic pressing, plasma spray deposition, or arc melting with controlled cooling rate to retain the metastable single phase).
+
+\subsubsection{$q$-theory predictions}
+
+The curvature at operating temperature:
+\begin{equation}
+  K_{\mathrm{WMoTaCrHf}} \approx 0.41 \qquad (\text{vs.\ } K_{\mathrm{WMoTaNbZr}} \approx 0.22).
+\end{equation}
+
+The 87\% higher curvature predicts correspondingly higher radiation tolerance, solid-solution strengthening, and creep resistance at temperature.
+
+\begin{prediction}[Operating-temperature alloy stability]
+WMoTaCrHf ($\delta = 7.17\%$) forms a single-phase BCC solid solution when processed above 2130~K and maintained at NTP operating temperature ($\sim$2500~K), despite violating the standard $\delta \leq 6.6\%$ design rule.  This is a direct test of the $q$-entropy correction: standard Shannon entropy predicts decomposition; $q$-entropy with $q < 1$ predicts stability at elevated temperature.
+\end{prediction}
+
+\begin{prediction}[Performance advantage over HEA-1]
+At equivalent radiation dose and operating temperature, WMoTaCrHf should show $\sim$1.9$\times$ better radiation tolerance than WMoTaNbZr ($K$ ratio: $0.41/0.22$), at the cost of losing phase stability below 2130~K and 9\% higher density.
+\end{prediction}
+
+\subsubsection{Risk assessment}
+
+This is the boldest of the three proposals:
+\begin{itemize}
+  \item If WMoTaCrHf forms a stable single phase at 2500~K as predicted, it \textbf{validates the $q$-entropy correction}---the core novel prediction of the $q$-thermodynamic framework applied to HEAs.
+  \item If it decomposes even at 2500~K, it \textbf{falsifies} the temperature-dependent $\delta_{\max}$ prediction and suggests the $q$-entropy enhancement is weaker than the theory predicts.
+  \item Even partial decomposition (e.g., stable above 2300~K but not 2130~K) would provide a quantitative constraint on the $q$-entropy correction factor.
+\end{itemize}
+
+\subsection{HEA-4: WTaNbHfZr --- Self-protecting rocket nozzle}
+
+\subsubsection{Application and the current performance frontier}
+
+Radiation-cooled rocket nozzles operate at the most extreme thermal-oxidative environment in aerospace: combustion gas temperatures of 2700--3000~K, nozzle throat wall temperatures of 2200--2500~K, and direct exposure to oxidizing exhaust products (H$_2$O, CO$_2$, NO$_x$).  These nozzles are used in satellite apogee motors, reaction control thrusters, and upper-stage engines where regenerative cooling is impractical.
+
+The current gold standard is a \textbf{rhenium substrate with chemical-vapor-deposited (CVD) iridium coating}:
+\begin{itemize}
+  \item Re provides the refractory substrate ($T_m = 3459$~K, excellent creep resistance to 2200$^\circ$C).
+  \item Ir provides oxidation protection ($T_m = 2719$~K, forms a thin, adherent IrO$_2$ layer).
+\end{itemize}
+
+The Re/Ir system has three fundamental limitations:
+
+\begin{enumerate}
+  \item \textbf{Cost}: Re at \$4,000--10,000/kg and Ir at \$50,000/kg, plus CVD processing, bring nozzle costs to $\sim$\$15,000/kg.
+  \item \textbf{Weight}: Re has $\rho = 21.0$~g/cm$^3$---the second densest element.
+  \item \textbf{The coating problem}: The Ir coating is pre-deposited at fixed thickness (25--75~$\mu$m).  Under thermal cycling, CTE mismatch between Re and Ir ($\Delta\alpha \approx 0.2$~$\mu$m/m$\cdot$K) and Re/Ir interdiffusion at operating temperature degrade the coating.  Once the Ir cracks or is consumed by interdiffusion, the unprotected Re oxidizes catastrophically---Re forms volatile ReO$_3$ and Re$_2$O$_7$ above 600$^\circ$C.  \emph{The coating cannot heal.}  This interdiffusion-limited lifetime is the primary failure mode.
+\end{enumerate}
+
+The second-tier solution, \textbf{niobium alloy C-103} (Nb-10Hf-1Ti) with fused silica coating, is cheaper and lighter ($\rho = 8.85$~g/cm$^3$) but limited to $\sim$1370$^\circ$C---far below the Re/Ir regime.
+
+No current material combines refractory strength, oxidation resistance, low density, reasonable cost, \emph{and} self-healing protection.
+
+\subsubsection{The design insight: escort-distribution-driven surface self-protection}
+
+The $q$-theory provides a design principle unavailable to conventional metallurgy.  The escort distribution $P_j = a_j x_j^q / Z_q$ weights each element by its effective contribution to the relevant property.  Under selective oxidation, the ``property'' that matters at the surface is \emph{oxidation resistance}---specifically, the thermodynamic stability of each element's oxide.
+
+Consider the oxidation free energies at 2200$^\circ$C (2473~K):
+\begin{center}
+\begin{tabular}{@{}lccl@{}}
+\toprule
+Element & $\Delta G^\circ_{\mathrm{oxide}}$ (kJ/mol O$_2$) & Oxide & Behavior at 2200$^\circ$C \\
+\midrule
+Hf & $-850$ & HfO$_2$ ($T_m = 3031$~K) & \textbf{Highly protective, solid} \\
+Zr & $-800$ & ZrO$_2$ ($T_m = 2988$~K) & \textbf{Highly protective, solid} \\
+Ta & $-550$ & Ta$_2$O$_5$ ($T_m = 2145$~K) & Marginal (near melting) \\
+Nb & $-500$ & Nb$_2$O$_5$ ($T_m = 1785$~K) & Liquid, moderate volatility \\
+W  & $-200$ & WO$_3$ ($T_{\mathrm{bp}} = 2145$~K) & Significant vapor pressure \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The thermodynamic gradient is stark: Hf and Zr have $\sim$4$\times$ more negative oxidation free energy than W.  They will \textbf{preferentially oxidize}, consuming available oxygen before W can react significantly.  This is the reactive element effect, well established in oxidation metallurgy for NiCrAl alloys---but here elevated to an HEA design principle.
+
+The escort distribution predicts the resulting surface evolution:
+
+\begin{enumerate}
+  \item \textbf{Initial exposure} (seconds): Hf and Zr at the alloy surface oxidize immediately, forming a thin HfO$_2$-ZrO$_2$ solid solution layer.  Some W at the very surface may form WO$_3$ and volatilize, but the thermodynamic preference for Hf/Zr oxidation (600~kJ/mol more negative) strongly limits W loss.
+  \item \textbf{Steady state} (minutes to hours): the surface develops a three-layer structure:
+    \begin{itemize}
+      \item \emph{Outer}: HfO$_2$-ZrO$_2$ protective oxide (dense, adherent, solid to 3000~K)
+      \item \emph{Sublayer}: Hf/Zr-depleted, W/Ta/Nb-enriched metallic zone
+      \item \emph{Bulk}: equimolar WTaNbHfZr (full refractory strength)
+    \end{itemize}
+  \item \textbf{Self-healing}: if the oxide layer cracks (thermal cycling, mechanical impact), fresh Hf and Zr from the sublayer---and ultimately from the bulk---diffuse to the crack and oxidize, sealing the breach.  This self-healing cycle continues as long as the Hf/Zr reservoir in the bulk is not exhausted.
+\end{enumerate}
+
+The HfO$_2$-ZrO$_2$ solid solution that forms is not just any oxide: it belongs to the same family as \textbf{yttria-stabilized zirconia} (YSZ), the standard thermal barrier coating (TBC) in gas turbine engines.  The alloy spontaneously grows its own TBC.
+
+\subsubsection{Proposed composition}
+
+\begin{center}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Element & $r$ (pm) & $T_m$ (K) & $\rho$ (g/cm$^3$) & VEC & Role \\
+\midrule
+W  & 139 & 3695 & 19.25 & 6 & Refractory anchor \\
+Ta & 146 & 3290 & 16.65 & 5 & High-$T$ strength \\
+Nb & 146 & 2750 & 8.57  & 5 & Moderate-$T$ strength \\
+Hf & 159 & 2506 & 13.31 & 4 & Oxide former (HfO$_2$) \\
+Zr & 160 & 2128 & 6.52  & 4 & Oxide former (ZrO$_2$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Calculated parameters} (equimolar):
+\begin{itemize}
+  \item $\bar{r} = 150.0$~pm, \quad $\delta = 5.45\%$.
+  \item Average density: 12.86~g/cm$^3$ \quad (\textbf{39\% lighter than Re/Ir}).
+  \item Average $T_m$: 2874~K.
+  \item VEC = 4.8 $\to$ BCC.
+  \item $K \approx 0.24$ \quad (vs.\ $K \approx 0.01$ for binary Re/Ir).
+\end{itemize}
+
+Note the deliberate \textbf{absence of Mo}: molybdenum forms MoO$_3$, which has a vapor pressure exceeding 100~Pa above 1000$^\circ$C and would cause catastrophic surface recession in an oxidizing environment.  Molybdenum is appropriate for reducing environments (NTP, HEA-1) but lethal in oxidizing rocket exhaust.
+
+\subsubsection{Quantitative comparison with Re/Ir}
+
+\begin{center}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Property & Re/Ir & C-103 + silicide & WTaNbHfZr \\
+\midrule
+Max steady-state $T$ & 2200$^\circ$C & 1370$^\circ$C & 2200$^\circ$C (pred.) \\
+Density & 21.0~g/cm$^3$ & 8.85~g/cm$^3$ & 12.86~g/cm$^3$ \\
+Oxidation & Ir (pre-deposited) & Silicide (pre-applied) & HfO$_2$/ZrO$_2$ (self) \\
+Self-healing & No & Limited & Yes (continuous) \\
+Thermal cycling & Ir cracking risk & Coating spallation & Oxide reforms \\
+Approx.\ cost & $\sim$\$15k/kg & $\sim$\$3k/kg & $\sim$\$800/kg \\
+$K$ (curvature) & $\sim$0.01 & $\sim$0.05 & 0.24 \\
+\bottomrule
+\end{tabular}
+\normalsize
+\end{center}
+
+For a satellite apogee motor nozzle (typical mass 2--5~kg), the weight savings of 39\% translates to 0.8--1.9~kg---worth \$8,000--95,000 at current launch costs (\$10,000--50,000/kg to GEO).  The cost savings per nozzle exceed \$30,000.
+
+\subsubsection{$q$-theory predictions}
+
+\begin{prediction}[Self-forming oxide protection]\label{pred:nozzle_oxide}
+When exposed to oxidizing combustion products at 2000--2200$^\circ$C, equimolar WTaNbHfZr spontaneously forms a dense, adherent HfO$_2$--ZrO$_2$ oxide layer within the first minute, driven by the ${\sim}600$~kJ/mol thermodynamic preference for Hf/Zr oxidation over W~oxidation.  This oxide is solid to ${\sim}3000$~K (vs.\ 2719~K for Ir) and provides equivalent or superior protection to pre-deposited Ir coatings.
+\end{prediction}
+
+\begin{prediction}[Self-healing after thermal cycling]\label{pred:nozzle_heal}
+After 1000 thermal cycles (ambient $\to$ 2200$^\circ$C $\to$ ambient), WTaNbHfZr retains full oxidation protection while Re/Ir shows measurable Ir coating degradation.  The self-healing mechanism---Hf/Zr diffusion from the bulk to oxide cracks---provides a renewable protection reservoir that pre-deposited Ir coatings lack.  The Hf + Zr reservoir (40~at.\% of the alloy) ensures protection over the full satellite service life ($>$15 years, $>$10,000 firing cycles for reaction control thrusters).
+\end{prediction}
+
+\begin{prediction}[Specific creep advantage]\label{pred:nozzle_creep}
+At 2200$^\circ$C, WTaNbHfZr should exhibit specific creep resistance (creep rate normalized by density) comparable to or exceeding Re, because the solid-solution strengthening from $K = 0.24$ (five complementary elements) compensates for the 39\% lower density.  The CES prediction: diversity-driven strengthening $\Delta\sigma \propto K \times \delta_q^2$ with $K = 0.24$ and $\delta = 5.45\%$ provides $\sim$20$\times$ higher lattice friction than binary Re/Ir ($K \approx 0.01$).
+\end{prediction}
+
+\subsubsection{Why this should outperform Re/Ir}
+
+The fundamental advantage is not any single property but the elimination of the \textbf{coating failure mode} that limits Re/Ir.  In the current system, the Ir coating is a pre-deposited, fixed-thickness, non-renewable resource.  Every thermal cycle, every micrometeorite impact, every interdiffusion event depletes this resource irreversibly.  Once exhausted, the nozzle fails catastrophically.
+
+WTaNbHfZr replaces this static protection with a \textbf{dynamic, self-renewing} system.  The $q$-theory explains why: in a high-$K$ alloy, the escort distribution at the surface evolves toward the elements most suited to the environment.  Under oxidation, this means Hf and Zr are preferentially presented to the oxidizing gas, forming and reforming the protective oxide as needed.  The alloy is, in effect, an oxide-forming machine with a metallic refractory skeleton.
+
+This is the same escort-distribution mechanism as the sputter-resistant ion thruster grid (HEA-2): the surface composition adapts to the degradation environment, preferentially retaining the most resistant species.  The $q$-theory unifies both predictions through the same curvature-driven mechanism.
+
+\subsubsection{Risk assessment}
+
+\begin{enumerate}
+  \item \textbf{Initial recession}: Before the HfO$_2$/ZrO$_2$ layer fully forms, some W at the surface will oxidize to volatile WO$_3$.  The initial recession depth depends on the oxide formation kinetics.  If the oxide takes minutes rather than seconds to become continuous, the initial recession could be $\sim$10--50~$\mu$m.  This is manageable (comparable to Ir coating thickness) but must be characterized experimentally.
+  \item \textbf{Nb$_2$O$_5$ weakness}: Nb forms a relatively low-melting oxide ($T_m = 1785$~K).  At 2200$^\circ$C, Nb$_2$O$_5$ is liquid, potentially creating a weak phase in the oxide layer.  This could be mitigated by reducing Nb content or replacing Nb with a second refractory element (e.g., Mo for use in fuel-rich/reducing exhaust environments where volatile oxides are not a concern).
+  \item \textbf{Interdiffusion and reservoir depletion}: Over very long service ($>$10,000 hours cumulative), the Hf/Zr reservoir near the surface depletes.  The depth of the depletion zone grows as $\sim\sqrt{Dt}$.  With interdiffusion coefficients $D \sim 10^{-14}$~cm$^2$/s at 2200$^\circ$C, the depletion zone reaches $\sim$60~$\mu$m after 10,000 hours.  For a nozzle wall thickness of $\sim$2~mm, the reservoir lasts $>$10$^6$ hours.
+  \item \textbf{Manufacturing}: equimolar WTaNbHfZr can be produced by vacuum arc melting (standard for refractory HEAs), powder metallurgy, or additive manufacturing (electron beam melting).  No CVD coating step is needed, simplifying the manufacturing process.
+\end{enumerate}
+
+The four alloys thus form a \textbf{graded test} of the $q$-theory: HEA-1 tests knockout robustness within the standard stability window (conservative); HEA-2 tests the self-hardening surface prediction (moderate); HEA-3 tests the $q$-entropy phase stability correction (bold); and HEA-4 tests the escort-distribution surface evolution prediction in the most demanding thermal-oxidative environment in aerospace.
+
+The preceding four alloys address extreme spaceflight environments (nuclear reactors, ion thruster plasma, rocket exhaust).  Two additional alloys address a more immediate engineering challenge: \textbf{reusable launch vehicle thermal protection}, where the binding constraint is not temperature capability alone but the combination of thermal survival, mechanical damage tolerance, and per-flight maintenance cost.  These proposals apply the escort-distribution mechanism not to propulsion components but to the vehicle airframe itself.
+
+
+\subsection{HEA-5: Fe$_{25}$Cr$_{25}$Ni$_{25}$Mn$_{15}$Ti$_{10}$ --- Self-emissive metallic TPS panel}\label{sec:hea5}
+
+\subsubsection{Application and the current TPS fragility problem}
+
+Ceramic thermal protection tiles---whether Shuttle HRSI, Starship hex tiles, or the HEO-9 foam proposed in Section~\ref{sec:heo9}---share a fundamental mechanical limitation: porous ceramics are brittle.  Shuttle orbiters routinely replaced 50--100~tiles per flight due to handling damage, FOD, and thermal shock cracking.  SpaceX has acknowledged that Starship is ``not resilient to loss of a single tile in most places.''  The fragility is intrinsic to high-porosity ceramic architecture: the same void structure that provides thermal insulation creates stress concentrators that initiate fracture under modest mechanical loads.
+
+An alternative philosophy: replace the brittle ceramic outer surface with a \textbf{ductile metallic panel} that achieves the critical thermal function---high-emissivity radiation of absorbed heat---through its self-forming oxide scale rather than through a pre-applied coating.  The metallic panel provides the aerodynamic surface and emissivity; a separate backing insulation blanket (ceramic fiber or aerogel, $\sim$2--5~kg/m$^2$) provides the thermal resistance.  This decouples emissivity from insulation, allowing each layer to be optimized independently.
+
+Prior metallic TPS programs (X-33 Inconel~617 panels, recent Starship metallic tile tests) face the \textbf{emissivity problem}: bare metals have $\varepsilon \approx 0.1$--$0.3$ at TPS-relevant temperatures, requiring pre-oxidation treatments or coatings that degrade with thermal cycling.  The $q$-theory provides a design principle for solving this: select a composition whose escort distribution under oxidation produces a multi-cation transition-metal spinel oxide with intrinsically high broadband emissivity.
+
+\subsubsection{Design rationale: intrinsic emissivity from multi-cation oxide}
+
+The radiative equilibrium surface temperature is $T_s = (q_{\mathrm{conv}} / \varepsilon\sigma)^{1/4}$.  Emissivity $\varepsilon$ is the controlling parameter: increasing $\varepsilon$ from 0.3 (bare metal) to 0.9 (high-emissivity oxide) reduces $T_s$ by $\sim$26\%.  At high windward heating rates, this difference is 200--300$^\circ$C---potentially bringing the surface temperature into a range where metallic panels survive without active cooling.
+
+Transition-metal spinel oxides of the form (Fe,Mn,Ni)(Cr,Ti)$_2$O$_4$ are among the highest-emissivity materials known ($\varepsilon = 0.85$--$0.95$ across 1--25~$\mu$m), due to overlapping electronic absorption mechanisms: Fe$^{2+}$/Fe$^{3+}$ $d$-$d$ transitions and intervalence charge transfer (0.5--3~$\mu$m), Mn$^{2+}$/Mn$^{3+}$ crystal-field transitions, and metal--oxygen phonon absorption (5--25~$\mu$m).  In a single-component spinel (e.g., FeCr$_2$O$_4$), each mechanism operates over a narrow spectral band.  In a \emph{multi-cation} spinel with five transition metals on both the tetrahedral and octahedral sublattice sites, mass and force-constant disorder \textbf{broadens all absorption mechanisms across a wider spectral range}---the same phonon-broadening mechanism that gives HEO-9 its intrinsic emissivity (Section~\ref{sec:heo9}), here operating in the oxide scale of a metallic alloy.
+
+\subsubsection{Proposed composition}
+
+The composition targets a two-layer oxide structure: an outer emissive spinel and an inner protective chromia sublayer.
+
+\begin{center}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Element & $r$ (pm) & Mass (amu) & VEC & $T_m$ (K) & Role \\
+\midrule
+Fe & 126 & 55.8 & 8 & 1811 & Fe$^{2+}$/Fe$^{3+}$ emissivity \\
+Cr & 128 & 52.0 & 6 & 2180 & Protective Cr$_2$O$_3$ sublayer \\
+Ni & 124 & 58.7 & 10 & 1728 & FCC stabilizer, NiCr$_2$O$_4$ spinel \\
+Mn & 127 & 54.9 & 7 & 1519 & MnCr$_2$O$_4$ emissivity \\
+Ti & 147 & 47.9 & 4 & 1941 & $\delta$ driver, oxide adhesion \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Calculated parameters} (Fe$_{25}$Cr$_{25}$Ni$_{25}$Mn$_{15}$Ti$_{10}$, at.\%):
+\begin{itemize}
+  \item $\bar{r} = 128.3$~pm, \quad $\delta = 5.0\%$ \quad (within optimal band $\delta^* \approx 4.7$--$5.5\%$).
+  \item Average density: 7.56~g/cm$^3$.
+  \item Average $T_m$: 1852~K.
+  \item VEC $= 7.45$ $\to$ predominantly FCC (at boundary of FCC--BCC dual-phase region).
+  \item Estimated $|\Delta H_{\mathrm{mix}}| \approx 10$~kJ/mol (moderately negative; Ni-Ti interaction dominant).
+  \item $\Omega = T_m \cdot \Delta S_{\mathrm{mix}} / |\Delta H_{\mathrm{mix}}| \approx 2.5 > 1.1$ \quad (stable).
+  \item $H = 0.22$, \quad $K \approx 0.20$.
+  \item $\delta_{\mathrm{mass}} = 6.0\%$ \quad (Ti at 47.9~amu vs.\ Ni at 58.7~amu; moderate Nordheim scattering).
+\end{itemize}
+
+\textbf{Deliberate absence of Co}: cobalt would contribute CoFe$_2$O$_4$ spinel (high emissivity) but at $\sim$\$30/kg is 10$\times$ more expensive than Fe or Mn.  Manganese provides equivalent spinel-forming emissivity at commodity cost, consistent with a TPS material that must cover $>$100~m$^2$ per vehicle.
+
+\subsubsection{$q$-theory predictions}
+
+\begin{prediction}[Self-forming high-emissivity oxide]\label{pred:tps_emissivity}
+When oxidized in air or dissociated-air plasma at 900--1100$^\circ$C, Fe$_{25}$Cr$_{25}$Ni$_{25}$Mn$_{15}$Ti$_{10}$ develops a two-layer oxide scale: an outer $\sim$1--5~$\mu$m (Fe,Mn,Ni)(Cr,Ti)$_2$O$_4$ spinel with $\varepsilon \geq 0.85$ across 1--25~$\mu$m, over an inner $\sim$0.5--2~$\mu$m Cr$_2$O$_3$ chromia diffusion barrier.  The five-cation spinel exceeds the emissivity of any binary spinel (e.g., FeCr$_2$O$_4$, $\varepsilon \approx 0.80$) due to entropy-broadened phonon and electronic absorption---the same mechanism as HEO-9's intrinsic emissivity, applied to the oxide scale of a metallic alloy.
+\end{prediction}
+
+\begin{prediction}[Self-healing emissive surface]\label{pred:tps_heal}
+After 500 thermal cycles (ambient $\to$ 1050$^\circ$C $\to$ ambient, 15-minute hold), the oxide scale remains adherent and $\varepsilon$ remains above 0.85.  Any localized spallation exposes fresh alloy that re-oxidizes within seconds at service temperature, regenerating the high-emissivity spinel.  The Ti micro-addition improves oxide adhesion through the reactive-element ``peg'' effect (TiO$_2$ pegs anchor the scale at the metal--oxide interface).  The full alloy serves as an indefinite emissivity reservoir---unlike pre-applied coatings (RCG, TUFI), which are consumed irreversibly.
+\end{prediction}
+
+\begin{prediction}[Reduced metallic thermal conductivity]\label{pred:tps_conductivity}
+The alloy thermal conductivity is $\sim$12--15~W/mK, approximately 30\% below the rule-of-mixtures estimate ($\sim$18~W/mK), due to Nordheim electron-phonon alloy scattering from the five-component solid solution ($\delta_{\mathrm{mass}} = 6.0\%$).  While much higher than ceramic insulation, the reduced metallic conductivity partially compensates when compared to conventional metallic TPS panels (Inconel~617: $k \approx 25$~W/mK).
+\end{prediction}
+
+\subsubsection{Quantitative comparison with existing TPS outer surfaces}
+
+\begin{center}
+\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+System & $T_{\max}$ & $\varepsilon$ & Density & Self-healing & Damage-tolerant \\
+\midrule
+Shuttle HRSI & 1260$^\circ$C & 0.85 (RCG coat) & 0.35~g/cm$^3$ & No & No (brittle) \\
+Starship hex & $\sim$1500$^\circ$C & $\sim$0.85 (TUFI coat) & $\sim$0.5~g/cm$^3$ & No & No (brittle) \\
+X-33 Inconel~617 & 1050$^\circ$C & 0.3--0.5 (bare) & 8.36~g/cm$^3$ & No & Yes \\
+\textbf{HEA-5 panel} & \textbf{1050$^\circ$C} & $\boldsymbol{\geq}$\textbf{0.85 (self)} & \textbf{7.56~g/cm$^3$} & \textbf{Yes} & \textbf{Yes} \\
+\bottomrule
+\end{tabular}
+\normalsize
+\end{center}
+
+The HEA-5 panel is denser than ceramic tiles but is used as a \emph{thin sheet} ($\sim$0.3--0.8~mm), not as a thick insulating body.  At 0.5~mm thickness, the panel areal density is $\sim$3.8~kg/m$^2$.  Combined with ceramic fiber backing insulation ($\sim$5~kg/m$^2$), the total system areal density ($\sim$9~kg/m$^2$) is below Shuttle HRSI (26.6~kg/m$^2$) and Starship hex tiles ($\sim$20~kg/m$^2$).  The advantage is not thermal performance but \textbf{damage tolerance}: a metallic panel does not chip, crack, or detach from handling, FOD, or ascent vibration.  Panels can overlap at edges (like roof shingles), eliminating the gap-sealing problem that has been a persistent vulnerability in ceramic tile systems.
+
+\subsubsection{Risk assessment}
+
+\begin{enumerate}
+  \item \textbf{Emissivity verification}: The predicted $\varepsilon \geq 0.85$ from a five-cation spinel is based on the phonon-broadening mechanism validated in HEO-9 ceramics, but has not been measured on a metallic HEA oxide scale.  Binary spinels (FeCr$_2$O$_4$) achieve $\varepsilon \approx 0.80$; the multi-cation enhancement needs experimental confirmation.  This is a zero-cost experiment: oxidize a sample in a furnace and measure spectral emissivity.
+
+  \item \textbf{Oxide scale stability under thermal cycling}: Chromia-forming alloys (stainless steels, Ni-base superalloys) maintain protective scales through thousands of thermal cycles at 900--1100$^\circ$C.  The five-component alloy should behave similarly, but the outer spinel layer's cycling behavior is less studied.  Accelerated cycling tests are required.
+
+  \item \textbf{Creep at service temperature}: At 1050$^\circ$C ($\sim$0.57~$T_m$ for this alloy), creep deformation is a concern.  For a thin panel under modest aerodynamic loads during 10--20~minute reentry exposures, creep strain should be negligible.  Long-term dimensional stability over 1000+ cycles needs verification.
+
+  \item \textbf{Phase stability}: VEC $= 7.45$ places this alloy at the FCC--BCC boundary.  Precipitate formation (Laves phases from Ti, $\sigma$ phases from Cr) during slow cooling or isothermal holds at 600--900$^\circ$C could embrittle the alloy.  The non-equimolar Ti content (10~at.\%) suppresses Laves phase formation relative to equimolar compositions.
+
+  \item \textbf{Manufacturing}: The composition is similar to established high-entropy stainless steels.  Sheet rolling, stamping, welding, and laser powder bed fusion are all feasible with existing equipment.  All constituent elements are commodity metals (total raw material cost $<$\$10/kg), and the composition is compatible with standard stainless steel processing infrastructure.
+\end{enumerate}
+
+
+\subsection[HEA-6: Self-protecting refractory hot-structure alloy]{HEA-6: AlNbTiHfZr --- Self-protecting Refractory\\Hot-Structure Alloy}\label{sec:hea6}
+
+\subsubsection{Application: the TPS gap at articulating structures}
+
+Reusable launch vehicles have structural components that must \emph{articulate} during reentry while exposed to plasma heating.  Forward flap hinges, control surface bearings, and structural seals represent the most persistent thermal protection challenge in current Starship development: ceramic tiles cannot cover moving joints, gap fillers degrade, and plasma intrusion through gaps between tiles and articulating structures has been observed on multiple flights.
+
+This is a problem that no existing TPS material solves because it requires \textbf{simultaneous structural load-bearing and plasma exposure resistance} in a component that cannot be thermally insulated.  The $q$-theory offers a solution: a lightweight refractory HEA whose escort distribution under oxidation produces a self-healing, multi-component protective oxide---the same mechanism as HEA-4, but retuned for the lower temperatures and mass constraints of TPS hot structures.
+
+\subsubsection{Design rationale: lightweight refractory with self-forming oxide}
+
+The design targets differ from HEA-4 (rocket nozzle):
+
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Requirement & HEA-4 (nozzle) & HEA-6 (hot structure) \\
+\midrule
+Peak temperature & 2200$^\circ$C (steady) & 1200--1500$^\circ$C (transient) \\
+Exposure duration & Hours (continuous) & 10--20~min (per reentry) \\
+Environment & Rocket exhaust & Dissociated air (N/O plasma) \\
+Density target & $<$21~g/cm$^3$ (vs.\ Re/Ir) & $<$10~g/cm$^3$ (mass-critical) \\
+Manufacturing & Arc melt, HIP & Additive manufacturing \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The lower temperature and shorter exposure allow a lighter composition.  Replacing W ($\rho = 19.25$~g/cm$^3$) and Ta ($\rho = 16.65$~g/cm$^3$) with Al ($\rho = 2.70$~g/cm$^3$) and Ti ($\rho = 4.51$~g/cm$^3$) reduces density by 45\% while maintaining the escort-distribution self-healing mechanism: Al, Hf, and Zr have the most negative oxidation free energies and are preferentially presented to the oxidizing plasma.
+
+\subsubsection{Proposed composition}
+
+\begin{center}
+\begin{tabular}{@{}lccccl@{}}
+\toprule
+Element & $r$ (pm) & Mass (amu) & VEC & $T_m$ (K) & Role \\
+\midrule
+Al & 143 & 27.0 & 3 & 933 & Al$_2$O$_3$ former, density reducer \\
+Nb & 146 & 92.9 & 5 & 2750 & Refractory strength \\
+Ti & 147 & 47.9 & 4 & 1941 & TiO$_2$ supplement, lightweight \\
+Hf & 159 & 178.5 & 4 & 2506 & HfO$_2$ former, mass disorder \\
+Zr & 160 & 91.2 & 4 & 2128 & ZrO$_2$ former, lightweight \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Calculated parameters} (equimolar):
+\begin{itemize}
+  \item $\bar{r} = 151.0$~pm, \quad $\delta = 4.68\%$ \quad (within optimal band; $< \delta_{\max} = 6.6\%$ at all temperatures).
+  \item Average density: 7.12~g/cm$^3$ \quad (\textbf{45\% lighter than HEA-4}, comparable to stainless steel).
+  \item Average $T_m$: 2052~K (1779$^\circ$C).
+  \item VEC $= 4.0$ $\to$ BCC.
+  \item Estimated $|\Delta H_{\mathrm{mix}}| \approx 19$~kJ/mol (negative; driven by strong Al-Hf, Al-Zr, Al-Ti interactions).
+  \item $\Omega = T_m \cdot \Delta S_{\mathrm{mix}} / |\Delta H_{\mathrm{mix}}| \approx 1.4 > 1.1$ \quad (marginally stable; B2 ordering likely).
+  \item $H = 0.20$ (equimolar), \quad $K \approx 0.18$.
+  \item $\delta_{\mathrm{mass}} = 59.5\%$ \quad (Al at 27~amu vs.\ Hf at 178.5~amu---$6.6:1$ ratio, extreme phonon scattering).
+\end{itemize}
+
+\textbf{Deliberate absence of W}: tungsten would raise $T_m$ and creep resistance but at $\rho = 19.25$~g/cm$^3$ dominates the density.  At the lower operating temperatures of TPS hot structures (vs.\ rocket nozzles), Nb provides adequate refractory strength.  The absence of W also eliminates volatile WO$_3$ formation---critical in oxidizing reentry environments (same reasoning as HEA-4's exclusion of Mo, line~876).
+
+\subsubsection{Oxidation behavior: escort-distribution-driven self-healing scale}
+
+At 1200--1500$^\circ$C in dissociated air, the thermodynamic gradient drives selective oxidation:
+
+\begin{center}
+\begin{tabular}{@{}lccl@{}}
+\toprule
+Element & $\Delta G^\circ_{\mathrm{oxide}}$ (kJ/mol O$_2$) & Oxide $T_m$ ($^\circ$C) & Behavior at 1400$^\circ$C \\
+\midrule
+Al & $-900$ & 2072 (Al$_2$O$_3$) & \textbf{Primary protective layer} \\
+Hf & $-850$ & 2758 (HfO$_2$) & \textbf{Refractory reinforcement} \\
+Zr & $-800$ & 2715 (ZrO$_2$) & \textbf{Refractory reinforcement} \\
+Ti & $-700$ & 1843 (TiO$_2$) & Supplementary oxide \\
+Nb & $-500$ & 1512 (Nb$_2$O$_5$) & Liquid sealant at $>$1512$^\circ$C \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The escort distribution predicts a three-layer surface structure:
+
+\begin{enumerate}
+  \item \textbf{Outer oxide}: Dense Al$_2$O$_3$ matrix with (Hf,Zr)O$_2$ reinforcement.  The Al$_2$O$_3$ provides the primary diffusion barrier (oxygen permeability $\sim$10$^4\times$ lower than Cr$_2$O$_3$); the HfO$_2$/ZrO$_2$ particles provide mechanical reinforcement and crack-bridging.  At $>$1512$^\circ$C, Nb$_2$O$_5$ liquid sinters any remaining porosity (same liquid-phase-sealing mechanism as HEC-8).
+  \item \textbf{Depleted sublayer}: Al/Hf/Zr-depleted, Nb/Ti-enriched metallic zone.  This zone retains structural strength (Nb and Ti are the primary strengthening elements in BCC refractory HEAs).
+  \item \textbf{Bulk}: Equimolar AlNbTiHfZr with full compositional reservoir.
+\end{enumerate}
+
+The oxide-former reservoir (Al~+~Hf~+~Zr $= 60$~at.\% of the alloy) is 50\% larger than HEA-4's reservoir (Hf~+~Zr $= 40$~at.\%).  For a 2~mm component wall, the reservoir supports $>$10$^5$~hours of cumulative oxidation at 1400$^\circ$C (depletion zone $\sim$60~$\mu$m after 10,000~hours at $D \sim 10^{-14}$~cm$^2$/s).
+
+\subsubsection{$q$-theory predictions}
+
+\begin{prediction}[Self-forming protective oxide on AlNbTiHfZr]\label{pred:hotstructure_oxide}
+When exposed to dissociated-air plasma at 1200--1500$^\circ$C, equimolar AlNbTiHfZr forms a dense, adherent oxide scale within the first minute, consisting of an Al$_2$O$_3$ matrix reinforced by (Hf,Zr)O$_2$ particles.  The $\sim$400~kJ/mol thermodynamic preference for Al/Hf/Zr oxidation over Nb oxidation drives rapid selective oxidation.  This oxide provides equivalent or superior protection to pre-applied coatings on conventional refractory alloys (e.g., silicide coatings on C-103 Nb alloy), with the critical advantage of self-healing: any mechanical damage exposes fresh Al/Hf/Zr-rich alloy that immediately re-oxidizes.
+\end{prediction}
+
+\begin{prediction}[Thermal cycling durability]\label{pred:hotstructure_cycling}
+After 1000 thermal cycles (ambient $\to$ 1400$^\circ$C $\to$ ambient, 20-minute hold), AlNbTiHfZr retains $>$90\% of initial tensile strength and full oxidation protection.  The self-healing oxide eliminates the coating-failure mode that limits C-103/silicide (coating spallation after $\sim$100~cycles) and Re/Ir (interdiffusion-limited lifetime).
+\end{prediction}
+
+\begin{prediction}[Ultra-low thermal conductivity for a metal]\label{pred:hotstructure_conductivity}
+The extreme mass disorder ($\delta_{\mathrm{mass}} = 59.5\%$, Al/Hf mass ratio $= 6.6{:}1$) produces alloy thermal conductivity $\leq 8$~W/mK---comparable to some ceramics and 3--5$\times$ lower than conventional refractory alloys (C-103: $\sim$42~W/mK; W: 173~W/mK).  For a structural TPS component, low thermal conductivity is advantageous: it reduces heat transfer through the component to the backing airframe.
+\end{prediction}
+
+\subsubsection{Quantitative comparison}
+
+\begin{center}
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Property & C-103 + silicide & Inconel~718 & HEA-4 & AlNbTiHfZr \\
+\midrule
+Max service $T$ & 1370$^\circ$C & 700$^\circ$C & 2200$^\circ$C & 1500$^\circ$C (pred.) \\
+Density & 8.85~g/cm$^3$ & 8.19~g/cm$^3$ & 12.86~g/cm$^3$ & 7.12~g/cm$^3$ \\
+Oxidation & Silicide (pre-appl.) & Cr$_2$O$_3$ (native) & HfO$_2$/ZrO$_2$ (self) & Al$_2$O$_3$+HfO$_2$ (self) \\
+Self-healing & No & Limited & Yes & Yes \\
+$k$ (W/mK) & 42 & 11.4 & $\sim$15 & $\leq$8 (pred.) \\
+Cost (\$/kg) & $\sim$3,000 & $\sim$50 & $\sim$800 & $\sim$150 \\
+\bottomrule
+\end{tabular}
+\normalsize
+\end{center}
+
+The combination of moderate density (comparable to stainless steel), self-healing oxidation protection, and very low thermal conductivity makes AlNbTiHfZr uniquely suited for structural TPS components where no other solution exists---not because it is the best refractory alloy (HEA-4 is superior above 1500$^\circ$C), but because it operates in the temperature gap between superalloys ($<$1100$^\circ$C) and heavy refractory metals ($>$1800$^\circ$C) while being light enough for mass-constrained aerospace structures.
+
+\subsubsection{Risk assessment}
+
+\begin{enumerate}
+  \item \textbf{Phase stability with equimolar Al}: Aluminum (20~at.\%) in BCC refractory HEAs can promote B2 (ordered BCC) or Laves phase formation.  Published data on Al$_x$NbTiVZr show single-phase BCC for $x \leq 0.5$; equimolar Al may exceed this limit.  However, B2 ordering is not necessarily detrimental---it can increase strength---and the alloy passes Yang--Zhang criteria ($\Omega = 1.4 > 1.1$, $\delta = 4.68\% < 6.6\%$).  If embrittlement occurs, reducing Al to 10--15~at.\% while increasing Nb or Ti restores ductility with a modest density increase.
+
+  \item \textbf{Solidus temperature}: Pure Al melts at 660$^\circ$C, but in a BCC solid solution with refractory elements, the solidus is substantially higher ($\sim$1550--1700$^\circ$C based on analogous Al-containing refractory HEAs).  Operation at 1200--1500$^\circ$C approaches this range; the alloy must remain solid under transient reentry conditions.  Differential thermal analysis is needed to establish the exact solidus.
+
+  \item \textbf{Alumina emissivity}: Al$_2$O$_3$ has low emissivity ($\varepsilon \approx 0.3$--$0.5$).  For small-area structural components (hinges, seals, brackets), low surface emissivity is less critical than for large-acreage TPS panels.  If higher emissivity is needed, the composition can be modified to include Fe or Mn (forming higher-emissivity mixed oxides), at the cost of reduced melting point.
+
+  \item \textbf{Compatibility with stainless steel airframe}: BCC AlNbTiHfZr has a CTE of $\sim$8--10~$\mu$m/m$\cdot$K, lower than austenitic stainless steel ($\sim$17~$\mu$m/m$\cdot$K).  This CTE mismatch requires compliant mechanical joints rather than direct welding---the same bolted-stud approach Starship uses for hex tile attachment would accommodate the differential expansion.
+
+  \item \textbf{Manufacturing}: AlNbTiHfZr can be produced by vacuum arc melting (demonstrated for similar compositions), powder metallurgy, or electron-beam additive manufacturing.  The Al content requires careful atmosphere control during processing to avoid excessive Al$_2$O$_3$ inclusion formation.  Hf cost ($\sim$\$300/kg) is the dominant material cost driver, but for small structural components (total mass $\sim$1--10~kg per vehicle), the material cost ($\sim$\$150--1,500) is negligible.
+\end{enumerate}
+
+HEA-5 and HEA-6 address passive TPS for reusable launch vehicles.  A third reusable-vehicle alloy, HEA-7, addresses a fundamentally different thermal protection architecture: \textbf{actively cooled metallic heat shields}, where the material requirements invert from low to high thermal conductivity but the escort-distribution and sluggish-diffusion mechanisms remain beneficial.
+
+
+\subsection[HEA-7: Actively Cooled Heat Shield Alloy]{HEA-7: Ni$_{30}$Cr$_{25}$Fe$_{20}$Mn$_{15}$Ti$_{10}$ --- Actively Cooled\\Heat Shield for Reusable Upper Stages}\label{sec:hea7}
+
+\subsubsection{Application: the actively cooled heat shield}
+
+A fundamentally different approach to reusable upper-stage TPS is being developed by Stoke Space for the Nova launch vehicle: rather than passive ceramic tiles, the second stage reenters \textbf{base-first} with the engine system itself serving as the heat shield.  Cryogenic liquid hydrogen (LH2) circulates through microscopic capillary channels in a 3D-printed metallic heat shield, absorbing reentry heat via regenerative cooling.  The heated hydrogen drives the turbopumps in an expander bleed cycle, creating a self-regulating feedback loop: more heat $\to$ faster pumps $\to$ more coolant flow.
+
+This architecture---successfully ground-tested at heat loads exceeding orbital reentry conditions and flight-tested in a vertical hop (September 2023)---inverts the material requirements relative to passive TPS\@:
+
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Property needed & Passive TPS (HEA-5/6) & Active cooling (HEA-7) \\
+\midrule
+Thermal conductivity & Low (insulate) & High (transfer heat to coolant) \\
+Emissivity & High (radiate heat) & High (radiate heat---same) \\
+Service temperature & 1000--1500$^\circ$C & 500--800$^\circ$C (coolant-limited) \\
+Life-limiting mechanism & Oxidation, FOD & \textbf{Hydrogen embrittlement} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The $q$-theory's Nordheim scattering mechanism \emph{reduces} thermal conductivity---seemingly the wrong direction.  However, for a thin-walled ($\sim$2~mm) actively cooled structure, the thermal bottleneck is the convective boundary layer, not wall conduction: reducing $k$ from 25 to 15~W/mK increases the wall temperature drop by only $\sim$8$^\circ$C (see below).  The self-emissive and sluggish-diffusion mechanisms remain fully beneficial.
+
+\subsubsection{Design rationale: three $q$-theory mechanisms for active cooling}
+
+\textbf{Mechanism 1: self-emissive surface reduces coolant demand.}  At wall temperature 700$^\circ$C (973~K) with $\varepsilon = 0.85$, the surface radiates $q_{\mathrm{rad}} = \varepsilon\sigma T^4 \approx 43$~kW/m$^2$ back to space.  For typical windward convective heat flux of $\sim$200~kW/m$^2$, this is a $\sim$22\% reduction in net heat reaching the coolant---directly increasing the propellant margin available for landing.  The same five-cation spinel mechanism as HEA-5 provides intrinsic $\varepsilon \geq 0.85$ without a coating.
+
+\textbf{Mechanism 2: hydrogen embrittlement resistance via sluggish diffusion.}  This is the \textbf{novel prediction} with no analog in the existing proposals.  The heat shield experiences LH2 at $-253^\circ$C on the coolant side and reentry plasma on the hot side, cycled hundreds of times.  Hydrogen embrittlement is the expected long-term life limiter:
+
+\begin{enumerate}
+  \item At elevated temperature: atomic H diffuses into the metal lattice through interstitial sites.
+  \item At cryogenic temperature: H becomes supersaturated, accumulating at grain boundaries and precipitate interfaces.
+  \item Repeated thermal cycling: cumulative intergranular damage $\to$ microcracking $\to$ channel failure.
+\end{enumerate}
+
+The $q$-theory predicts that the same sluggish-diffusion mechanism that suppresses sintering in HEO-9 and creep in HEA-4 should suppress hydrogen transport in an HEA:
+
+\begin{itemize}
+  \item The diverse lattice creates a \textbf{rough interstitial energy landscape}: H atoms encounter varied tetrahedral and octahedral site energies with no connected low-barrier percolation pathway, reducing effective H diffusivity by $\sim$3--10$\times$ relative to conventional Ni superalloys.
+  \item H atoms are \textbf{distributed among diverse local trapping environments} throughout the lattice, preventing the concentration buildup at grain boundaries that drives intergranular cracking.
+  \item The predicted diffusivity reduction scales as $\exp(-\Delta E_a / RT)$ with $\Delta E_a \propto K \times \delta^2$---the same functional form as sintering suppression but applied to interstitial diffusion rather than substitutional diffusion.
+\end{itemize}
+
+This prediction is supported by emerging experimental evidence: equimolar CoCrFeMnNi shows significantly less H-induced ductility loss than 304 stainless steel or Inconel~718, consistent with the sluggish-diffusion mechanism retarding H transport to crack tips.
+
+\textbf{Mechanism 3: self-healing oxide extends service life.}  Even with active cooling, the hot surface slowly oxidizes over hundreds of reentry cycles.  In a conventional Ni superalloy, the oxide eventually spalls and the structural wall thins.  The self-healing HEA oxide scale (HEA-5 mechanism) regenerates after each spallation event, maintaining wall thickness indefinitely.
+
+\subsubsection{Why the conductivity penalty is negligible}
+
+For a wall thickness $L = 2$~mm and net heat flux $q_{\mathrm{net}} \approx 150$~kW/m$^2$ (after radiative rejection):
+
+\[
+\Delta T_{\mathrm{wall}} = \frac{q_{\mathrm{net}} \times L}{k}.
+\]
+
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Material & $k$ (W/mK) & $\Delta T_{\mathrm{wall}}$ \\
+\midrule
+QuesTek Ni superalloy (est.) & 25 & 12$^\circ$C \\
+HEA-7 (predicted) & 15 & 20$^\circ$C \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The 8$^\circ$C penalty is negligible compared to the $\sim$43~kW/m$^2$ radiative benefit and the hydrogen embrittlement advantage.  The thermal bottleneck is the gas-side boundary layer ($h \sim 500$--$2000$~W/m$^2$K), not the wall conduction.
+
+\subsubsection{Proposed composition}
+
+\begin{center}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Element & $r$ (pm) & Mass (amu) & VEC & $T_m$ (K) & Role \\
+\midrule
+Ni & 124 & 58.7 & 10 & 1728 & AM base, high-$T$ strength \\
+Cr & 128 & 52.0 & 6 & 2180 & Cr$_2$O$_3$ sublayer \\
+Fe & 126 & 55.8 & 8 & 1811 & Fe$^{2+}$/Fe$^{3+}$ emissivity \\
+Mn & 127 & 54.9 & 7 & 1519 & MnCr$_2$O$_4$ emissivity \\
+Ti & 147 & 47.9 & 4 & 1941 & $\delta$ driver, H trapping \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Calculated parameters} (Ni$_{30}$Cr$_{25}$Fe$_{20}$Mn$_{15}$Ti$_{10}$, at.\%):
+\begin{itemize}
+  \item $\bar{r} = 128.2$~pm, \quad $\delta = 5.1\%$ \quad (within optimal band).
+  \item Average density: 7.61~g/cm$^3$.
+  \item Average $T_m$: 1848~K (1575$^\circ$C) \quad (adequate for 500--800$^\circ$C service with active cooling).
+  \item VEC $= 7.55$ $\to$ FCC \quad (ductile, compatible with laser powder bed fusion).
+  \item $H = 0.225$, \quad $K \approx 0.20$.
+  \item $\delta_{\mathrm{mass}} = 6.5\%$ \quad (Ti at 47.9~amu vs.\ Ni at 58.7~amu).
+\end{itemize}
+
+\textbf{Ni-dominant vs.\ Fe-dominant (HEA-5)}: The composition uses the same five elements as HEA-5 but shifts the balance from Fe to Ni.  This provides: (1)~compatibility with existing Ni-based powder feedstock and laser PBF parameter sets used in the Stoke Space manufacturing chain (five Additive Industries MetalFab~420K systems); (2)~better high-temperature creep resistance from the Ni-rich FCC matrix; and (3)~superior hydrogen embrittlement resistance (FCC Ni-based alloys resist H embrittlement better than BCC or ferritic alloys because the FCC lattice has lower H diffusivity and fewer susceptible trap sites).
+
+\subsubsection{$q$-theory predictions}
+
+\begin{prediction}[Self-emissive surface reduces coolant demand]\label{pred:active_emissivity}
+When oxidized in dissociated-air plasma at 500--800$^\circ$C, HEA-7 develops the same two-layer oxide scale as HEA-5 (outer five-cation spinel with $\varepsilon \geq 0.85$, inner Cr$_2$O$_3$ barrier).  At 700$^\circ$C wall temperature, the surface radiates $\sim$43~kW/m$^2$ back to space, reducing the net heat load on the LH2 coolant by $\sim$20\%, proportionally increasing the propellant margin for propulsive landing.
+\end{prediction}
+
+\begin{prediction}[Hydrogen embrittlement resistance]\label{pred:H_embrittlement}
+At 500$^\circ$C, the effective hydrogen diffusivity in HEA-7 is 3--10$\times$ lower than in conventional Ni superalloys (e.g., Inconel~718: $D_H \approx 5 \times 10^{-9}$~cm$^2$/s at 500$^\circ$C), due to the sluggish-diffusion mechanism operating on interstitial H transport.  After 1000 thermal cycles ($-253^\circ$C $\to$ 700$^\circ$C $\to$ $-253^\circ$C), HEA-7 retains $>$90\% of initial ductility, compared with $<$70\% for Inconel~718 under equivalent H charging conditions.  The improvement scales with $K \times \delta^2$---the same functional form as the sintering suppression prediction (HEO-9), applied to a different diffusing species.
+\end{prediction}
+
+\begin{prediction}[Extended reuse life]\label{pred:active_life}
+The combination of self-healing oxide (eliminating hot-side wall thinning) and H embrittlement resistance (eliminating cold-side microcracking) extends the heat shield reuse life from $\sim$100~cycles (estimated for conventional Ni superalloy under comparable conditions) to $>$500~cycles before microstructural inspection is required.  This supports the airplane-like reuse cadence that actively cooled upper-stage architectures are designed to enable.
+\end{prediction}
+
+\subsubsection{Quantitative comparison}
+
+\begin{center}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Property & Inconel~718 & QuesTek Ni (est.) & HEA-7 \\
+\midrule
+$\varepsilon$ (oxidized) & 0.4--0.6 & 0.4--0.6 (est.) & $\geq$0.85 (pred.) \\
+$k$ (W/mK) & 11.4 & $\sim$25 (est.) & $\sim$15 (pred.) \\
+H embrittlement & Susceptible & Unknown & Resistant (pred.) \\
+Self-healing oxide & Limited & Limited (est.) & Yes \\
+AM compatible & Yes (LPBF) & Yes (LPBF) & Yes (LPBF) \\
+\$/kg (raw) & $\sim$50 & Proprietary & $<$15 \\
+\bottomrule
+\end{tabular}
+\normalsize
+\end{center}
+
+\subsubsection{Risk assessment}
+
+\begin{enumerate}
+  \item \textbf{Conductivity vs.\ coolant margin trade-off}: The 8$^\circ$C wall temperature penalty from reduced $k$ is small, but the expander bleed cycle's performance depends on total heat absorbed.  Lower $k$ reduces total heat absorption (partially offset by higher $\varepsilon$ increasing radiative absorption from plasma).  The net effect on turbopump power and cycle efficiency requires coupled thermal-fluid analysis of the specific engine geometry.
+
+  \item \textbf{Hydrogen embrittlement prediction is untested}: The sluggish-diffusion mechanism for interstitial H transport in HEAs is theoretically grounded (same framework as substitutional diffusion suppression) and supported by preliminary experimental data on CoCrFeMnNi, but has not been validated at the specific conditions of an actively cooled heat shield (cryogenic LH2 contact, 1000+ thermal cycles, thin-walled capillary geometry).  Permeation testing at cryogenic-to-elevated cycling conditions is required.
+
+  \item \textbf{Compatibility with copper thrust chambers}: The heat shield manifold connects to copper-alloy thrust chambers.  Galvanic corrosion at the Ni-HEA/Cu interface in the presence of combustion products (H$_2$O) must be evaluated.  Transition joints or diffusion barriers may be needed.
+
+  \item \textbf{Capillary channel integrity}: The microscopic cooling channels ($\sim$100--500~$\mu$m) are 3D-printed into the heat shield.  The HEA composition must produce equivalent print quality (density, surface finish, residual stress) to existing Ni superalloys in laser PBF\@.  Print parameter development for this specific composition is needed but is straightforward given the extensive LPBF literature on NiCrFe-based HEAs.
+
+  \item \textbf{Phase stability at service temperature}: At 500--800$^\circ$C (0.42--0.58~$T_m$), precipitation of $\sigma$ phase (Cr-rich) or Laves phase (Ti-rich) could occur during extended isothermal holds.  For the brief thermal exposures during reentry ($\sim$10--20~minutes per cycle), kinetics are likely too slow for significant precipitation, but cumulative effects over 1000+ cycles need assessment.
+\end{enumerate}
+
+The seven metallic HEAs now span three application domains: extreme propulsion environments (HEA-1 through HEA-4), passive TPS for reusable vehicles (HEA-5, HEA-6), and \textbf{actively cooled TPS} (HEA-7).  HEA-7 introduces a novel $q$-theory prediction---hydrogen embrittlement resistance via sluggish interstitial diffusion---that extends the framework's diffusion-suppression mechanism from substitutional species (grain boundary diffusion in sintering, vacancy diffusion in creep) to interstitial species (hydrogen transport in embrittlement).  If validated, this would demonstrate the generality of the $K \times \delta^2$ diffusion scaling across fundamentally different diffusion mechanisms.
+
+
+\subsection[HEC-8: High-Entropy UHTC Diboride for Heat Shields]{HEC-8: (Hf,Zr,Ta,Nb,Ti)B$_2$ --- High-Entropy UHTC\\Diboride for Reusable Heat Shields}\label{sec:hec8}
+
+Current thermal protection systems (TPS) for hypersonic vehicles and atmospheric re-entry face a fundamental materials gap.  Carbon/carbon-silicon carbide (C/C-SiC) composites are limited to $\sim$1650$^\circ$C before active oxidation destroys the SiC protective layer.  Ultra-high-temperature ceramics (UHTCs) such as HfB$_2$ and ZrB$_2$ can survive higher temperatures, but suffer a catastrophic failure mode: above $\sim$1600$^\circ$C, the protective B$_2$O$_3$ glass boils off (vapor pressure $> 10$~kPa), leaving an unprotected, porous oxide scale that permits rapid oxygen ingress.  This creates a ``temperature gap'' between 1600--2200$^\circ$C where \emph{no existing single-component UHTC provides reliable oxidation protection}.
+
+The $q$-theory suggests a solution: a high-entropy diboride where the escort distribution under oxidation produces a \textbf{multi-functional oxide} that replaces the volatile B$_2$O$_3$ glass with a self-sealing refractory oxide system.
+
+\subsubsection{Design rationale}
+
+Consider equimolar (Hf$_{0.2}$Zr$_{0.2}$Ta$_{0.2}$Nb$_{0.2}$Ti$_{0.2}$)B$_2$ in the hexagonal AlB$_2$ structure.  The five metal cations occupy a single sublattice with entropy-stabilized disorder; the boron sublattice remains ordered.
+
+When this ceramic oxidizes above 1600$^\circ$C, the B$_2$O$_3$ boils off just as in conventional UHTCs.  But the five-component metal oxide layer that remains is fundamentally different from a single-component oxide:
+
+\begin{itemize}
+  \item \textbf{Refractory scaffold (40 mol\% of oxide cations)}: HfO$_2$ ($T_m = 2758^\circ$C) and ZrO$_2$ ($T_m = 2715^\circ$C) form a high-entropy solid solution with negligible vapor pressure to $>$2500$^\circ$C.  These provide structural integrity.
+
+  \item \textbf{Liquid-phase sintering flux (60 mol\%)}: Ta$_2$O$_5$ ($T_m = 1872^\circ$C), Nb$_2$O$_5$ ($T_m = 1512^\circ$C), and TiO$_2$ ($T_m = 1843^\circ$C) are liquid at service temperature.  Rather than being a weakness, these liquid oxides \emph{fill the pores left by B$_2$O$_3$ evaporation}, creating a dense, self-sealing scale.
+
+  \item \textbf{Self-healing}: any crack in the oxide exposes fresh ceramic, which immediately oxidizes and fills the crack with the same bifunctional (scaffold + flux) oxide.  The Hf+Zr+Ta+Nb+Ti reservoir ensures continuous protection.
+\end{itemize}
+
+This is the escort-distribution mechanism applied to a ceramic: under oxidation, the surface composition evolves to present the optimal mix of refractory framework formers and viscous sealants.  The single-component UHTCs fail because they produce only one type of oxide (either refractory but porous, or glassy but volatile).  The high-entropy ceramic produces \emph{both simultaneously} from a single precursor material.
+
+\subsubsection{Composition and parameters}
+
+\begin{center}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Metal & $r$ (pm) & $T_m^{\mathrm{boride}}$ ($^\circ$C) & Oxide formed & Oxide $T_m$ ($^\circ$C) & Role \\
+\midrule
+Hf & 159 & 3250 & HfO$_2$ & 2758 & Refractory scaffold \\
+Zr & 160 & 3245 & ZrO$_2$ & 2715 & Refractory scaffold \\
+Ta & 146 & 3040 & Ta$_2$O$_5$ & 1872 & Liquid sealant \\
+Nb & 146 & 3050 & Nb$_2$O$_5$ & 1512 & Liquid sealant \\
+Ti & 147 & 3225 & TiO$_2$ & 1843 & Liquid sealant \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Calculated parameters} (metal sublattice, equimolar):
+\begin{itemize}
+  \item $\bar{r} = 151.6$~pm, \quad $\delta_{\mathrm{size}} = 4.27\%$ \quad ($< 6.6\%$, phase-stable by Yang--Zhang).
+  \item Mass disorder: $\delta_{\mathrm{mass}} = 44.5\%$ \quad (Ti: 48~amu to Ta: 181~amu --- extreme phonon scattering).
+  \item Average boride $T_m$: 3162$^\circ$C.
+  \item Estimated density: $\sim$8.3~g/cm$^3$ \quad (vs.\ 11.2~g/cm$^3$ for HfB$_2$, 6.09~g/cm$^3$ for ZrB$_2$).
+  \item $K = (1-q)(1-1/5) \approx 0.24$ \quad for $q \approx 0.7$ (ceramic lattice correlations).
+  \item Herfindahl index: $H = 5 \times 0.2^2 = 0.20$ \quad (maximal entropy for 5 components).
+\end{itemize}
+
+\subsubsection{Quantitative comparison with existing TPS}
+
+\begin{center}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Property & C/C-SiC & HfB$_2$ & HfB$_2$-SiC & HE-UHTC \\
+\midrule
+Max reusable $T$ & 1650$^\circ$C & $\sim$1600$^\circ$C & $\sim$1800$^\circ$C & 2400$^\circ$C (pred.) \\
+Failure mode & SiC active ox.\ & B$_2$O$_3$ boiloff & SiC active ox.\ & Scaffold melt \\
+Oxide self-sealing & No & No & Partially & Yes (predicted) \\
+Self-healing & No & No & Limited & Yes \\
+Thermal conductivity & 15--40 W/mK & 104 W/mK & $\sim$70 W/mK & $\sim$15 W/mK (pred.) \\
+Density & 1.9 g/cm$^3$ & 11.2 g/cm$^3$ & $\sim$9 g/cm$^3$ & 8.3 g/cm$^3$ \\
+$K$ (curvature) & $\sim$0.02 & 0 & $\sim$0.05 & 0.24 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The predicted thermal conductivity of $\sim$15~W/mK (an order of magnitude below HfB$_2$) is itself advantageous for a heat shield: it reduces heat flux to the underlying structure.  The $q$-theory predicts this via the transport-scattering mechanism (Section~\ref{sec:transport}): the extreme mass disorder ($\delta_{\mathrm{mass}} = 44.5\%$) creates strong alloy phonon scattering, with conductivity reduction scaling as $K \times \delta_{\mathrm{mass}}^2$.
+
+\subsubsection{$q$-theory predictions}
+
+\begin{prediction}[Bifunctional oxide scale]\label{pred:ceramic_oxide}
+Above 1600$^\circ$C (after B$_2$O$_3$ evaporation), equimolar (Hf,Zr,Ta,Nb,Ti)B$_2$ forms a dense, two-phase oxide scale consisting of a solid (Hf,Zr)O$_2$ scaffold infiltrated by a (Ta,Nb,Ti)-oxide liquid phase.  The liquid fraction sinters the scale to $>$95\% density within the first 10 minutes at 2000$^\circ$C, compared with $<$70\% density for the porous HfO$_2$ scale on single-component HfB$_2$.
+\end{prediction}
+
+\begin{prediction}[Oxidation rate reduction]\label{pred:ceramic_rate}
+The parabolic oxidation rate constant $k_p$ at 2000$^\circ$C for the HE-UHTC is at least $5\times$ lower than for HfB$_2$, because the liquid-phase-sintered scale eliminates the through-thickness porosity that accelerates oxygen transport in single-component UHTC oxide scales.  This extends the reusable temperature ceiling from $\sim$1600$^\circ$C (HfB$_2$) to $\sim$2400$^\circ$C (HE-UHTC), limited by the onset of (Hf,Zr)O$_2$ scaffold melting ($\sim$2700$^\circ$C) minus a safety margin for long-term service.
+\end{prediction}
+
+\begin{prediction}[Thermal shock resistance]\label{pred:ceramic_shock}
+The combination of low thermal conductivity ($\sim$15~W/mK) and high curvature ($K \approx 0.24$) creates thermal shock resistance superior to conventional UHTCs.  The $q$-theory predicts this through two mechanisms: (1)~the high-entropy oxide scale has a coefficient of thermal expansion (CTE) closer to the substrate than single-component oxides (entropy of mixing reduces the CTE mismatch), and (2)~the liquid oxide phase accommodates thermal strain plastically rather than by cracking.  After 100 thermal cycles from ambient to 2000$^\circ$C with 30-second ramp, the HE-UHTC retains $>$80\% of its flexural strength, compared with $<$50\% for HfB$_2$.
+\end{prediction}
+
+\subsubsection{Why this should outperform existing UHTCs}
+
+The fundamental insight is that single-component UHTCs face an inherent design conflict: the boride must simultaneously resist oxidation (requiring a dense oxide scale) and withstand extreme temperature (requiring the oxide scale to remain solid).  B$_2$O$_3$ glass satisfies the first requirement but fails the second; HfO$_2$ satisfies the second but fails the first (forming a porous, non-protective scale without B$_2$O$_3$ to fill pores).
+
+The high-entropy diboride resolves this conflict by producing an oxide with \emph{two co-existing phases at service temperature}: a refractory solid scaffold (HfO$_2$+ZrO$_2$) for structural integrity and a liquid sealant (Ta$_2$O$_5$+Nb$_2$O$_5$+TiO$_2$) for pore closure.  This is not an accident of composition---it is the escort distribution under oxidation, concentrating refractory formers and sealant formers in their optimal roles.
+
+The analogy to the metallic rocket nozzle (HEA-4) is exact: both systems exploit the escort distribution to create a self-renewing, multi-functional surface layer.  The difference is that HEA-4 forms a primarily solid oxide (HfO$_2$/ZrO$_2$), while HEC-8 deliberately includes elements whose oxides are liquid at service temperature, turning a failure mode (liquid oxide) into a design feature (pore sealing).
+
+\subsubsection{Risk assessment}
+
+\begin{enumerate}
+  \item \textbf{Liquid oxide recession}: If the liquid Ta$_2$O$_5$/Nb$_2$O$_5$/TiO$_2$ phase is too fluid at $>$2000$^\circ$C, it may flow off the surface under shear from hypersonic airflow rather than remaining as a sealant.  Mitigation: the (Hf,Zr)O$_2$ scaffold provides a capillary structure that retains the liquid by surface tension.  Wind tunnel testing above Mach~8 is needed to validate retention.
+
+  \item \textbf{Boride phase stability}: The AlB$_2$ structure must accommodate all five cations without decomposing.  Gild et~al.\ (2016) confirm single-phase (Hf,Zr,Ta,Nb,Ti)B$_2$ formation by spark plasma sintering at 2000$^\circ$C\@.  The $q$-entropy correction (Section~\ref{sec:entropy_correction}) predicts even stronger stability than the Shannon-entropy estimate.
+
+  \item \textbf{Density penalty}: At 8.3~g/cm$^3$, the HE-UHTC is significantly denser than C/C-SiC (1.9~g/cm$^3$).  For large acreage TPS (e.g., windward surface of a capsule), this mass penalty may be prohibitive.  The HE-UHTC is best suited for \textbf{leading edges} and \textbf{nose caps}---small areas ($<$0.5~m$^2$) experiencing the highest heat fluxes---where the temperature capability is worth the mass cost.
+
+  \item \textbf{Manufacturing}: Spark plasma sintering (SPS) at 2000$^\circ$C/50~MPa produces near-fully-dense samples (Gild~et~al.\ achieved $>$92\% density).  Near-net-shape fabrication of leading-edge geometries is achievable via SPS or hot pressing with diamond grinding for final shaping.  Cost is dominated by Hf powder ($\sim$\$300/kg), giving an estimated material cost of $\sim$\$500/kg---comparable to existing UHTC components.
+\end{enumerate}
+
+The eight proposals form a \textbf{graded test} of the $q$-theory across two material classes: seven metallic HEAs (HEA-1 through HEA-7) testing knockout robustness, escort-distribution surface evolution, $q$-entropy phase stability, self-forming oxide protection, self-emissive surface oxide, self-protecting hot-structure oxidation, and sluggish interstitial diffusion for hydrogen embrittlement resistance; and one high-entropy ceramic (HEC-8) testing the same escort-distribution mechanism in an entirely different material system (ceramic diboride rather than metallic alloy).
+
+
+\subsection[HEO-9: High-Entropy Rare-Earth Zirconate Foam Tile]{HEO-9: (La,Nd,Sm,Gd,Y)$_2$Zr$_2$O$_7$ --- High-Entropy\\Rare-Earth Zirconate Foam Tile for Large-Acreage TPS}\label{sec:heo9}
+
+HEC-8 addresses the highest heat fluxes (leading edges, nose caps) but at 8.3~g/cm$^3$ is far too heavy for large-acreage thermal protection---the windward surface of a re-entry vehicle, which can exceed 100~m$^2$.  Here the dominant constraint is \textbf{areal density} (kg/m$^2$), and the state of the art has remained essentially unchanged since the Space Shuttle: silica fiber tiles (HRSI) at 0.35~g/cm$^3$, limited to $\sim$1260$^\circ$C by fiber sintering.
+
+The $q$-theory identifies the failure mechanism and its cure: in a single-component ceramic foam, atomic self-diffusion drives \textbf{sintering}---the closure of porosity that provides thermal insulation.  Above $\sim$1200$^\circ$C for silica and $\sim$1400$^\circ$C for zirconia, the pore structure coarsens irreversibly and the tile densifies, losing its insulating function.  In a high-entropy ceramic, the sluggish-diffusion mechanism (Section~\ref{sec:sluggish}) raises the effective activation energy for grain-boundary and surface diffusion by an estimated $\Delta E_a \approx 25$--$50$~kJ/mol (consistent with measured 3--10$\times$ diffusivity reductions in entropy-stabilized oxides), \emph{significantly suppressing sintering kinetics} and preserving porosity to higher temperatures.
+
+\subsubsection{Design rationale}
+
+Rare-earth zirconates $\mathrm{RE}_2\mathrm{Zr}_2\mathrm{O}_7$ in the pyrochlore or defect fluorite structure are among the best-known low-conductivity ceramics, with thermal conductivity $k \approx 1.5$~W/mK---40\% below yttria-stabilized zirconia (YSZ).  They are phase-stable to $>$2000$^\circ$C, have no monoclinic$\leftrightarrow$tetragonal transformation (unlike ZrO$_2$), and resist calcium-magnesium-alumino-silicate (CMAS) attack.
+
+A high-entropy version places five rare-earth cations on the A-site: equimolar (La,\allowbreak{}Nd,\allowbreak{}Sm,\allowbreak{}Gd,\allowbreak{}Y)$_2$Zr$_2$O$_7$.  The RE$^{3+}$ ions span ionic radii from $1.019$~\AA{} (Y$^{3+}$) to $1.160$~\AA{} (La$^{3+}$) and masses from 89~amu~(Y) to 157~amu~(Gd), providing both size and mass disorder on the A-sublattice while Zr$^{4+}$ on the B-sublattice remains ordered.
+
+\textbf{Phase note.}  The pyrochlore structure requires $r_{\mathrm{A}}/r_{\mathrm{B}} \gtrsim 1.46$.  In this composition, La ($r_{\mathrm{A}}/r_{\mathrm{Zr}} = 1.61$) and Nd ($1.54$) favor pyrochlore, while Y ($1.42$) and Gd ($1.46$) fall at or below the threshold.  Entropy of mixing on the A-site favors the disordered \emph{defect fluorite} phase, and published syntheses of mixed large/small RE zirconates typically yield fluorite or fluorite-pyrochlore coexistence.  For the application, defect fluorite is \emph{preferable}: the additional cation and anion-vacancy disorder enhances phonon scattering (further reducing thermal conductivity) and eliminates any pyrochlore$\to$fluorite ordering transition under irradiation.  The RE$_2$Zr$_2$O$_7$ stoichiometry label is retained while noting that the equilibrium structure at synthesis temperature is likely defect fluorite.
+
+The $q$-theory makes three specific predictions for this material in foam form:
+
+\begin{enumerate}
+  \item \textbf{Entropy-suppressed sintering}: The five-component A-site creates a rough diffusion energy landscape with no connected low-barrier percolation pathway.  An activation-energy increase of $\Delta E_a \approx 25$--$50$~kJ/mol (consistent with measured sluggish diffusion in entropy-stabilized oxides) shifts the sintering onset from $\sim$1400$^\circ$C (single-component La$_2$Zr$_2$O$_7$) to $\sim$1550$--$1650$^\circ$C (high-entropy version), a $\sim$150--250$^\circ$C increase driven by the CES sluggish-diffusion mechanism.  At 1600$^\circ$C, the sintering rate constant is predicted to be 3--10$\times$ lower than for single-component La$_2$Zr$_2$O$_7$.
+
+  \item \textbf{Ultra-low foam conductivity}: Mass disorder ($\delta_{\mathrm{mass}} = 17.8\%$, dominated by the Y/Gd contrast) creates strong phonon point-defect scattering (Klemens mechanism, with Y~+~Gd contributing $\sim$90\% of the mass-variance scattering parameter $\Gamma_{\mathrm{mass}}$), reducing bulk $k$ from $\sim$1.5~W/mK (single RE$_2$Zr$_2$O$_7$) to $\sim$1.0~W/mK---consistent with published measurements on high-entropy rare-earth zirconates (Zhao et al.\ 2020: $k \approx 1.1$~W/mK; Wright et al.\ 2020: $k = 0.9$--$1.3$~W/mK).  In a 90\% porous foam, three heat-transfer mechanisms contribute: solid conduction through the ceramic skeleton ($k_s \approx 0.03$~W/mK), gas conduction through pores (suppressed to near zero at re-entry altitudes where mean free path $\gg$ pore size), and \emph{radiation through pores} ($k_{\mathrm{rad}} \propto T^3 d_{\mathrm{pore}}$).  At the 1200--1400$^\circ$C surface temperatures typical of large-acreage windward TPS, $k_{\mathrm{eff}} \approx 0.08$--$0.10$~W/mK under re-entry conditions.  At higher temperatures ($>$1600$^\circ$C), radiative transport through pores becomes dominant; managing this requires either small pore size ($d_{\mathrm{pore}} < 50$~$\mu$m) or incorporation of an IR opacifier (e.g., SiC particles) in the foam walls, as was done in Shuttle-era tiles.
+
+  \item \textbf{Intrinsic high emissivity}: Rare-earth zirconates have high broadband emissivity ($\varepsilon \approx 0.80$--$0.90$) in the thermal infrared due to strong phonon absorption from Zr--O and RE--O stretching modes.  The five-component A-site broadens the phonon density of states through mass and force-constant disorder, extending absorption across a wider spectral range.  Additionally, Nd$^{3+}$ ($4f^3$) and Sm$^{3+}$ ($4f^5$) contribute $f$-$f$ electronic transitions in the near-infrared (0.5--1.5~$\mu$m), relevant near the blackbody peak at TPS operating temperatures ($\lambda_{\mathrm{peak}} = 1.4$--$2.3$~$\mu$m for 1000--1800$^\circ$C).  Shuttle tiles required a reaction-cured glass (RCG) coating for emissivity; the HE zirconate achieves $\varepsilon \geq 0.85$ intrinsically from its bulk composition, eliminating a coating failure mode.  Damage to the surface exposes fresh material with the same emissivity.
+\end{enumerate}
+
+\subsubsection{Composition and parameters}
+
+\begin{center}
+\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+RE$^{3+}$ & $r_{\mathrm{VIII}}$ (\AA) & Mass (amu) & Oxide $T_m$ ($^\circ$C) & \$/kg & Role \\
+\midrule
+La & 1.160 & 139 & 2315 & $\sim$5  & Large cation, $\delta$ driver \\
+Nd & 1.109 & 144 & 2233 & $\sim$50 & Intermediate \\
+Sm & 1.079 & 150 & 2335 & $\sim$5  & Intermediate \\
+Gd & 1.053 & 157 & 2420 & $\sim$30 & Heavy, mass disorder \\
+Y  & 1.019 &  89 & 2425 & $\sim$10 & Lightest, mass contrast \\
+\bottomrule
+\end{tabular}
+\normalsize
+\end{center}
+
+\textbf{Calculated parameters} (A-site, equimolar):
+\begin{itemize}
+  \item $\bar{r} = 1.084$~\AA, \quad $\delta_{\mathrm{size}} = 4.45\%$ \quad (well within solid-solution range; average $r_{\mathrm{A}}/r_{\mathrm{Zr}} = 1.51$).
+  \item $\bar{m} = 135.8$~amu, \quad $\delta_{\mathrm{mass}} = 17.8\%$ \quad (Y at 89~amu vs.\ lanthanides at 139--157~amu).
+  \item Herfindahl index: $H = 5 \times 0.2^2 = 0.20$ \quad (maximal entropy for 5 components).
+  \item $K = (1-q)(1-H) \approx 0.24$ \quad for $q \approx 0.7$.  \emph{Caveat}: $q$ has not been calibrated for ionic ceramics.  Using the metallic formula $q \approx 1 - \alpha\delta^2$ with A-sublattice $\delta$ gives $q \approx 0.55$; using the whole-crystal dilution ($\delta_{\mathrm{eff}} = f_A \delta_A$ where $f_A = 2/11$ is the A-site fraction) gives $q \approx 0.95$.  The range $q \in [0.5, 0.9]$ yields $K \in [0.08, 0.40]$.  Fitting $q$ from published thermal conductivity data on binary/ternary RE$_2$Zr$_2$O$_7$ mixtures would resolve this uncertainty at zero experimental cost.
+  \item Average RE$_2$O$_3$ cost: $\sim$\$20/kg \quad (all five elements are among the most abundant rare earths).
+\end{itemize}
+
+\subsubsection{Foam tile architecture}
+
+The tile is manufactured by \textbf{directional freeze-casting}:
+
+\begin{enumerate}
+  \item Co-precipitate or solid-state react equimolar (La,Nd,Sm,Gd,Y)$_2$Zr$_2$O$_7$ powder.
+  \item Prepare aqueous slurry (30--40 vol.\% solids, dispersant, binder).
+  \item Directional freeze-casting: freeze \emph{in-plane} so ice crystals grow parallel to the tile surface.  Upon sublimation, this creates lamellar pore channels oriented parallel to the surface---thin ceramic walls stacked through the thickness with gas gaps between them.
+  \item Sublimate ice under vacuum (freeze-drying).
+  \item Sinter at 1400--1500$^\circ$C.  This temperature is sufficient to form strong inter-particle necks (mechanical integrity) but---crucially---insufficient to close the macroscopic pore structure in the high-entropy composition.  In a single-component La$_2$Zr$_2$O$_7$, the same sintering temperature would produce $>$95\% dense material.  The entropy-stabilized sluggish diffusion preserves the foam architecture.
+\end{enumerate}
+
+The in-plane-frozen lamellar architecture is optimal for TPS\@: ceramic walls run through-thickness in series with gas gaps, \emph{minimizing through-thickness conductivity} while providing good in-plane conductivity for lateral heat spreading and compressive strength perpendicular to the surface.
+
+At 90\% porosity with bulk pyrochlore density $\sim$5.7~g/cm$^3$:
+\[
+\rho_{\mathrm{tile}} = 0.10 \times 5.7 = 0.57~\text{g/cm}^3.
+\]
+
+\subsubsection{Quantitative comparison with existing large-acreage TPS}
+
+For a reusable vehicle with steel structure (backface temperature limit $\sim$800$^\circ$C), the required tile thickness scales as $L \propto k_{\mathrm{eff}} \times \Delta T / q_{\mathrm{back}}$, where $\Delta T$ is the temperature drop through the tile and $q_{\mathrm{back}}$ is the allowable backface heat flux.
+
+\textbf{Operating temperature distinction.}  The $T_{\max}$ column below is the \emph{material capability ceiling}---the temperature above which the tile degrades.  The \emph{actual} surface temperature on large-acreage windward TPS is set by radiative equilibrium with the convective heat flux: $T_{\mathrm{surface}} \approx (q_{\mathrm{conv}} / \varepsilon\sigma)^{1/4}$.  For typical windward heating rates (30--60~kW/m$^2$), this gives $T_{\mathrm{surface}} \approx 1200$--$1400^\circ$C---well below the HEO-9 limit, providing a large safety margin.  Higher temperatures ($>$1600$^\circ$C) occur only at stagnation points and leading edges, where HEC-8 is the appropriate choice.
+
+The $k_{\mathrm{eff}}$ values include solid conduction, gas conduction (suppressed at re-entry altitudes by the Knudsen effect), and radiative transport through pores.  The HEO-9 values assume 50~$\mu$m lamellar pores from freeze-casting; pore-wall opacifier would reduce $k_{\mathrm{eff}}$ further:
+
+\begin{center}
+\small
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+System & $T_{\max}$ & Tile $\rho$ & $k_{\mathrm{eff}}^{\dagger}$ & Thick. & Mass & Reuses$^{\ddagger}$ \\
+ & ($^\circ$C) & (g/cm$^3$) & (W/mK) & (cm) & (kg/m$^2$) & \\
+\midrule
+Shuttle HRSI & 1260 & 0.35 & 0.17 & 7.6 & 26.6 & $\sim$100 \\
+TUFROC & 1750 & 0.40 & 0.20 & 5.0 & 20.0 & $\sim$50 \\
+PICA-X & 1600+ & 0.27 & 0.08 & 5.0 & 13.5 & 1 (abl.) \\
+Starship hex & $\sim$1500 & $\sim$0.5 & $\sim$0.15 & $\sim$4 & $\sim$20 & $>$100 \\
+\textbf{HEO-9 @ 1260$^\circ$C} & \textbf{1800} & \textbf{0.57} & \textbf{0.08} & \textbf{3.7} & \textbf{21} & \textbf{50--200$^{\ddagger}$} \\
+\textbf{HEO-9 @ 1600$^\circ$C} & \textbf{1800} & \textbf{0.57} & \textbf{0.13} & \textbf{5.7} & \textbf{33} & \textbf{20--50$^{\ddagger}$} \\
+\bottomrule
+\end{tabular}
+\normalsize
+\end{center}
+{\small $\dagger$ Temperature-averaged from backface (800$^\circ$C) to surface, under re-entry pressure ($\sim$100~Pa).}
+
+{\small $\ddagger$ HEO-9 reuse ranges are pre-experimental projections based on two distinct life-limiting regimes.  \emph{Material-limited life} (cumulative sintering): at 1260$^\circ$C, 100~flights at 10--30~min peak exposure per flight yields 17--50~hours cumulative---well below the 100-hour sintering threshold (Prediction~\ref{pred:foam_sinter}), placing sintering far from the binding constraint.  At 1600$^\circ$C, 50~flights approach the threshold directly, making sintering the likely life limiter.  \emph{Operationally-limited life}: foreign-object damage (FOD), aerodynamic erosion, rain/ice thermal shock, and handling damage may reduce practical reuse below the material limit, as they did for Shuttle tiles (see Risk~8).}
+
+At Shuttle-equivalent surface temperatures ($\sim$1260$^\circ$C), HEO-9 achieves \emph{lower} areal density (21~kg/m$^2$ vs.\ 26.6~kg/m$^2$) while providing a 540$^\circ$C higher temperature ceiling.  At elevated surface temperatures ($\sim$1600$^\circ$C), the tile is thicker (5.7~cm) and heavier (33~kg/m$^2$) due to radiative transport through pores, but still below conventional alternatives for that temperature range.  At the 1800$^\circ$C material limit, radiation management (opacifier or reduced pore size) is required to keep tile thickness practical.
+
+The reusability advantage follows from three mechanisms: (1)~no phase transformation to cause thermal cycling fatigue (Gibson-Ashby analysis confirms thermal stresses at 90\% porosity are an order of magnitude below compressive strength), (2)~intrinsic high emissivity without a degradable coating, and (3)~entropy-suppressed sintering prevents rapid microstructural degradation over repeated thermal cycles.  The non-hygroscopic ceramic eliminates the per-flight waterproofing that was a major maintenance burden for Shuttle HRSI tiles.
+
+However, material durability is only one component of tile reuse life.  Operational damage mechanisms---foreign-object damage (FOD) from runway debris or micrometeoroid impact, aerodynamic erosion at boundary-layer transition zones, rain or ice ingestion thermal shock during ascent, and handling damage during ground processing---also limit practical reuse.  Shuttle experience showed that tiles were routinely replaced due to these operational mechanisms, not material degradation per se.  HEO-9 eliminates several Shuttle-era failure modes (coating delamination, waterproofing degradation) but does not eliminate FOD, erosion, or thermal shock.  Cumulative sintering arithmetic bounds the material-limited life: at 10--30~min peak thermal exposure per flight, 100~flights yield 17--50~hours of cumulative high-temperature exposure.  At 1260$^\circ$C this is well below the 100-hour sintering threshold (Prediction~\ref{pred:foam_sinter}), so sintering is not the binding constraint and operational damage likely limits reuse first.  At 1600$^\circ$C, 50~flights approach the sintering threshold directly, making material degradation the probable life limiter.  Even with periodic tile replacement at 50--100~flight intervals, the elimination of per-flight waterproofing, coating refurbishment, and individual tile inspection provides substantial cost savings over Shuttle-era operations.
+
+\subsubsection{$q$-theory predictions}
+
+\begin{prediction}[Sintering suppression]\label{pred:foam_sinter}
+After 100 hours at 1600$^\circ$C, equimolar HEO-9 foam retains significantly more porosity than single-component La$_2$Zr$_2$O$_7$ foam of identical initial architecture.  For $\Delta E_a \approx 40$~kJ/mol (mid-range of literature estimates for entropy-stabilized oxides), the sintering rate constant $k_s$ at 1600$^\circ$C is $\sim$10$\times$ lower for the high-entropy composition: HEO-9 retains $\sim$75--87\% porosity while La$_2$Zr$_2$O$_7$ retains $<$50\% (the range reflects uncertainty in sintering kinetics exponents).  The lower bound ($\Delta E_a \approx 25$~kJ/mol, giving $\sim$5$\times$ rate reduction) still produces a meaningful porosity advantage.
+\end{prediction}
+
+\begin{prediction}[Thermal conductivity floor]\label{pred:foam_conductivity}
+The bulk thermal conductivity of dense HEO-9 is ${\leq}\,1.1$~W/mK at 1000$^\circ$C, at least 30\% below the average of the five single-component RE$_2$Zr$_2$O$_7$ (${\sim}1.5$~W/mK).  The reduction is dominated by mass-disorder phonon scattering from the Y/Gd contrast ($\delta_{\mathrm{mass}} = 17.8\%$; Y~+~Gd contribute $\sim$90\% of the Klemens scattering parameter $\Gamma_{\mathrm{mass}}$).  This prediction is consistent with published measurements on similar high-entropy rare-earth zirconates ($k \approx 0.9$--$1.3$~W/mK at 1000$^\circ$C).  If the equilibrium phase is defect fluorite rather than pyrochlore, the additional anion-vacancy disorder should reduce $k$ further.
+\end{prediction}
+
+\begin{prediction}[Thermal cycling durability]\label{pred:foam_cycling}
+After 1000 thermal cycles (ambient $\to$ 1600$^\circ$C $\to$ ambient, 60-second ramp), HEO-9 foam tiles retain $>$90\% of initial flexural strength, while single-component La$_2$Zr$_2$O$_7$ foam retains $<$70\%.  The advantage comes from two $q$-theory mechanisms: (1)~no monoclinic$\leftrightarrow$tetragonal phase transformation (unlike YSZ-based foams), and (2)~the entropy-stabilized lattice accommodates thermal strain through distributed local distortions rather than crack nucleation.
+\end{prediction}
+
+\subsubsection{Why this should outperform Shuttle-era tiles}
+
+The Shuttle HRSI tile was an engineering triumph constrained by a materials limitation: silica fibers sinter above $\sim$1200$^\circ$C, and no amount of clever tile design can circumvent the physics of single-component diffusion kinetics.  Every subsequent reusable TPS---including Starship's hex tiles---faces the same constraint with different materials.
+
+The $q$-theory identifies this as a \emph{single-component diffusion problem} and prescribes the solution: replace the single-component ceramic with a high-entropy composition where sluggish interdiffusion raises the sintering ceiling.  The foam architecture (low density, low conductivity, high porosity) remains the same; only the \emph{material constituting the foam walls} changes.
+
+This is the same principle as high-entropy alloy creep resistance: diversity of atomic environments raises the effective activation barrier for any process requiring cooperative atomic rearrangement.  In HEAs, this suppresses dislocation creep.  In HEO-9, it suppresses sintering.  Both are mathematical consequences of the CES sluggish-diffusion mechanism operating through $K \times \delta^2$.
+
+The intrinsic high emissivity provides an additional advantage.  Shuttle tiles required a separately applied RCG (borosilicate glass + SiC particles) coating for thermal radiation.  This coating could crack, delaminate, or erode, creating local hot spots.  The HEO-9 tile radiates efficiently through its \emph{bulk composition}: the dominant mechanism is phonon absorption from Zr--O and RE--O stretching modes (broadened by five-component mass and force-constant disorder), supplemented by near-IR $f$-$f$ electronic transitions from Nd$^{3+}$ and Sm$^{3+}$ at wavelengths relevant to the blackbody peak at TPS operating temperatures ($\lambda_{\mathrm{peak}} = 1.4$--$2.3$~$\mu$m for 1000--1800$^\circ$C).  Any surface damage exposes fresh material with the same emissivity.
+
+\subsubsection{Risk assessment}
+
+\begin{enumerate}
+  \item \textbf{Radiative transport through pores}: At temperatures above $\sim$1400$^\circ$C, radiation through pore channels ($k_{\mathrm{rad}} \propto T^3 d_{\mathrm{pore}}$) becomes the dominant heat-transfer mechanism in the foam.  For 100~$\mu$m lamellar pores at 1600$^\circ$C, $k_{\mathrm{rad}} \approx 0.12$~W/mK---comparable to the total solid + gas contribution.  Mitigation: (a)~reduce pore size to $<$50~$\mu$m through freeze-casting parameters (ice crystal size control via cooling rate), cutting $k_{\mathrm{rad}}$ proportionally; (b)~incorporate IR opacifier particles (SiC, ZrO$_2$, or TiO$_2$) in the foam walls, as was done in Shuttle-era tiles, which can reduce $k_{\mathrm{rad}}$ by 3--5$\times$; (c)~accept the higher effective $k$ and use thicker tiles.  At the 1200--1400$^\circ$C surface temperatures typical of large-acreage windward TPS, radiation is manageable without opacifier.
+
+  \item \textbf{Mechanical strength}: At 90\% porosity, the foam compressive strength is estimated at 0.3--1.6~MPa by Gibson-Ashby scaling (isotropic--lamellar range), comparable to or exceeding Shuttle tiles (0.1--0.3~MPa).  Flexural strength is lower ($\sim$0.1~MPa); attachment systems must accommodate this.  Mitigation: reduce porosity to 85\% ($\rho = 0.86$~g/cm$^3$) or use a strain isolation pad (SIP) as on Shuttle.
+
+  \item \textbf{Water absorption}: The RE zirconate ceramic is not hygroscopic (unlike Shuttle's silica tiles, which required dimethylethoxysilane waterproofing before every flight), eliminating a major maintenance burden and reducing per-flight refurbishment cost.
+
+  \item \textbf{Fiber vs.\ foam}: The comparison table assumes freeze-cast foam.  An alternative architecture---electrospun HE zirconate nanofibers pressed into a tile---could achieve higher porosity ($>$93\%) at lower density ($\sim$0.40~g/cm$^3$) with better damage tolerance (fiber pullout rather than brittle fracture) and inherently small ``pore'' size (inter-fiber gaps $\sim$1--10~$\mu$m), which would strongly suppress radiative transport.
+
+  \item \textbf{Raw material cost}: All five rare-earth oxides (La, Nd, Sm, Gd, Y) are among the most abundant rare earths.  At $\sim$\$20/kg average oxide cost, material cost is $\sim$\$500--600/m$^2$.  Including ZrO$_2$ feedstock, powder synthesis, freeze-casting, sintering, and machining, estimated total cost is $\sim$\$5,000--15,000/m$^2$ installed---below Shuttle-era tiles ($\sim$\$20,000--40,000/m$^2$ including waterproofing and labor) but above the simplest estimate due to specialized ceramic processing.
+
+  \item \textbf{Technology readiness}: High-entropy rare-earth zirconates have been synthesized experimentally (Sarker et al.\ demonstrated up to 15-component RE$_2$Zr$_2$O$_7$ in pyrochlore/fluorite structure).  Freeze-casting of ceramic foams is mature (TRL~5 for aerospace applications).  The combination---freeze-cast HE zirconate foam---has not been demonstrated but requires no new physics or processing breakthroughs.
+
+  \item \textbf{Uncalibrated $q$}: The curvature $K \approx 0.24$ assumes $q \approx 0.7$, which has not been experimentally calibrated for ionic ceramics.  The range $q \in [0.5, 0.9]$ yields $K \in [0.08, 0.40]$.  This uncertainty does not affect the thermal conductivity or sintering predictions (which follow from standard phonon scattering and diffusion theory independent of~$q$) but does affect the quantitative curvature-scaling claims.  Fitting $q$ from existing composition--property data on RE$_2$Zr$_2$O$_7$ mixtures would resolve this at zero experimental cost.
+
+  \item \textbf{Reuse limitations}: The reuse estimates in the comparison table are pre-experimental projections, not demonstrated values.  Two distinct regimes govern tile life:
+  \begin{itemize}
+    \item \emph{Material-limited life (cumulative sintering):} At 1260$^\circ$C, 100~flights at 10--30~min peak exposure yield 17--50~hours cumulative---well below the 100-hour sintering threshold (Prediction~\ref{pred:foam_sinter}).  At 1600$^\circ$C, 50~flights ($\sim$8--25~hours) approach the threshold, making sintering the probable life limiter.
+    \item \emph{Operationally-limited life:} Foreign-object damage (FOD), aerodynamic erosion at boundary-layer transition, rain/ice thermal shock during ascent, and handling damage during ground processing all reduce practical reuse independently of material degradation.  HEO-9 \emph{eliminates} several Shuttle-era operational failure modes---waterproofing degradation, RCG coating delamination, and moisture-induced strength loss---but does \emph{not} eliminate FOD, erosion, or thermal shock.
+  \end{itemize}
+  Shuttle experience is instructive: tiles were routinely replaced after operational damage (bird strikes, debris impacts, gap-filler displacement), not because the silica material had exhausted its thermal cycling life.  For HEO-9, the argument shifts from ``indefinite material reuse'' to ``dramatically lower per-flight refurbishment cost.''  Even if tiles require periodic replacement at 50--100~flight intervals, eliminating waterproofing ($\sim$\$3M per Shuttle flight) and individual coating inspection removes the dominant maintenance cost drivers.
+\end{enumerate}
+
+
+\subsection[HEO-9b: Optimized Dual-Sublattice Nanofiber Tile]{HEO-9b: (La,Gd,Y)$_2$(Zr,Hf)$_2$O$_7$ --- Optimized\\Dual-Sublattice Nanofiber Tile}\label{sec:heo9b}
+
+A quantitative heat-transfer analysis of HEO-9 reveals that \emph{radiative transport through pores} ($k_{\mathrm{rad}} \propto T^3 d_{\mathrm{pore}}$) dominates the foam's effective thermal conductivity above $\sim$1400$^\circ$C.  At 1600$^\circ$C with 100~$\mu$m lamellar pores, $k_{\mathrm{rad}} \approx 0.15$~W/mK---four times the solid-conduction contribution ($k_s \approx 0.03$~W/mK).  This means \emph{architecture trumps composition}: reducing the pore size by $20\times$ (from 100~$\mu$m to 5~$\mu$m) cuts $k_{\mathrm{eff}}$ by 3--5$\times$, while reducing the bulk $k$ by 30\% (the HE composition effect) saves only $\sim$10\%.
+
+This insight reframes the role of the high-entropy effect.  Its primary value for TPS is not lower bulk thermal conductivity---which is already near the Cahill--Pohl amorphous limit---but \textbf{sintering suppression that preserves fine microstructure at operating temperature}.  In single-component ceramics, nanofibers coarsen above $\sim$1200$^\circ$C and freeze-cast structures above $\sim$1400$^\circ$C.  In a high-entropy ceramic, sluggish interdiffusion raises these limits by 150--250$^\circ$C, enabling architectures with 2--5~$\mu$m effective pore sizes to survive at TPS operating temperatures.
+
+\subsubsection{Composition: dual-sublattice disorder}
+
+The original HEO-9 places disorder only on the A-sublattice (2 of 11 atoms per formula unit), leaving the B-site (Zr$^{4+}$) ordered.  The optimized design disorders \emph{both} sublattices:
+
+\begin{center}
+\textbf{(La,Gd,Y)$_2$(Zr,Hf)$_2$O$_7$}
+\end{center}
+
+\textbf{A-site} (3 components): La$^{3+}$ ($r = 1.160$~\AA, 139~amu), Gd$^{3+}$ ($1.053$~\AA, 157~amu), Y$^{3+}$ ($1.019$~\AA, 89~amu).  Fewer elements than HEO-9 but \emph{more contrasting}: the three endpoints of the RE size and mass spectrum.  A-site Klemens scattering parameter $\Gamma_{\mathrm{mass}}^A = 0.051$, vs.\ $0.032$ for the original five-component A-site.
+
+\textbf{B-site} (2 components): Zr$^{4+}$ ($r = 0.72$~\AA, 91~amu) and Hf$^{4+}$ ($0.71$~\AA, 179~amu).  The Zr/Hf pair has three properties that make it ideal for phonon engineering:
+\begin{enumerate}
+  \item \emph{Nearly identical ionic radius} ($\Delta r / \bar{r} < 1.5\%$) $\to$ guaranteed complete solid solution with no phase stability risk.
+  \item \emph{Enormous mass ratio}: $M_{\mathrm{Hf}}/M_{\mathrm{Zr}} = 1.96$, giving $\Gamma_{\mathrm{mass}}^B = 0.105$---close to the theoretical maximum for a binary (0.25).  This is the same reason HfO$_2$ doping reduces thermal conductivity in YSZ thermal barrier coatings.
+  \item \emph{Identical crystal chemistry}: both form pyrochlore/fluorite with all rare earths.  No new phases, no segregation.
+\end{enumerate}
+
+The effective whole-cell scattering parameter, weighted by sublattice fraction ($f_A = f_B = 2/11$):
+\begin{equation}
+  \Gamma_{\mathrm{eff}} = \frac{2}{11}\Gamma_{\mathrm{mass}}^A + \frac{2}{11}\Gamma_{\mathrm{mass}}^B = 0.028,
+\end{equation}
+which is $4.9\times$ the original HEO-9 value ($\Gamma_{\mathrm{eff}} = 0.006$).  The predicted bulk thermal conductivity is $k \approx 0.6$--$0.8$~W/mK, a further 20--40\% reduction beyond HEO-9's $\sim$1.0~W/mK.
+
+\textbf{Sintering suppression}: disorder on both sublattices means diffusion of \emph{both} A-site and B-site species encounters a rough energy landscape.  Since sintering requires cooperative motion of cations on both sublattices, the activation-energy increase is approximately additive: $\Delta E_a^{\mathrm{dual}} \approx \Delta E_a^A + \Delta E_a^B \approx 50$--$90$~kJ/mol, roughly double the A-only estimate.  This extends nanofiber morphological stability by an additional 100--150$^\circ$C.
+
+\textbf{Cost}: HfO$_2$ costs $\sim$\$300/kg vs.\ $\sim$\$30/kg for ZrO$_2$.  At equimolar Zr/Hf on the B-site, Hf constitutes $\sim$18\% of the tile mass.  The material cost increase is $\sim$\$50/kg of powder, or $\sim$\$200--1,000/m$^2$ at nanofiber-tile areal densities---acceptable for aerospace applications.
+
+\subsubsection{Architecture: electrospun nanofiber mat}
+
+Instead of freeze-casting (which produces 50--200~$\mu$m lamellar pores), the tile is fabricated from \textbf{electrospun ceramic nanofibers}:
+
+\begin{enumerate}
+  \item Prepare a sol-gel precursor solution containing equimolar La/Gd/Y nitrates (A-site) and equimolar Zr/Hf alkoxides (B-site), with polyvinylpyrrolidone (PVP) as the spinning polymer.
+  \item Electrospin onto a rotating drum collector to produce aligned nanofiber mats (fiber diameter 0.3--0.5~$\mu$m).
+  \item Calcine at 800--1000$^\circ$C to burn out the polymer and crystallize the fluorite phase.
+  \item Stack calcined nanofiber mats to the desired tile thickness, with fibers oriented parallel to the tile surface for through-thickness insulation.
+  \item Lightly sinter at 1200--1300$^\circ$C to form inter-fiber necks (mechanical integrity) without closing inter-fiber gaps.  The dual-sublattice sluggish diffusion ensures the nanofiber morphology is preserved.
+\end{enumerate}
+
+Electrospinning of individual rare-earth zirconate nanofibers has been demonstrated in the literature; the multi-component precursor is a straightforward extension requiring only mixed metal-salt solutions.  The resulting tile has:
+\begin{itemize}
+  \item Inter-fiber gaps: 2--5~$\mu$m (vs.\ 50--200~$\mu$m for freeze-cast foam).
+  \item Porosity: 92--95\%.
+  \item Tile density: 0.3--0.5~g/cm$^3$ (comparable to or lighter than Shuttle HRSI at 0.35~g/cm$^3$).
+  \item Fiber pullout provides damage tolerance superior to brittle ceramic foam.
+\end{itemize}
+
+\subsubsection{Heat-transfer analysis}
+
+At 2--5~$\mu$m inter-fiber gaps, radiative transport drops below solid conduction at all TPS temperatures:
+
+\begin{center}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+$T$ ($^\circ$C) & $k_{\mathrm{rad}}$ (5~$\mu$m) & $k_{\mathrm{solid}}$ & Radiation fraction \\
+\midrule
+1000 & 0.003 W/mK & 0.020 W/mK & 13\% \\
+1400 & 0.006 W/mK & 0.020 W/mK & 23\% \\
+1800 & 0.010 W/mK & 0.020 W/mK & 33\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Gas conduction is suppressed at re-entry altitudes (Knudsen regime: mean free path $\gg$ inter-fiber gap at $\sim$100~Pa).  The total $k_{\mathrm{eff}}$ is dominated by solid conduction alone: $k_{\mathrm{eff}} \approx 0.02$--$0.03$~W/mK across the full operating range---essentially temperature-independent, unlike the freeze-cast foam where $k_{\mathrm{eff}}$ doubles from 1000 to 1800$^\circ$C.
+
+\subsubsection{Performance comparison}
+
+\begin{center}
+\small
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+System & $T_{\max}$ & $\rho_{\mathrm{tile}}$ & $k_{\mathrm{eff}}$ & Thick. & Mass & Hygroscopic \\
+ & ($^\circ$C) & (g/cm$^3$) & (W/mK) & (cm) & (kg/m$^2$) & \\
+\midrule
+Shuttle HRSI & 1260 & 0.35 & 0.17 & 7.6 & 26.6 & Yes \\
+Starship hex & $\sim$1500 & $\sim$0.5 & $\sim$0.15 & $\sim$4 & $\sim$20 & No \\
+HEO-9 foam & 1800 & 0.57 & 0.08--0.13 & 3.7--5.7 & 21--33 & No \\
+\textbf{HEO-9b nanofiber} & \textbf{1800} & \textbf{0.40} & \textbf{0.02--0.03} & \textbf{0.6--1.1} & \textbf{2--4} & \textbf{No} \\
+\bottomrule
+\end{tabular}
+\normalsize
+\end{center}
+
+At Shuttle-equivalent surface temperatures ($\sim$1260$^\circ$C), HEO-9b achieves an areal density of $\sim$2--4~kg/m$^2$---roughly \textbf{one-tenth} of Shuttle HRSI and one-fifth of Starship hex tiles---while providing a 540$^\circ$C higher temperature ceiling.  The improvement comes almost entirely from eliminating radiative transport: the nanofiber architecture converts a radiation-dominated foam into a conduction-dominated insulator.
+
+\subsubsection{Nanofiber coarsening: why dual-sublattice HE is critical}
+
+The nanofiber architecture's advantage survives only if the fine inter-fiber gaps are preserved at operating temperature.  Surface-diffusion-driven coarsening follows $d(t) \sim d_0 (1 + t/\tau)^{1/4}$, where $\tau \propto 1/D_s$ is the coarsening time constant.  For 100 hours of isothermal exposure:
+
+\begin{center}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+ & \multicolumn{2}{c}{1200$^\circ$C} & \multicolumn{2}{c}{1400$^\circ$C} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+Composition & Fiber ($\mu$m) & Gap ($\mu$m) & Fiber ($\mu$m) & Gap ($\mu$m) \\
+\midrule
+Single-component & $0.5 \to 1.6$ & $5 \to 16$ & $0.5 \to 3.7$ & $5 \to 37$ \\
+A-only HE ($\Delta E_a \approx 40$) & $0.5 \to 0.7$ & $5 \to 7$ & $0.5 \to 1.7$ & $5 \to 17$ \\
+Dual-sublattice ($\Delta E_a \approx 70$) & $0.5 \to 0.5$ & $5 \to 5$ & $0.5 \to 1.1$ & $5 \to 11$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+In a single-component ceramic, nanofibers coarsen to 37~$\mu$m gaps after 100~hours at 1400$^\circ$C---entering the radiation-dominated regime and losing the nanofiber advantage.  With dual-sublattice HE disorder, gaps grow only to $\sim$11~$\mu$m, remaining below the radiation crossover ($\sim$20~$\mu$m at 1400$^\circ$C).  \emph{The HE effect enables the architecture that provides the performance.}
+
+\subsubsection{$q$-theory predictions}
+
+\begin{prediction}[Dual-sublattice thermal conductivity]\label{pred:dual_kappa}
+Dense (La,Gd,Y)$_2$(Zr,Hf)$_2$O$_7$ has bulk thermal conductivity $k \leq 0.8$~W/mK at 1000$^\circ$C, at least 20\% below equimolar HEO-9 ($\sim$1.0~W/mK) and 45\% below single-component La$_2$Zr$_2$O$_7$ ($\sim$1.5~W/mK).  The reduction is dominated by B-site mass-disorder scattering ($\Gamma_{\mathrm{mass}}^B = 0.105$ from the Zr/Hf contrast), which contributes more to phonon scattering than the entire five-component A-site of HEO-9.
+\end{prediction}
+
+\begin{prediction}[Nanofiber morphological stability]\label{pred:nanofiber_stable}
+After 100 hours at 1400$^\circ$C, electrospun (La,Gd,Y)$_2$(Zr,Hf)$_2$O$_7$ nanofibers retain inter-fiber gaps ${<}\,15$~$\mu$m (starting from $\sim$5~$\mu$m), while single-component La$_2$Zr$_2$O$_7$ nanofibers coarsen to gaps $>\,30$~$\mu$m under identical conditions.  The dual-sublattice disorder provides approximately twice the activation-energy increase of A-only disorder, as both cation sublattices must undergo sluggish cooperative rearrangement for coarsening to proceed.
+\end{prediction}
+
+\begin{prediction}[Nanofiber tile effective conductivity]\label{pred:nanofiber_keff}
+A nanofiber-mat tile at 92\% porosity with 2--5~$\mu$m inter-fiber gaps achieves $k_{\mathrm{eff}} \leq 0.03$~W/mK from room temperature to 1800$^\circ$C under re-entry pressures ($\sim$100~Pa), with radiation contributing less than one-third of total heat transfer at all temperatures.  This represents a 3--5$\times$ reduction in $k_{\mathrm{eff}}$ over freeze-cast HEO-9 foam, attributable entirely to the elimination of radiative transport through the smaller inter-fiber gaps.
+\end{prediction}
+
+\subsubsection{Risk assessment}
+
+\begin{enumerate}
+  \item \textbf{Nanofiber sintering at processing temperature}: The calcination step (800--1000$^\circ$C) and light sintering step (1200--1300$^\circ$C) must form inter-fiber necks for mechanical integrity \emph{without} closing inter-fiber gaps.  This requires precise temperature control in the window between neck formation and pore closure.  The dual-sublattice HE composition widens this window by suppressing the latter.  If the window is still too narrow, partial sintering followed by impregnation with a fugitive binder could decouple the two requirements.
+
+  \item \textbf{Mechanical strength}: Nanofiber mats are typically weaker than freeze-cast foams at the same porosity, with compressive strength $\sim$0.1--0.5~MPa.  Fiber pullout provides damage tolerance but attachment to the vehicle structure requires a compliant interface (strain isolation pad).  The through-thickness tensile strength is the critical parameter for tile retention during re-entry aerodynamic loading.
+
+  \item \textbf{Electrospinning scale-up}: Laboratory electrospinning produces $\sim$1~g/hour of nanofibers.  For a 100~m$^2$ vehicle at 4~kg/m$^2$, $\sim$400~kg of nanofibers are needed.  Industrial multi-needle or free-surface electrospinning can produce 10--100~g/hour per production line.  While scale-up is feasible, it represents a significant manufacturing development compared to freeze-casting.
+
+  \item \textbf{Hafnium cost and supply}: Global Hf production is $\sim$70~tonnes/year (a byproduct of Zr refining for nuclear applications).  A 100~m$^2$ vehicle at $\sim$4~kg/m$^2$ tile mass with 18\% Hf content requires $\sim$72~kg of Hf per vehicle---a negligible fraction of global supply.  However, at $\sim$\$300/kg for HfO$_2$, material costs are $\sim$\$5,000 per vehicle (comparable to a single Shuttle tile).
+
+  \item \textbf{Long-term coarsening and reuse}: The coarsening model predicts inter-fiber gaps growing to $\sim$11~$\mu$m after 100~hours at 1400$^\circ$C.  Mapping flight counts to cumulative hours: at 10--30~min peak exposure per flight, 100~flights yield 17--50~hours, 500~flights yield 83--250~hours, and 1000~flights yield 167--500~hours of cumulative high-temperature exposure.  Above $\sim$100~hours, gaps could grow to $\sim$15--20~$\mu$m, approaching the radiation crossover where $k_{\mathrm{eff}}$ begins to rise.  As with HEO-9 (Section~\ref{sec:heo9}), operational damage mechanisms---FOD, aerodynamic erosion, thermal shock, and handling---may limit practical reuse well before coarsening becomes the binding constraint.  Periodic inspection or replacement at fixed intervals (e.g., every 200--500~flights) addresses both concerns.  The low tile cost ($\sim$\$1,000--3,000/m$^2$) combined with the absence of per-flight waterproofing or coating refurbishment makes scheduled replacement economically practical---far less costly per flight than Shuttle-era tile maintenance.
+\end{enumerate}
+
+
+The ten proposals now span the full spectrum of aerospace thermal protection: metallic HEAs for propulsion components (HEA-1 through HEA-4), metallic HEAs for passive reusable TPS (HEA-5 and HEA-6), a metallic HEA for actively cooled reusable TPS (HEA-7), a dense UHTC diboride for leading edges and nose caps (HEC-8), a freeze-cast rare-earth zirconate foam for large-acreage windward surfaces (HEO-9), and an optimized dual-sublattice nanofiber tile exploiting the synergy between compositional sintering suppression and fine-scale architecture (HEO-9b).  Together they test the $q$-theory across three material classes (metallic alloy, covalent ceramic, ionic ceramic), six architectures (dense metal, metallic panel, actively cooled panel, dense ceramic, foam, nanofiber mat), and ten distinct $q$-theory mechanisms (knockout robustness, escort-distribution surface evolution, $q$-entropy phase stability, self-forming oxide, self-emissive multi-cation oxide, self-protecting refractory oxide, sluggish interstitial diffusion for H embrittlement resistance, bifunctional oxide scale, entropy-suppressed sintering, and dual-sublattice sluggish coarsening).  If even half the predictions survive experimental testing, it would establish the CES/$q$-thermodynamic framework as a genuine design tool for advanced materials, not merely a fitting function.
+
+
+%% ================================================================
+\section{Computational Validation}\label{sec:validation}
+%% ================================================================
+
+Five validation scripts were developed to test the $q$-thermodynamic framework against published experimental data and internal consistency requirements.  The element database covers 15 metallic elements (Co, Cr, Fe, Mn, Ni, Al, Ti, V, Nb, Mo, Ta, W, Hf, Zr, Cu) with atomic radius, mass, melting point, VEC, electronegativity, elastic modulus, yield strength, thermal conductivity, and density.  All scripts and data are available in the \texttt{scripts/} directory.
+
+\subsection{What passed}
+
+\begin{enumerate}
+  \item \textbf{$S_q > S_1$ for $q < 1$.}  Verified for all five proposed alloys and 1{,}000 random compositions (varying $J$ from 2 to 15, random Dirichlet fractions and atomic radii).  Zero violations found.  The Tsallis entropy strictly exceeds the Shannon entropy whenever $q < 1$, consistent with Section~3.1.
+
+  \item \textbf{Paper alloy parameters.}  Computed $\bar{r}$, $\delta$, $\rho$, $\bar{T}_m$, VEC for all four proposed alloys match paper claims to within rounding tolerance ($<0.3\%$).  The curvature values match with $\alpha \approx 100$ (see calibration below).
+
+  \item \textbf{CES bounds.}  For all alloys, $E_{\mathrm{Reuss}}(q=-1) \leq E_{\mathrm{geo}}(q \to 0) \leq E_{\mathrm{Voigt}}(q=1)$.  The CES power mean correctly interpolates between Voigt and Reuss bounds for elastic modulus.
+
+  \item \textbf{Per-element surplus $\pi_K(J)$ peaks at $J = 2$.}  Confirmed analytically for constant~$q$: $\pi_K = (1-q)(J-1)/J^2$ has $d\pi_K/dJ = 0$ at $J = 2$.  Confirmed numerically for the Lean-proved theorem.
+
+  \item \textbf{Conductivity deficit correlates with $K$.}  Across Cantor subsystems (NiFe through CoCrFeMnNi), the fractional thermal conductivity deficit correlates with the curvature~$K$ at $r = 0.99$.  While $K$ alone underpredicts the deficit magnitude (Section~\ref{sec:transport_fail}), the ordering is correct.
+
+  \item \textbf{Steepest damage reduction at $J = 1 \to 2$.}  Using Zhang et al.\ (2015) data for radiation-induced defect clusters, the largest reduction occurs when going from a pure element to a binary alloy ($\Delta D = 0.45$), consistent with the per-element surplus prediction.
+
+  \item \textbf{Elastic modulus within Voigt--Reuss bounds.}  For Cantor subsystems (NiFe, NiCoCr, NiCoFeCr, CoCrFeMnNi), all measured elastic moduli fall within the CES prediction band $[E_{\mathrm{Reuss}}, E_{\mathrm{Voigt}}]$.
+\end{enumerate}
+
+\subsection{What failed---and what was learned}
+
+\subsubsection{The $\alpha \approx 100$ calibration}
+
+The calibration constant $\alpha$ in $q \approx 1 - \alpha\delta^2$ was independently determined by back-calculating from the curvature values $K = (1-q)(1-H)$ claimed for HEA-1, HEA-3, and HEA-4.  All three give $\alpha \approx 100 \pm 1$.  At the Yang--Zhang stability limit $\delta_{\max} = 6.6\%$, this yields $q \approx 0.56$---the alloy retains substantial complementarity, and it is the enthalpy factor $(1 - |\Delta H_{\mathrm{mix}}|/RT_m)^+$ in $K_{\mathrm{eff}}$ that drives the stability boundary, not $q \to 0$.  Dimensional analysis from elastic strain energy gives $\alpha \sim \mu\Omega_a/(k_BT) \approx 40$--$100$, consistent with the empirical value.
+
+\subsubsection{Transport property failure: Nordheim scattering}\label{sec:transport_fail}
+
+For CoCrFeMnNi, the measured thermal conductivity ($\kappa = 12$~W/mK, Jin et al.\ 2016) falls below the Reuss harmonic mean ($\kappa_{\mathrm{Reuss}} \approx 22$~W/mK).  No value of~$q$ in the CES power mean can produce a result below the harmonic mean of the elemental conductivities.  The deficit beyond the Reuss bound ($\sim$45\% of total deficit) is attributable to Nordheim alloy scattering---phonon scattering from mass and force-constant disorder on the lattice---which is a mechanism \emph{outside} the CES aggregation framework.
+
+This motivates the layered model of equation~\ref{eq:kappa_layered}: the CES handles compositional weighting, while a multiplicative Nordheim factor captures scattering physics.  For refractory HEAs with larger $\delta$, the CES curvature contribution is proportionally larger, but the Nordheim correction remains significant.
+
+\subsubsection{Property-dependent $q$: unification weakens to correlation}
+
+Four independent estimates of~$q$ for CoCrFeMnNi:
+\begin{center}
+\begin{tabular}{@{}lrl@{}}
+\toprule
+Channel & $q$ estimate & Notes \\
+\midrule
+$\delta$-based ($q = 1 - 100\delta^2$) & 0.987 & Geometric; near 1 \\
+Elastic modulus ($E = 200$~GPa) & $\sim$0.87 & Within Voigt--Reuss \\
+Thermal conductivity ($\kappa = 12$~W/mK) & undefined & Below Reuss bound \\
+Yield strength ($\sigma_y = 125$~MPa, annealed) & $>$1 & Below ROM (annealed softening) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The channels disagree.  For the Cantor alloy ($\delta = 1.12\%$, $q_\delta \approx 0.99$), the CES corrections are $<1\%$ of ROM, making this alloy a poor discriminator.  High-$\delta$ refractory HEAs (WMoTaNbZr: $\delta = 5.25\%$, $q \approx 0.72$) show much larger CES curvature and are better test cases.  For WMoTaNbZr, the elastic modulus fit gives $q_E \approx 0.0$ (assuming $E_{\mathrm{measured}} \approx 178$~GPa), reasonably consistent with $q_\delta \approx 0.72$ given the uncertainty in experimental values.
+
+The revised conclusion: $K$ is a valid \emph{structural parameter} controlling the magnitude of all four core effects, but each property channel couples to the lattice disorder with a property-specific sensitivity.  The unification is in the \emph{common cause} ($\delta$-driven lattice heterogeneity), not in a single numerical fitting parameter.
+
+\subsubsection{Mirror prediction: correct sign, wrong magnitude}
+
+Across Cantor subsystems, the fractional hardness excess and fractional conductivity deficit are anti-correlated ($r \approx -0.89$), confirming the predicted sign.  However, the slope $\lambda \approx 3.6$, not~1 as the simplest form of Prediction~\ref{pred:twosided} would suggest.  The asymmetry arises because hardness excess is an \emph{additive} diversity bonus from dislocation--lattice interactions, while conductivity deficit includes a \emph{multiplicative} Nordheim scattering component.  The prediction has been refined to include the materials-class-specific coupling ratio~$\lambda$.
+
+\subsubsection{Phase classification: $K_{\mathrm{eff}}$ vs.\ $\Omega$-$\delta$}
+
+On a 16-alloy benchmark (13 solid solutions, 3 intermetallics), the bare geometric curvature $K = (1-q)(1-H)$ misclassifies alloys with large negative $\Delta H_{\mathrm{mix}}$.  However, the full $K_{\mathrm{eff}}$ with the enthalpy correction $(1 - |\Delta H_{\mathrm{mix}}|/RT_m)^+$ achieves 94\% accuracy, matching the empirical $\Omega$-$\delta$ rule.  This confirms the paper's core claim that the Yang--Zhang rule is a projection of the single condition $K_{\mathrm{eff}} > 0$.  The remaining misclassification (AlCoCrCuFeNi) involves Cu segregation---a pair-specific effect that no single-parameter model can capture.  The thermochemical input $\Delta H_{\mathrm{mix}}$ is essential: the CES framework provides the structural parameter, but phase stability requires both geometric and thermochemical information.
+
+\subsubsection{Al$_x$CoCrFeNi phase boundary}
+
+$K_{\mathrm{eff}}$ increases monotonically with Al content but does \emph{not} predict the FCC$\to$BCC phase boundary (experimentally at $x \approx 0.5$--$0.9$).  The valence electron concentration (VEC $< 6.87 \Rightarrow$ BCC, per the Guo criterion) remains the better predictor of crystal structure.  The CES curvature captures the \emph{magnitude} of lattice distortion but not its \emph{symmetry}---it cannot distinguish FCC from BCC because $K$ is a scalar that does not encode the directional bonding preferences controlled by VEC.
+
+\subsubsection{Monte Carlo lattice simulation}
+
+A GPU-accelerated Kawasaki Monte Carlo simulation (8{,}000-site simple cubic lattice, Lennard-Jones pairwise interactions, NVIDIA RTX~4080) tested whether $q < 1$ emerges from nearest-neighbor lattice correlations.  The simulation swept $J = 2$--$5$ components (Cantor subsystems) at four temperatures ($T/\varepsilon = 0.1$--$2.0$).
+
+The CES power mean of pure-element LJ energies does \emph{not} fit the mixed-system energy at any consistent~$q$.  This is expected: the CES framework is a \emph{macroscopic aggregation model} for effective properties, not a prescription for how microscopic pairwise energies partition across atom types.  Lennard-Jones cross-terms ($\sigma_{ij} = (\sigma_i + \sigma_j)/2$) do not follow a power-mean structure, so no~$q$ can make CES match the actual mixing energy.
+
+The simulation does confirm two structural predictions: (i)~the Warren--Cowley short-range order parameters are small ($|\alpha_{ij}| < 0.06$), consistent with the random-mixing assumption underlying the theory; and (ii)~the per-element energy spread (standard deviation $\sim$0.1--0.5$\varepsilon$) increases with~$J$, consistent with greater lattice distortion in higher-component alloys.
+
+\subsubsection{GPU molecular dynamics: macroscopic observables}
+
+A full velocity-Verlet molecular dynamics simulation (500-atom FCC lattice, Lennard-Jones, Berendsen thermostat, NVIDIA RTX~4080) computed three macroscopic observables for pure elements and mixed systems: bulk modulus~$B$ (from equation of state at 5~volumes), elastic constant~$C_{11}$ (from uniaxial strain response), and heat capacity~$C_v$ (from energy fluctuations).
+
+For the Cantor subsystems ($\delta = 0.4$--$1.4\%$), the elements have nearly identical LJ parameters ($\sigma_i/\bar{\sigma} \approx 0.97$--$1.03$), making bulk modulus insensitive to mixing ($B_{\mathrm{mixed}} \approx B_{\mathrm{ROM}}$, $q_B \approx 1$).  This is consistent with the theory: $q_\delta \approx 0.99$ predicts CES $\approx$ ROM\@.  $C_{11}$ shows larger deviations from ROM (mixed-system $C_{11}$ drops below the ROM average by up to 95\%), but these deviations exceed what any CES power mean can capture ($q_{C_{11}}$ hits the search bounds), suggesting that directional elastic softening from compositional disorder involves physics beyond the scalar CES framework.
+
+The proper testing ground for $q$-emergence remains high-$\delta$ refractory alloys ($\delta > 4\%$), where the elements have more diverse sizes and the CES curvature is large.  However, such systems require embedded-atom or bond-order potentials rather than pairwise LJ to capture the metallic bonding correctly.
+
+\subsubsection{Nordheim-corrected CES model for thermal conductivity}
+
+The layered model of equation~\ref{eq:kappa_layered} was implemented using the Klemens phonon scattering framework.  The scattering parameter $\Gamma = \Gamma_M + \Gamma_S$ combines mass disorder ($\Gamma_M = \sum c_i(1 - M_i/\bar{M})^2$) and strain disorder ($\Gamma_S = \varepsilon_s^2 \sum c_i(1 - r_i/\bar{r})^2$ with $\varepsilon_s = 6.4$).  The reduced conductivity follows the Klemens formula $\kappa/\kappa_{\mathrm{base}} = \arctan(u)/u$ where $u^2 = A \cdot \Gamma \cdot \kappa_{\mathrm{base}}$ and $A$ is a material-specific constant.
+
+Calibrating $A$ from the NiFe binary ($\kappa = 29.0$~W/mK) gives $A = 54.8$.  The model correctly reproduces the NiFe data point but overpredicts $\kappa$ for higher-$J$ alloys by 35--165\%.  The NiCoCr ($\kappa_{\mathrm{pred}} = 30$~W/mK vs.\ $\kappa_{\mathrm{meas}} = 12.1$~W/mK) and CoCrFeMnNi ($\kappa_{\mathrm{pred}} = 28$~W/mK vs.\ $\kappa_{\mathrm{meas}} = 11.8$~W/mK) discrepancies indicate that single-parameter Klemens scattering saturates too slowly---the measured conductivity plateau at $\sim$12~W/mK for $J \geq 3$ requires either many-body scattering effects, force-constant disorder beyond the strain coupling, or grain boundary contributions not captured by the phonon model.
+
+This overprediction is resolved by the Wiedemann--Franz analysis below.
+
+\subsubsection{The Wiedemann--Franz resolution for thermal conductivity}
+
+The Nordheim model's failure for $J \geq 3$ is explained by a more fundamental insight: thermal conductivity in HEAs is dominated by \emph{electronic} transport, not phonon transport.  Using the Wiedemann--Franz law $\kappa_e = L_0 T / \rho$ with measured electrical resistivities:
+
+\begin{center}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Alloy & $\rho$ ($\mu\Omega$cm) & $\kappa_e$ (W/mK) & $\kappa_{\mathrm{ph}}$ & $\kappa_{\mathrm{total}}$ & Electronic \\
+\midrule
+Ni     & 6.9  & 106 & $<$1 & 90.9 & $>$98\% \\
+NiFe   & 40   & 18  & 11   & 29.0 & 63\% \\
+NiCoCr & 85   & 8.6 & 3.5  & 12.1 & 71\% \\
+CoCrFeMnNi & 69 & 10.6 & 1.2 & 11.8 & 90\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The phonon contribution is always small ($\kappa_{\mathrm{ph}} \leq 11$~W/mK) and decreases with~$J$ as expected from Klemens scattering.  The electronic contribution decreases because disorder scattering increases $\rho$ by $5$--$12\times$ over pure elements.  The CES power mean aggregates \emph{total} conductivities, conflating two channels with different disorder dependencies.
+
+This resolves the ``below Reuss'' puzzle: the Reuss bound applies to aggregation of a single property, but thermal conductivity in alloys involves a regime change from phonon-dominated (pure metals with $\rho < 10~\mu\Omega$cm) to electron-dominated-but-resistive (HEAs with $\rho \sim 70$--$85~\mu\Omega$cm).  No power mean of pure-element $\kappa_{\mathrm{total}}$ can capture this transition.  The correct model separates the channels:
+\begin{equation}\label{eq:kappa_v2}
+  \kappa_{\mathrm{HEA}} = \frac{L_0 T}{\rho_{\mathrm{alloy}}} + \kappa_{\mathrm{ph,min}},
+\end{equation}
+where $\rho_{\mathrm{alloy}}$ follows the Nordheim rule for electrical resistivity and $\kappa_{\mathrm{ph,min}} \approx 1$--$5$~W/mK is the Klemens-limited phonon conductivity.  This equation reproduces all four Cantor subsystem data points to within the uncertainty in~$\rho$.
+
+\subsubsection{Crystal-structure mismatch for elastic moduli}
+
+The Voigt--Reuss bounds $[E_{\mathrm{Reuss}}, E_{\mathrm{Voigt}}]$ fail to bracket experimental elastic moduli for \emph{all four} Cantor subsystems when using stable-phase element moduli (BCC Cr $= 279$~GPa, HCP Co $= 209$~GPa, BCC Fe $= 211$~GPa).  The Cantor alloy is FCC, but three of its five constituents (Cr, Fe, Mn) are not FCC in their stable form, and FCC Cr is mechanically unstable ($C_{44} < 0$ from DFT).
+
+Fitting effective FCC-context moduli from the subsystem data yields self-consistent values (Co$^* \approx 261$~GPa, Cr$^* \approx 287$~GPa, Mn$^* \approx 167$~GPa) that reproduce all four measurements to within $\pm$3\% via CES.  Leave-one-out cross-validation shows prediction errors of $-7\%$ to $+6\%$, confirming the CES functional form is \emph{not} falsified---the failure was in the input data, not the aggregation model.
+
+For BCC refractory HEAs (WMoTaNbZr, CrMoNbTaV), all elements share the BCC structure.  The Voigt--Reuss range $[142, 220]$~GPa for WMoTaNbZr comfortably brackets the estimated experimental value $E \approx 178$~GPa.  This confirms that the CES framework works correctly when crystal-structure-consistent element properties are available.
+
+\subsection{Summary of validation status}
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Claim} & \textbf{Status} & \textbf{Qualification} \\
+\midrule
+$S_q > S_1$ for $q < 1$ & Passed & Universal \\
+$\pi_K$ peaks at $J = 2$ & Passed & Analytical theorem \\
+CES bounds hold & Passed & All alloys tested \\
+$K$ correlates with all four effects & Passed & $r > 0.85$ \\
+Steepest effect at $J = 1 \to 2$ & Passed & Radiation data \\
+Single $q$ fits all properties & \textbf{Failed} & Property-specific coupling \\
+$\kappa$ within CES bounds & \textbf{Failed} & Nordheim scattering \\
+$K_{\mathrm{eff}} > 0$ classification & Passed & 94\% (matches $\Omega$-$\delta$) \\
+Mirror slope $= 1$ & \textbf{Failed} & Slope $\approx 3.6$; sign correct \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The framework's mathematical structure (theorems, identities, bounds) is sound.  The failures are in the \emph{physical interpretation}---specifically, the claim that a single numerical~$q$ can serve as a universal fitting parameter across property channels.  The revised theory retains~$K$ as the structural unifying parameter while acknowledging property-specific coupling constants and the need for supplementary scattering models (Nordheim, Labusch/VLGC) for quantitative predictions.
+
+
+%% ================================================================
+\section{Discussion}
+%% ================================================================
+
+The central claim is not that CES is a useful fitting function for HEA properties---many functions can fit data with enough parameters.  The claim is deeper: $Z_q = \sum a_j x_j^q$ is the \emph{generating function} of HEA thermodynamics, from which all four core effects follow as mathematical identities of a single object.
+
+This claim rests on two pillars:
+
+\textbf{First, mathematical uniqueness.}  The CES emergence theorem (Kolmogorov--Nagumo--Acz\'el, proved in Lean~4) shows that CES is the \emph{unique} aggregation function compatible with multi-scale consistency: aggregating at the atomic and macroscopic scales must give consistent answers, forcing CES\@.  For alloys, multi-scale consistency is a physical requirement, not an assumption.  The power mean is forced by the geometry of aggregation.
+
+\textbf{Second, physical structure.}  HEAs satisfy every structural requirement of the theory: conservation of atoms, real thermodynamic temperature, lattice constraints creating long-range correlations, and a well-defined thermodynamic limit.  The ML mapping failed because neural networks lack these structures.  The alloy mapping should succeed because the physics supports the mathematics.
+
+The Rosetta Stone connecting the fields:
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Production Economics / CES} & \textbf{Alloy $q$-Thermodynamics} \\
+\midrule
+Output $F = Z_q^{1/q}$ & Alloy aggregate property \\
+Factor shares $s_j$ & Escort distribution / effective property shares \\
+Complementarity $q$ & Elemental substitutability on the lattice \\
+CES curvature $K = (1-q)(1-H)$ & Diversity benefit strength \\
+Information friction $T$ & Ordering energy / thermal disorder \\
+Effective curvature $K_{\mathrm{eff}}$ & Phase stability parameter \\
+Welfare loss $\Phi_q$ & CES free energy \\
+Fisher information & Lattice distortion metric $\delta_q^2$ \\
+Superadditivity & Cocktail effect (for performance properties) \\
+Knockout robustness & Radiation tolerance \\
+Kramers escape time & Phase decomposition kinetics \\
+VRI & Fluctuation-dissipation for composition \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The three known results---the Yang--Zhang phase stability rule, the VLGC strengthening model, and the radiation tolerance scaling---are explained by the single parameter~$K$, each through a different mathematical identity of the same partition function.  The five new predictions (Herfindahl test, VRI on the lattice, conductivity-hardness anticorrelation, Kramers kinetics, four-effect correlation) are falsifiable with existing data and experimental techniques.  The seven proposed materials---four metallic HEAs, one UHTC diboride, one rare-earth zirconate foam tile, and one optimized dual-sublattice nanofiber tile---test the framework across three material classes, four architectures, and seven distinct mechanisms.
+
+Computational validation (Section~\ref{sec:validation}) has sharpened the theory in important ways.  The mathematical structure---Tsallis entropy exceeding Shannon, per-element surplus peaking at $J = 2$, CES power mean interpolating Voigt--Reuss bounds---is fully confirmed.  The physical interpretation, however, required revision: a single numerical~$q$ does not fit all property channels simultaneously, transport properties require Nordheim scattering corrections beyond the CES framework, and $K_{\mathrm{eff}}$ alone underperforms the $\Omega$-$\delta$ rule for phase classification.  The revised theory retains~$K$ as the unifying \emph{structural parameter} while acknowledging that each property channel couples to lattice disorder with property-specific sensitivity.  This is a weaker claim than universal single-parameter fitting, but a more honest one---and the correlation between all four core effects through the common cause of $\delta$-driven heterogeneity remains the central, testable prediction.
+
+If the framework survives experimental validation of the proposed materials, HEAs would be the first materials system where the information geometry bridge between production economics and statistical mechanics is experimentally validated---not as a universal fitting function, but as a structural organizing principle for the physics of compositional disorder.
+
+
+\subsection{Experimental verification plan}
+
+Computational validation reveals that most material proposals derive their advantages from standard physics (thermodynamics, Klemens scattering, oxidation metallurgy) rather than from $q$-theory specifically.  This is good news: viability does not depend on the validity of $q$-thermodynamics.  A literature survey of published refractory HEA data has already resolved several open questions and substantially de-risked the experimental program.
+
+\subsubsection{Phase~0 results: literature-based pre-screening (completed)}
+
+Three checks were performed at zero experimental cost:
+
+\textbf{(a)~CES bounds for BCC refractory HEAs.}  Senkov et al.\ (2011) report $E = 220 \pm 20$~GPa for equimolar NbMoTaW and $E = 180 \pm 15$~GPa for V$_{20}$Nb$_{20}$Mo$_{20}$Ta$_{20}$W$_{20}$.  Both fall within the CES Voigt--Reuss bounds: NbMoTaW in $[196, 258]$~GPa and VNbMoTaW in $[177, 232]$~GPa.  Across 16 alloys from the Couzini\'e et al.\ (2018) compilation with experimental Young's modulus, all-BCC alloys pass at 2/2 (100\%), while mixed-structure alloys (containing HCP elements Hf, Ti, Zr) pass at 7/14 (50\%)---confirming that the crystal-structure mismatch identified in Section~\ref{sec:validation} is the cause of bounds violations, not a failure of the CES functional form.
+
+\textbf{(b)~Radiation tolerance: already demonstrated.}  El-Atwani et al.\ (2019) irradiated nanocrystalline WTaCrV with 1~MeV Kr$^{2+}$ at 1073~K to 8~dpa and observed \emph{zero} irradiation-created dislocation loops---effectively infinite improvement over pure W, which develops extensive loop populations under identical conditions.  The curvature $K(\text{WTaCrV}) = 0.175$ is \emph{lower} than $K(\text{WMoTaNbZr}) = 0.221$ for HEA-1.  El-Atwani et al.\ (2023) confirmed outstanding radiation resistance for the quinary WTaCrVHf ($K = 0.458$).  These results \textbf{strongly support the HEA-1 radiation tolerance prediction without requiring new irradiation experiments}, as the proposed alloy has comparable or higher~$K$ than alloys already shown to exhibit the effect.
+
+\textbf{(c)~Cr--Hf Laves phase risk for HEA-3.}  The binary HfCr$_2$ Laves phase (C15) melts congruently at 2098~K (Stein et al.\ 2010).  Since HEA-3 operates at 2500~K, the Laves phase is above its melting point and should be dissolved.  At the 1800~K test temperature for decomposition studies, Laves is stable ($T < 2098$~K) and may form during annealing.  This complicates but does not invalidate the phase stability experiment: the $\delta_{\max}(T)$ prediction concerns whether a single-phase region exists, regardless of what phases appear in the multi-phase field.
+
+\textbf{(d)~Cocktail effect confirmed.}  Both Senkov alloys show massive solid-solution strengthening: $\sigma_{0.2} = 1058$~MPa for NbMoTaW ($+139\%$ above ROM of 443~MPa) and $\sigma_{0.2} = 1246$~MPa for VNbMoTaW ($+199\%$ above ROM).  HEA-1 (WMoTaNbZr) has $5\times$ higher $K$ than NbMoTaW, predicting even larger strengthening.
+
+\subsubsection{Revised experimental program}
+
+Phase~0 results eliminate the need for dedicated radiation experiments and confirm the CES framework for BCC alloys.  The remaining program is leaner:
+
+\textbf{Phase~1: BCC subsystem progression and oxidation test ($\sim$\$5K, 2--4 weeks).}  (a)~Arc-melt five compositions: W, WMo, WMoTa, WMoTaNb, WMoTaNbZr.  Characterize by XRD and nanoindentation.  \emph{Pass}: all $E$ values within Voigt--Reuss bounds; single $q$ fits all subsystems to RMSE $< 15$~GPa; hardness increases monotonically with~$K$.  This fills the largest remaining data gap: no subsystem progression exists for the W--Mo--Ta--Nb--Zr system.  (b)~Oxidize WTaNbHfZr at 1200$^\circ$C for 1~hour, cross-section with SEM/EDS\@.  \emph{Pass}: outer oxide $>$70\% Hf$+$Zr by cation fraction.
+
+\textbf{Phase~2: Temperature-dependent phase stability ($\sim$\$10K, 4--6 weeks).}  Anneal WMoTaCrHf at 1800, 2000, 2200, and 2500~K for 24~hours each, water quench, XRD and SEM\@.  \emph{Pass}: multi-phase at 1800~K, single-phase BCC at 2500~K.  This is the sole remaining falsification test for the $q$-entropy prediction $\delta_{\max}(T) \propto \sqrt{T}$.  Pre-requisite: CALPHAD screening for Laves phase fields in the 5-component system.
+
+\textbf{Phase~3: Application-specific qualification (cost varies, 6--18 months).}  (a)~Hot-fire test of WTaNbHfZr nozzle geometry.  (b)~Arc-jet test of HEC-8 leading-edge coupon.  (c)~Thermal cycling of HEO-9 foam tile (ambient $\to$ 1600$^\circ$C, 1000~cycles).  These proceed only after Phase~1--2 pass gates.
+
+\subsubsection{Decision gates}
+
+\begin{itemize}
+  \item If Phase~1a fails (CES bounds violated for all-BCC subsystems), the CES aggregation model is wrong even for crystal-structure-consistent inputs.  The theory requires fundamental revision, but the materials remain viable (their performance derives from standard physics).
+  \item If Phase~2 fails (WMoTaCrHf multi-phase at all temperatures including 2500~K), $\delta_{\max}(T) \propto \sqrt{T}$ is falsified and HEA-3 is abandoned.  All other proposals are unaffected.
+  \item If Phase~1b fails (no preferential Hf/Zr oxidation), HEA-4 must be redesigned---but the thermodynamic driving force (584~kJ/mol) makes this unlikely.
+\end{itemize}
+
+The revised total cost to validate or falsify the core theory is $\sim$\$15K over 2--3 months, reduced from $\sim$\$40K because published radiation data (El-Atwani 2019, 2023) already confirms the radiation tolerance mechanism for W-based refractory HEAs at comparable~$K$ values.
+
+
+\end{document}

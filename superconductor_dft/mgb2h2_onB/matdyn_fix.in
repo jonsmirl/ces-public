@@ -1,0 +1,8 @@
+&INPUT
+  asr = 'crystal'
+  flfrc = 'mgb2h2r_fix.fc'
+  dos = .true.
+  fldos = 'phdos_zpe.dat'
+  nk1 = 20, nk2 = 20, nk3 = 14
+  deltaE = 1.0
+/

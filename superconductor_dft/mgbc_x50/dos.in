@@ -1,0 +1,4 @@
+&DOS
+  prefix = 'mgbc50', outdir = './tmp/'
+  fildos = 'dos.dat', DeltaE = 0.05, degauss = 0.02
+/

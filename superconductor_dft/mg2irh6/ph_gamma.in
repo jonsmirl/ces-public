@@ -1,0 +1,8 @@
+Phonon eigenvectors at Gamma for chiral analysis
+&INPUTPH
+  prefix = 'mg2irh6'
+  outdir = './tmp/'
+  fildyn = 'mg2irh6.dyn'
+  tr2_ph = 1.0d-14
+/
+0.0 0.0 0.0

@@ -1,0 +1,10 @@
+Phonon calculation for MgB2H2 on-boron
+&INPUTPH
+  prefix = 'mgb2h2'
+  outdir = './tmp/'
+  fildyn = 'mgb2h2.dyn'
+  fildvscf = 'dvscf'
+  ldisp = .true.
+  nq1 = 2, nq2 = 2, nq3 = 2
+  tr2_ph = 1.0d-12
+/

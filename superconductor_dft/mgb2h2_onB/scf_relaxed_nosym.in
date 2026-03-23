@@ -1,0 +1,40 @@
+&CONTROL
+  calculation = 'scf',
+  outdir = './tmp/',
+  prefix = 'mgb2h2',
+  pseudo_dir = '/usr/share/espresso/pseudo/',
+/
+&SYSTEM
+  degauss = 0.02
+  nosym = .true.,
+  ecutrho = 480,
+  ecutwfc = 60,
+  occupations = 'smearing',
+  smearing = 'mp',
+  ibrav = 0,
+  nat = 5,
+  ntyp = 3,
+/
+&ELECTRONS
+  conv_thr = 1d-10,
+/
+&IONS
+/
+&CELL
+/
+ATOMIC_SPECIES
+  B  10.8110 B.pbe-n-kjpaw_psl.1.0.0.UPF
+  H  1.0079 H.pbe-kjpaw.UPF
+  Mg  24.3050 Mg.pbe-n-kjpaw_psl.0.3.0.UPF
+ATOMIC_POSITIONS crystal
+  Mg -0.000000 0.000000 -0.003517
+  B 0.333334 0.666667 0.404120
+  B 0.666667 0.333333 0.404119
+  H 0.333333 0.666667 0.737640
+  H 0.666666 0.333333 0.737639
+K_POINTS automatic
+  12 12 8 0 0 0
+CELL_PARAMETERS angstrom
+  3.212561 -0.000001 -0.000001
+  -1.606281 2.782161 0.000000
+  -0.000001 0.000000 3.940617

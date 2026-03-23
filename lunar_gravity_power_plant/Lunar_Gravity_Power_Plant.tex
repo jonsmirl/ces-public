@@ -1,0 +1,1500 @@
+\documentclass[12pt,letterpaper]{article}
+
+% Page layout
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+% Math
+\usepackage{amsmath,amssymb,amsthm}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+
+% Typography
+\usepackage[T1]{fontenc}
+\usepackage[expansion=false]{microtype}
+\usepackage{enumitem}
+
+% Graphics
+\usepackage{graphicx}
+
+% References
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+% Section formatting
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.5em}{}
+
+\begin{document}
+
+% -------------------------------------------------------------------
+% TITLE PAGE
+% -------------------------------------------------------------------
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+{\LARGE\bfseries A PRACTICAL PATH TO O'NEILL COLONIES\par}
+\vspace{0.8cm}
+{\large\itshape Bootstrapping Lunar Industry from a\\Superconducting Cable and an Asteroid\par}
+\vspace{1.5cm}
+{\large Jon Smirl\par}
+\vspace{0.3cm}
+{Independent Researcher\par}
+\vspace{0.3cm}
+{March 2026\par}
+\vspace{0.5cm}
+{\scshape Concept Paper\par}
+\vspace{1cm}
+\begin{abstract}
+\noindent Building O'Neill-class space habitats requires gigawatt-scale power and millions of tons of steel---neither available off Earth. This paper presents a gravity power plant that provides both from a single system. Three insights drive the design: (1)~a space elevator used exclusively for \emph{descent}, not ascent, is a power plant---rocks fall, electricity comes out; (2)~a superconducting cable (MgB$_2$) converts the kinetic energy of falling cargo to persistent current via Lenz's law---the cable is simultaneously the generator, the battery, and the transmission line, with zero moving parts; (3)~the power scales sublinearly with cable thickness---10$\times$ the power requires only 3.2$\times$ the cable mass, reaching 10+~GW with existing materials.
+
+The complete cycle: M-type asteroid rock descends a 62,000~km superconducting cable from Earth-Moon L1 to the lunar surface in passive clamshell carriers, generating 1~GW at baseline throughput. The rock---already metallic iron-nickel---is smelted into structural steel using the power it just generated. A surface mass driver returns empty carriers to L1 and launches finished steel to lunar orbit for habitat construction. One 600~m asteroid provides the full material for a 2~km rotating habitat: a radiation-shielded, impact-proof city for 200,000 people with 31~km$^2$ of 1$g$ interior.
+
+For Mars delivery, the mass driver launches steel sections at the departing habitat---each catch simultaneously builds the structure and provides propulsion (no propellant expended). Autonomous robots complete the interior during the 10-year transit. At the destination, the habitat drops a superconducting cable to the surface, mines a local moon for fuel, and replicates the gravity plant---a self-propagating industrial architecture.
+
+At \$40B for 1~GW (vs.\ \$50--70B for equivalent lunar nuclear power, which requires enriched uranium launched from Earth and 100,000~m$^2$ of waste-heat radiators), this system provides a credible path from a Starship launch contract to a self-sustaining industrial civilization across the solar system.
+\end{abstract}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% -------------------------------------------------------------------
+% 1. THE LUNAR ENERGY PROBLEM
+% -------------------------------------------------------------------
+\section{The O'Neill Bootstrapping Problem}
+
+In 1976, Gerard O'Neill proposed building large rotating space habitats from asteroid and lunar material, housing millions of people in Earth-like environments. The engineering is straightforward: an O'Neill cylinder (Island Three) is a 32~km steel tube, spinning for gravity. The problem has never been the \emph{design}---it has been the \emph{bootstrapping}. Building one requires $\sim$50~million tons of processed steel and $\sim$10~GW of continuous power sustained for years. Every path to these numbers hits a wall:
+
+\begin{itemize}
+\item \textbf{Launch from Earth:} even a 2~km habitat requires $\sim$400~million tons of steel and shielding. At \$100/kg: \$40~trillion. No.
+\item \textbf{Mine lunar regolith:} The regolith is 20\% iron oxide. Reducing oxide to metal costs $\sim$15,000~MJ/ton---requiring GW-scale power that doesn't exist on the Moon (see below).
+\item \textbf{Mine asteroids in microgravity:} Smelting without gravity doesn't work. No slag separation, no convection, no casting. You cannot run a steel mill in zero-g.
+\item \textbf{Build solar panels first:} 10~GW of solar requires 50~km$^2$ of panels. Made from what? You need the metal first. Chicken-and-egg.
+\end{itemize}
+
+Every path requires industrial infrastructure to build industrial infrastructure. This paper presents an architecture that breaks the loop: a \emph{gravity power plant} that generates GW-scale electricity from descending asteroid rock, where the rock that generates the power is already metallic (M-type asteroid iron-nickel, requiring no oxide reduction) and becomes the smelter feedstock after generating electricity. The only Earth-supplied components are a cable and an initial carrier fleet. Everything else---power, material, and products---comes from gravity and asteroids.
+
+Before presenting the design, this section reviews why conventional power technologies cannot provide the energy that O'Neill-scale industry demands.
+
+\subsection{Solar}
+
+Lunar solar provides $\sim$1,360~W/m$^2$ during the 14-day sunlit period, but nothing during the 14-day night. A 1~GW average output requires either $\sim$7~km$^2$ of panels with 14-day energy storage ($\sim$1,200~GWh in batteries or thermal mass), or placement at a permanently illuminated polar peak---of which only a handful exist, none large enough for gigawatt-scale installations. Solar does not scale to continuous industrial power on the Moon.
+
+\subsection{Nuclear}
+
+Nuclear fission provides continuous power independent of sunlight. However, on the Moon it faces three problems absent on Earth:
+
+\begin{enumerate}[label=(\roman*)]
+\item \textbf{Heat rejection.} On Earth, nuclear plants reject waste heat to rivers, oceans, or cooling towers. On the Moon, the only mechanism is thermal radiation into space. A 100~MW$_e$ reactor at 30\% thermal efficiency must radiate $\sim$230~MW$_{th}$ of waste heat. By Stefan-Boltzmann ($P = \sigma A T^4$), radiators at 800~K require $\sim$10,000~m$^2$ of surface area \emph{per reactor}. For 1~GW (ten reactors): 100,000~m$^2$ of radiator panels---fragile, heavy structures that must be assembled in vacuum.
+
+\item \textbf{Fuel logistics.} A 1~GW plant consumes $\sim$1.5~tons of enriched uranium per year. This fuel must be manufactured on Earth, packaged for spaceflight, and launched. At current Starship reliability ($\sim$99\%), a 20-year fuel supply requires $\sim$30 launches carrying nuclear material. The statistical expectation is at least one launch failure with enriched uranium aboard---a contamination event that would halt the entire program. Public opposition to launching kilograms of plutonium in RTGs is already intense; launching \emph{tons} of enriched uranium would face overwhelming political resistance.
+
+\item \textbf{Development cost.} No space nuclear reactor above 5~kW$_e$ has ever operated (Soviet TOPAZ, 1987). NASA's Kilopower demonstration produced 1~kW$_e$. Scaling to 100~MW$_e$ is a factor of 100,000 with no intermediate steps. Development cost for the first unit: \$15--25B. Manufacturing ten units for a 1~GW plant: \$20--30B. Total realistic cost for 1~GW lunar nuclear: \$50--70B.
+\end{enumerate}
+
+\subsection{Gravitational Potential Energy}
+
+This paper proposes a third option: converting the gravitational potential energy of asteroid material into electricity. Material at Earth-Moon L1 has $\sim$2,700~kJ/kg of potential energy relative to the lunar surface. A superconducting cable from L1 to the surface captures this energy as persistent current via Lenz's law braking---with zero resistive loss. At 1,333~tons/hour throughput, the captured power is $\sim$1~GW.
+
+The ``fuel'' is asteroid rock. It is delivered by redirecting near-Earth asteroids to the L1 vicinity---a capability already demonstrated in principle by NASA's DART mission. The rock descends the cable, generates electricity, and accumulates at the surface as waste (or feedstock for optional smelting). No uranium, no radiators, no moving parts in the generator.
+
+\subsection{Three Key Insights}
+
+This paper rests on three observations, each departing from the assumptions of prior work:
+
+\begin{enumerate}[label=\arabic*.]
+\item \textbf{Down, not up.} Every space elevator proposal in the literature is about \emph{ascent}---lifting cargo from a gravity well. This paper inverts the concept: the value is in the \emph{descent}. The elevator is a drain, not a pump. Rocks fall down; electricity comes out. Everything else in the design---the mass driver for carrier return, the passive terminal, the construction-as-propulsion delivery of habitats---follows from this inversion.
+
+\item \textbf{The superconductor is the generator.} Previous superconducting space proposals used the superconductor for levitation or structural support. Here, the MgB$_2$ wire converts kinetic energy to persistent current via Lenz's law braking---the cable is the generator, with zero moving parts and zero resistive loss. The same wire that brakes the carrier stores the energy (SMES) and delivers it to the grid. Generator, battery, and transmission line in one component.
+
+\item \textbf{Scale.} The system produces 10~GW with existing materials (carbon fiber and MgB$_2$ wire). No fusion. No exotic physics. Just a thicker cable. Every previous space power proposal tops out at 1--100~MW---enough for a research station, not a civilization. 10~GW is what separates an outpost from an industrial economy.
+
+Critically, the scaling is \emph{sublinear}. Power scales with the cable's cross-sectional area (which determines carrier throughput), while cable mass scales with cross-sectional area times length. Since the length is fixed (62,000~km), 10$\times$ the power requires only $\sqrt{10}\times$ the diameter $= 3.2\times$ the cable mass. No other space power technology has this property: nuclear scales linearly (10$\times$ power $=$ 10$\times$ reactors $=$ 10$\times$ cost), and solar scales linearly (10$\times$ power $=$ 10$\times$ panels). The gravity plant scales by \emph{cross-section}:
+
+\begin{center}
+\small
+\begin{tabular}{rrrr}
+\toprule
+\textbf{Power} & \textbf{Cable diameter} & \textbf{Cable mass} & \textbf{Cost} \\
+\midrule
+1~GW & 20~mm & 108,000~t & \$40B \\
+10~GW & 45~mm & 190,000~t & \$65B \\
+100~GW & 100~mm & 600,000~t & \$150B \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+100~GW---the power output of a medium-sized country---for \$150B and one cable. The nuclear equivalent (1,000 reactors with 10~million~m$^2$ of radiators) is not physically constructable.
+\end{enumerate}
+
+% -------------------------------------------------------------------
+% 2. SYSTEM OVERVIEW
+% -------------------------------------------------------------------
+\section{System Overview}
+
+The complete power plant consists of five components:
+
+\begin{enumerate}[label=\arabic*.]
+\item \textbf{Cable} (62,000~km): carbon fiber structural core with helically wound MgB$_2$ superconducting wire. Serves simultaneously as the track (carriers ride on it), the brake (Lenz's law), and the battery (SMES persistent current storage). Manufactured at L1 by a single winding machine.
+
+\item \textbf{Tether asteroid} (5~million tons, permanent): an M-type near-Earth asteroid redirected to 5,000~km above L1. Never mined. Serves solely as counterweight to keep the cable in tension. Remains in place indefinitely.
+
+\item \textbf{Mining asteroid} (120+~million tons, consumable): a separate M-type asteroid in a nearby but distinct orbit. Mined for material, which is ferried to the tether asteroid for loading onto the cable. Replaced every $\sim$10 years.
+
+\item \textbf{Carriers} ($\sim$1,400 clamshell buckets): passive steel half-shells with Alnico permanent magnets. Self-locking on the cable (flux pinning + deceleration-driven pins), self-opening at the terminal (gravity on a V-anvil). Reusable; returned to L1 via mass driver.
+
+\item \textbf{Surface terminal}: a V-shaped anvil bolted to a mountain summit, with gravity-fed channels to the base. Zero moving parts in the critical path. Mass driver on the mountainside returns empty carriers and optionally exports products.
+\end{enumerate}
+
+\subsection{Mass and Energy Flow}
+
+The system operates as a closed cycle:
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\textbf{Step} & \textbf{Physics} \\
+\midrule
+Rock loaded into carrier at tether asteroid & Manual/robotic \\
+Carrier descends cable (62,000~km, $\sim$12~hrs) & Gravity (passive) \\
+Lenz's law braking captures energy & EM (passive) \\
+Carrier arrives at mountain summit ($\sim$2~m/s) & Variable-helix braking \\
+V-anvil splits carrier, rock slides downhill & Gravity (passive) \\
+Empty carrier halves roll to mass driver & Gravity (passive) \\
+Mass driver launches carrier to L1 ($\sim$2,330~m/s) & EM sled (active, 52~MW) \\
+Carrier caught at tether asteroid & EM catcher (active) \\
+Carrier reloaded & Repeat \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Only two steps require active power input: the mass driver launch (52~MW) and the L1 catcher. Everything else is powered by gravity and passive electromagnetism.
+
+% -------------------------------------------------------------------
+% 3. THE CABLE
+% -------------------------------------------------------------------
+\section{The Cable}
+
+\subsection{Why the Moon, Not Earth}
+
+A terrestrial space elevator to GEO requires specific strength $>$50~MYuri, achievable only with carbon nanotubes (TRL~2). The lunar cable to L1 requires only $\sim$2.5~MYuri, achievable with commercial carbon fiber (TRL~9). The taper ratio (thickest-to-thinnest cross-section) is 2.3$\times$ for the Moon versus $>10^{50}$ for Earth. The lunar cable is buildable with existing materials.
+
+\subsection{Structure}
+
+The cable is a composite of carbon fiber (structural) and two MgB$_2$ superconducting wires (electrical):
+
+\begin{center}
+\small
+\begin{tabular}{ll}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Total length & 62,000~km (57,000 to L1 + 5,000 to tether asteroid) \\
+Base diameter (surface) & 20~mm \\
+L1 diameter (thickest) & 30~mm (taper ratio 2.3$\times$) \\
+Carbon fiber tensile strength & 7~GPa \\
+Design stress & 3.5~GPa (50\% safety factor) \\
+MgB$_2$ critical temperature & 39~K (space ambient: 3--35~K) \\
+MgB$_2$ wires & 2 $\times$ 11~mm dia (1 helical + 1 axial return) \\
+Total cable mass & $\sim$108,000~tons (30,000 CF + 78,000 MgB$_2$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{The Two-Wire Circuit}
+
+Persistent current requires a closed superconducting loop---current cannot be stored in an isolated straight wire. The cable contains two MgB$_2$ wires forming a single loop:
+
+\begin{enumerate}[label=(\roman*)]
+\item \textbf{Helical wire:} wound around the carbon fiber core at variable pitch. This is the working wire---it brakes the carriers, generates EMF, and couples magnetically to the carrier's Halbach tube. All the physics happens here.
+
+\item \textbf{Axial return wire:} runs straight along the cable core. Carries the loop current back from L1 to the surface. It does not interact meaningfully with the carrier (see below). At the practical MgB$_2$ critical current density for carbon-doped wire in an applied field of 0.2~T at 20~K ($J_c \approx 3 \times 10^8$~A/m$^2$), 10~kA with a 1.5$\times$ safety factor requires 50~mm$^2$ of superconductor cross-section. With copper matrix (50\% fill factor): a wire of $\sim$11~mm diameter (100~mm$^2$ total). The helical wire has the same current-carrying requirement and similar cross-section. Total MgB$_2$ wire mass for both wires: $\sim$78,000~tons. Combined with the carbon fiber structure ($\sim$30,000~tons), total cable mass is $\sim$108,000~tons.
+\end{enumerate}
+
+The complete circuit: surface SMES $\to$ helical wire (up to L1) $\to$ jumper at tether asteroid $\to$ axial wire (back to surface) $\to$ SMES. One closed superconducting loop, 124,000~km of wire, with energy storage concentrated in a ground-based SMES coil at the surface base.
+
+\subsubsection{Why the return wire does not interfere with braking}
+
+The axial return wire carries 10~kA and creates a circumferential magnetic field:
+\begin{equation}
+B_{\text{return}} = \frac{\mu_0 I}{2\pi r} = \frac{4\pi \times 10^{-7} \times 10{,}000}{2\pi \times 0.15} = 0.013 \text{~T}
+\end{equation}
+at the carrier's Halbach bore (150~mm from the cable center). The carrier's Halbach tube has \emph{radial} magnetization. A radial magnet in a circumferential field experiences a \emph{tangential} force (perpendicular to the cable axis), not an axial force. The Halbach tube is symmetric around the cable, so tangential forces cancel around the circumference. \textbf{Net axial force from the return wire on the carrier: zero.}
+
+The return wire's field (0.013~T) is also small compared to the Halbach interior field (0.2~T)---a 6.7\% perturbation that does not significantly affect the helical wire's braking behavior.
+
+\subsubsection{Voltage in the cable}
+
+In a superconductor, $V = IR = 0$. There is no voltage drop along either wire. The 1~GW of power is at 10~kA $\times$ 100~kV, but the 100~kV appears only at the \emph{surface power converter} (where the persistent current switch forces current through the resistive load). Along the 62,000~km cable, the voltage between the two wires is zero in steady state. Each carrier contributes $\sim$125~V of local EMF over its 3~m length---125~V across a 10~mm vacuum gap, far below vacuum breakdown ($>$30~kV at 10~mm). No arcing risk. No high-voltage insulation needed along the cable.
+
+\subsection{The Helical Winding: Track, Brake, and Generator}
+
+The helical MgB$_2$ wire wound around the carbon fiber core creates two functions:
+
+\begin{enumerate}[label=(\roman*)]
+\item \textbf{Braking track with variable profile:} the carrier's permanent magnets moving past the helical superconductor experience a changing magnetic flux. The superconductor's screening currents oppose the flux change (Lenz's law), creating a braking force. The winding machine at L1 varies the helix pitch during manufacturing: open pitch (100~mm) in the upper cable gives light braking and fast cruise; dense pitch (3~mm) in the bottom 50~km gives heavy braking, decelerating the carrier from cruise speed to $\sim$2~m/s at the terminal. The braking profile is permanently ``programmed'' into the cable geometry.
+
+\item \textbf{Linear generator:} each turn of the helix acts as a generator coil. As the carrier moves past, the changing flux through each turn induces EMF in the loop. For a carrier of length $L_c = 3$~m at speed $v$, passing $N$ helix turns with circumferential conductor length $\ell$:
+\begin{equation}
+\text{EMF per carrier} = N \times B \times \ell \times v = N \times 0.2 \times 0.063 \times v
+\end{equation}
+At 10~turns/m in the cruise zone: $N = 30$ turns per carrier, EMF $= 0.378 \times v$. At 333~turns/m in the braking zone: $N = 1{,}000$, EMF $= 12.6 \times v$.
+
+With $\sim$800 carriers distributed along the cable at a time-weighted average speed of $\sim$330~m/s:
+\begin{equation}
+\text{Total EMF} = \sum_{i=1}^{800} 0.378 \times v_i \approx 100{,}000 \text{~V} = 100 \text{~kV}
+\end{equation}
+At loop current $I = 10$~kA:
+\begin{equation}
+P = \text{EMF} \times I = 100 \text{~kV} \times 10 \text{~kA} = 1 \text{~GW} \quad \checkmark
+\end{equation}
+\end{enumerate}
+
+\subsection{Ground-Based Energy Storage (SMES)}
+
+The energy storage is a superconducting solenoid on the lunar surface---not distributed in the cable. The cable is a \emph{transmission line and generator}; the ground coil is the \emph{battery}.
+
+A dedicated MgB$_2$ solenoid (100~m diameter, 1,000~turns) at the surface base stores energy as persistent loop current. At operating current $I = 10$~kA:
+\begin{equation}
+E = \frac{1}{2} L_{\text{SMES}} I^2
+\end{equation}
+The SMES inductance is sized for the desired buffer depth. At $L = 100$~H: $E = 5$~GJ (5~seconds at 1~GW). At $L = 1{,}000$~H: $E = 50$~GJ (50~seconds). The buffer smooths the power delivery from the 800 carriers continuously charging the loop.
+
+Energy extraction uses a persistent current switch and DC-DC power converter at the surface---standard SMES technology deployed commercially for grid stabilization. The 100~kV conversion to load voltage is contained within the surface base equipment. All high-voltage insulation is on the ground, not in the cable.
+
+\subsubsection{Why both braking mechanisms feed the same loop}
+
+Two distinct forces brake the carrier: the generator effect ($F = NB\ell I$, speed-independent, from EMF induction in the helix) and flux pinning ($F \propto v$, speed-dependent, from vortex drag in the Type~II superconductor). At the surface, the generator provides $\sim$11\% of the total braking force and flux pinning provides $\sim$89\%. This is a force partition, \textbf{not an energy partition.}
+
+Both mechanisms deliver energy to the \emph{same loop current}. In a superconducting loop, total enclosed flux is conserved ($V = IR = 0 \Rightarrow d\Phi_{\text{total}}/dt = 0$). When the carrier's magnets push flux vortices \emph{into} the wire (flux pinning), that flux is no longer enclosed by the loop---the enclosed flux decreases. To conserve total flux, the loop current must increase: $L\,dI = -d\Phi_{\text{external}}$. The energy goes into $\frac{1}{2}LI^2$.
+
+The generator effect drives current increase via EMF (Faraday's law). Flux pinning drives current increase via flux conservation (vortex entry). Both result in the same outcome: higher loop current, more stored energy in the SMES. The only loss is hysteresis heat from vortex motion through pinning sites ($\sim$0.30~J per carrier per 3~m section, a fraction of $3 \times 10^{-9}$ of the braking energy).
+
+\textbf{Essentially 100\% of the gravitational PE is captured as extractable persistent current.} There is no ``missing'' energy, no cable heating, and no need to oversize the system for partial capture.
+
+\subsection{Thermal Budget: Braking Heat vs.\ Radiative Cooling}
+
+A critical feasibility question: does the braking phase generate enough heat to quench the MgB$_2$ superconductor? The answer requires distinguishing between \emph{stored energy} (persistent current) and \emph{dissipated energy} (AC losses).
+
+\subsubsection{Where the braking energy goes}
+
+A 21-ton carrier entering the braking zone at 100~m/s carries $\sim$105~MJ of kinetic energy (plus gravitational PE). Electromagnetic braking converts this energy into persistent current in the superconducting wire---\emph{stored energy}, not heat. In a perfect superconductor, this conversion is lossless. The cable acts as a SMES battery: the current increases, the stored magnetic energy increases, and no heat is generated.
+
+The only heat comes from \emph{AC losses}: hysteresis from flux vortex motion through pinning sites in the Type~II superconductor. For MgB$_2$ wire with fine filaments ($d_f = 20$~\textmu m), the hysteresis loss per flux cycle is:
+\begin{equation}
+W_h = \frac{4}{3} \, \Delta B \cdot J_c \cdot d_f \approx 5{,}333 \text{~J/m}^3 \text{ per cycle}
+\end{equation}
+where $\Delta B = 0.2$~T (Halbach tube field) and $J_c = 10^9$~A/m$^2$ (MgB$_2$ at 20~K). Each carrier passage constitutes one flux cycle. For the MgB$_2$ volume under a 3~m carrier ($\sim$57~cm$^3$):
+\begin{equation}
+Q_{\text{heat}} = 5{,}333 \times 5.65 \times 10^{-5} = 0.30 \text{~J per carrier passage}
+\end{equation}
+
+This is $0.30$~J of heat versus $\sim$105~MJ of stored energy---a loss fraction of $3 \times 10^{-9}$. Essentially all braking energy goes into persistent current.
+
+\subsubsection{Radiative cooling capacity}
+
+In vacuum, the cable sheds heat only by thermal radiation. At 35~K (4~K safety margin below $T_c = 39$~K):
+\begin{equation}
+P_{\text{rad}} = \varepsilon \sigma (\pi d) (T_{\text{cable}}^4 - T_{\text{space}}^4) \approx 0.9 \times 5.67 \times 10^{-8} \times 0.063 \times (35^4 - 3^4) \approx 4.8 \text{~mW/m}
+\end{equation}
+
+\subsubsection{Thermal balance}
+
+At any fixed point on the cable, one carrier passes every 54~seconds, depositing 0.30~J over a 3~m length:
+\begin{equation}
+\dot{q}_{\text{avg}} = \frac{0.30}{3 \times 54} = 1.85 \text{~mW/m}
+\end{equation}
+
+The heat input (1.85~mW/m) is below the radiative cooling capacity at 35~K (4.8~mW/m). The cable reaches thermal equilibrium at $\sim$24--28~K, well below $T_c = 39$~K with $>$10~K margin.
+
+\subsubsection{Local thermal diffusion}
+
+The 0.30~J of heat is generated inside the 20~\textmu m MgB$_2$ filaments and must diffuse into the copper/aluminum matrix before the filament overheats locally. The thermal diffusion time across a 20~\textmu m filament:
+\begin{equation}
+t_{\text{diffuse}} = \frac{d_f^2}{\alpha} = \frac{(20 \times 10^{-6})^2}{3.85 \times 10^{-4}} \approx 1 \text{~ns}
+\end{equation}
+The carrier passage takes 30~ms. Heat leaves the filament 30~million times faster than the carrier passes. No local hotspot can form.
+
+\subsubsection{Filament diameter specification}
+
+The thermal constraint sets a manufacturing specification for the MgB$_2$ wire. The maximum radiated energy per carrier passage at 35~K is $P_{\text{rad}} \times 54\text{~s} = 0.260$~J/m. The hysteresis loss per meter scales linearly with filament diameter $d_f$:
+
+\begin{center}
+\small
+\begin{tabular}{rccl}
+\toprule
+\textbf{$d_f$ (\textmu m)} & \textbf{$Q_h$ (J/m)} & \textbf{Margin} & \textbf{Status} \\
+\midrule
+10 & 0.050 & 5.2$\times$ & Commercial (development) \\
+15 & 0.075 & 3.4$\times$ & Commercial (HyperTech) \\
+20 & 0.101 & 2.6$\times$ & Commercial (standard) \\
+30 & 0.151 & 1.7$\times$ & Commercial (Columbus SC) \\
+50 & 0.251 & 1.0$\times$ & Marginal \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Maximum allowable filament diameter: $d_f < 52$~\textmu m. Commercial MgB$_2$ wire from HyperTech (USA) already provides 15~\textmu m filaments with 3.4$\times$ margin. \textbf{This is a procurement specification, not a research problem.} The required wire is commercially available today.
+
+\subsubsection{Design rule}
+
+The transition zone (200~km, moderate helix) must reduce the carrier speed to $\leq$100~m/s before entry to the dense-helix braking section. At 100~m/s, the initial deceleration is $\sim$8$g$ but the AC heat generation is only 10~W during the 30~ms passage---safely within the cable's thermal budget. Validation requires a single laboratory measurement: AC loss in MgB$_2$ wire at 0.2~T, 33~Hz, 20~K, using standard superconductor characterization equipment.
+
+\subsection{Quench Protection}
+
+If a section of cable does transition to the resistive state (quench)---from a micrometeorite strike, localized damage, or an anomalous heat event---the 10~kA persistent current flowing through the newly resistive section would generate $I^2 R$ heating sufficient to vaporize the wire in milliseconds. Unprotected quench is catastrophic. The cable requires a quench protection system, standard in every superconducting magnet installation.
+
+\subsubsection{Detection}
+
+Quench propagation in MgB$_2$ is slow ($\sim$1--10~m/s) compared to the speed of light in the cable. A resistive section develops a voltage $V = IR$ that is detectable within microseconds by distributed voltage sensors along the cable. The detection threshold is set below the level that would cause thermal damage.
+
+\subsubsection{Energy dump}
+
+Upon quench detection, the cable's stored energy ($\frac{1}{2}LI^2 = 2.5$~GJ at 10~kA) must be extracted before it dissipates in the quench zone. Two mechanisms operate simultaneously:
+
+\begin{enumerate}[label=(\roman*)]
+\item \textbf{Dump resistors at the surface base:} the persistent current switch opens (forced resistive transition), routing current through external dump resistors. At $V_{\text{dump}} = 1{,}000$~V: the current decays from 10~kA with time constant $\tau = L/R = 50/0.1 = 500$~s. The 2.5~GJ dissipates as heat in the dump resistors over $\sim$8~minutes. The dump resistors are massive steel blocks or water-cooled banks---standard power engineering.
+
+\item \textbf{Distributed quench heaters:} resistive heater strips bonded to the cable at intervals ($\sim$every 100~m in the braking section, every 10~km elsewhere) force the entire cable to transition simultaneously. This spreads the stored energy over the full 62,000~km cable length instead of concentrating it in one spot. Energy per meter: $2.5 \times 10^9 / 62 \times 10^6 = 40$~J/m---easily absorbed by the cable's thermal mass without damage.
+\end{enumerate}
+
+\subsubsection{Recovery}
+
+After a quench, the cable cools radiatively back below $T_c$ ($\sim$hours to days depending on the energy deposited). The persistent current is lost and must be rebuilt by resuming carrier descents. First carriers after restart operate at reduced throughput until the cable current reaches its operating level. No physical repair is needed unless the quench was caused by structural damage.
+
+\subsubsection{Quench protection mass}
+
+\begin{center}
+\small
+\begin{tabular}{lr}
+\toprule
+\textbf{Component} & \textbf{Mass} \\
+\midrule
+Dump resistors (steel blocks, surface base) & 5,000~kg \\
+Persistent current switch (heater + SC section) & 50~kg \\
+Distributed quench heaters (every 100~m in braking zone) & 200~kg \\
+Voltage sensors (distributed, fiber-optic) & 100~kg \\
+Control electronics & 20~kg \\
+\midrule
+\textbf{Total quench protection} & $\sim$\textbf{5,400~kg} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+All components are standard superconducting magnet technology scaled to the cable's parameters. The quench protection system ensures that a quench event loses the \emph{stored energy} (requiring re-charging) but does not damage the \emph{cable structure} (requiring repair or replacement).
+
+\subsection{Cable Tension and the Counterweight}
+
+A cable can only carry tension, never compression. The system must be designed so that the cable pulls \emph{upward} on the surface anchor at all times; otherwise the cable goes slack and collapses.
+
+Below L1, the cable's own weight ($\sim$834~kN) plus descending carriers ($\sim$525~kN) pull \emph{downward}---a total of $\sim$1,360~kN. The tether asteroid above L1 must provide at least this much upward pull.
+
+At 5,000~km above L1, the effective gravity (centrifugal minus lunar minus terrestrial) is $g_{\text{eff}} = 0.000408$~m/s$^2$ directed away from the Moon. A 5-million-ton asteroid at this position exerts:
+\begin{equation}
+F_{\text{up}} = 5 \times 10^9 \times 0.000408 = 2{,}040 \text{~kN}
+\end{equation}
+This exceeds the downward pull by 50\%, keeping the cable taut with adequate margin.
+
+\subsection{Manufacturing}
+
+The cable is manufactured at L1 by a single helical filament winding machine ($\sim$15~tons), paying out cable in both directions: toward the Moon (57,000~km) and toward the tether asteroid (5,000~km). Carbon fiber and MgB$_2$ spools are delivered from Earth via Starship.
+
+\begin{center}
+\small
+\begin{tabular}{lcc}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Winding speed & 20~m/min = 29~km/day \\
+Winding time & 2,150~days = 5.9~years \\
+Material consumption & 28~tons/day \\
+Starship flights (100~t each) & 1,080 total, 1 every 2 days \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The winding machine varies the helix pitch automatically: open helix for the first 56,950~km, transitioning to dense helix for the final 50~km (the braking section). One continuous operation, no joints, no splices.
+
+% -------------------------------------------------------------------
+% 4. TWO-ASTEROID ARCHITECTURE
+% -------------------------------------------------------------------
+\section{Two-Asteroid Architecture}
+
+Mining an asteroid produces debris, vapor, and fragments at velocities sufficient to damage the superconducting cable. The cable must be nowhere near the mining operation. This requires two asteroids in separate orbits:
+
+\subsection{Tether Asteroid (Permanent)}
+
+\begin{itemize}
+\item Mass: $\sim$5~million tons (75~m diameter M-type)
+\item Position: 5,000~km above L1 (67,000~km from Moon center)
+\item Function: counterweight only---never mined, never disturbed
+\item Cable attaches directly to asteroid surface
+\item Clean environment: no operations, no debris
+\item Redirect time: 5--10~years with solar electric tug
+\item Station-keeping: provided by carrier arrivals (no ion drive---see below)
+\end{itemize}
+
+\subsubsection{Station-Keeping from Carrier Momentum}
+
+The tether asteroid requires periodic station-keeping corrections to maintain its position above L1. A conventional solution (ion drives) is unsuitable: the exhaust plume would deposit propellant atoms on the superconducting cable, degrading its surface properties over years of operation.
+
+Instead, station-keeping is a \emph{free byproduct} of the carrier return cycle. Each empty carrier (1,000~kg) arrives from the lunar mass driver at $\sim$120~m/s (the mass driver launch velocity is tuned so carriers arrive gently---see Section~8.2). Each carrier delivers 120~kN$\cdot$s of momentum directed away from the Moon. At 67~carriers per hour:
+\begin{equation}
+F_{\text{avg}} = \frac{67 \times 1{,}000 \times 120}{3{,}600} = 2.2 \text{~kN}
+\end{equation}
+The required station-keeping force is $\sim$1.6~kN---the carrier arrivals provide 1.4$\times$ the requirement (40\% margin). The catcher controls how much momentum it absorbs by varying the braking profile: hard catch for maximum outward push, soft catch (allowing overshoot and recapture) for reduced push. No propellant. No plume. No cable contamination. No power consumption.
+
+\subsection{Mining Asteroid (Consumable)}
+
+\begin{itemize}
+\item Mass: 120+~million tons ($\sim$200~m diameter M-type)
+\item Position: separate orbit near L1, safe distance from cable
+\item Function: material source (``fuel'' for the power plant)
+\item Material cut/split at asteroid, loaded into carriers
+\item Carriers ferried to tether asteroid for cable attachment
+\item Consumption rate: 12~million tons/year
+\item Lifetime: $\sim$10~years per asteroid; redirect a replacement every decade
+\end{itemize}
+
+The separation protects the cable from all mining operations. The ferry from mining asteroid to tether asteroid is a short transfer in the L1 vicinity---low delta-v, simple trajectories.
+
+% -------------------------------------------------------------------
+% 5. THE CARRIER
+% -------------------------------------------------------------------
+\section{The Carrier: A Passive, Self-Locking Clamshell}
+
+Each carrier is a two-piece steel shell with Alnico permanent magnets at top and bottom rings. It clamps around the cable, rides it down, opens at the terminal, and returns empty via mass driver. The design has \textbf{zero moving parts}.
+
+\subsection{Clamshell Geometry}
+
+The cargo is M-type asteroid material---primarily iron and nickel, which are \emph{ferromagnetic}. The carrier must keep this magnetic ore away from both the superconducting cable and the magnetic coupling surface. The solution is a Halbach magnet tube with a 2~m central clear zone:
+
+\begin{itemize}
+\item \textbf{Halbach magnet tube} (cast Alnico~5, 300~mm inner diameter, 350~mm outer diameter, 3~m tall): a continuous tube of cast aluminum-nickel-cobalt alloy, split into two halves along the carrier's parting line. Radially magnetized in a Halbach configuration to concentrate field inward toward the cable. This single component serves three functions simultaneously: magnetic coupling (flux pinning and braking), cable protection (mechanical barrier), and centering (magnetic bearing over the full 3~m length).
+
+\item \textbf{Why Alnico, not NdFeB:} sintered NdFeB is a brittle ceramic that cracks under repeated shock loading. Carriers experience 200$g$ on every mass driver launch. Cast Alnico is a \emph{ductile metallic alloy}---machinable, shock-resistant, castable into monolithic half-tube shapes. Its remnant field ($B_r = 1.27$~T) matches NdFeB. Its low coercivity (0.063~T demagnetization threshold) is adequate because the cable's screening currents produce only $\sim$0.014~T at the magnet surface (140~mm from the cable). Alnico magnets survive indefinitely under mechanical shock; they were the standard industrial magnet for 80 years.
+
+\item \textbf{Halbach interior field:} for the tube geometry ($R_{\text{inner}} = 150$~mm, $R_{\text{outer}} = 175$~mm):
+\begin{equation}
+B_{\text{inside}} = B_r \times \ln\!\left(\frac{R_{\text{outer}}}{R_{\text{inner}}}\right) = 1.27 \times \ln\!\left(\frac{175}{150}\right) = 0.20 \text{~T}
+\end{equation}
+Adequate for flux pinning. The coupling area is enormous: $\pi \times 0.3 \times 3 = 2.83$~m$^2$, giving total pinning force $>$10~kN even at modest pinning pressure.
+
+\item \textbf{Outer shell} (3~m outer diameter, 3~m tall): structural steel cylinder, split into two halves. Contains the cargo in the annular space between the 2~m clear zone and the outer wall.
+
+\item \textbf{Cargo annulus}: ore is loaded in the annular space between the Alnico tube (at 0.35~m radius) and the outer shell (at 1.5~m radius), beyond the 1~m clear-zone boundary. Volume: $\pi \times (1.5^2 - 1.0^2) \times 3 \approx 12$~m$^3$. Capacity: $\sim$35~tons at loose packing (20~tons nominal load).
+
+\item \textbf{Tapered alignment pins}: on the mating faces along the full parting line.
+
+\item \textbf{Total carrier mass} (empty): $\sim$1,000~kg (Alnico tube $\sim$560~kg, steel shell $\sim$400~kg, pins $\sim$40~kg).
+\end{itemize}
+
+The 2~m central clear zone keeps ferromagnetic ore at least 1~m from the cable center, where the cable's field is only 0.002~T---iron chunks at this distance experience negligible attraction. The Alnico tube provides continuous magnetic coupling over 3~m of length, superior stability (sleeve, not pendant), and mechanical protection---all in one cast metal component that survives 200$g$ launches without fatigue.
+
+\subsection{Self-Locking: Three Independent Mechanisms}
+
+The carrier is held shut by three mechanisms, any one of which is sufficient:
+
+\begin{enumerate}[label=(\roman*)]
+\item \textbf{Flux pinning (magnetic):} the Alnico Halbach tube on both halves interacts with the MgB$_2$ superconducting cable via flux pinning over the full 3~m tube length (2.83~m$^2$ of coupling surface). The pinning force pulls both halves \emph{inward} toward the cable, pressing them against each other. As long as the cable is in the tube bore and superconducting, the halves cannot separate. This is the same principle as an airplane door: the operating force (cabin pressure / flux pinning) is the force that holds the assembly shut. The carrier \emph{physically cannot open while on the cable.}
+
+\item \textbf{Deceleration-driven pins (mechanical):} the tapered alignment pins are oriented so that the braking deceleration force (directed upward, opposing descent) wedges them deeper into their sockets. Harder braking = tighter lock. If braking fails and the carrier accelerates, Lenz's law increases the braking force, which re-tightens the pins. Self-reinforcing: no unstable failure mode.
+
+\item \textbf{Full-length magnetic bearing (centering):} flux pinning along the entire 3~m Alnico tube provides a continuous self-correcting magnetic bearing, constraining the carrier in all six degrees of freedom. The carrier floats at a fixed gap ($\sim$140~mm) inside the Halbach bore. The cast Alnico tube is a rigid mechanical structure---even if flux pinning weakened completely, the tube bore (300~mm) prevents the cable (20~mm) from contacting anything. No carrier deformation can close a 140~mm gap.
+\end{enumerate}
+
+\subsection{Self-Opening at the Terminal}
+
+At the surface terminal, the carrier arrives at $\sim$2~m/s and settles onto the anvil---a steel collar surrounding the cable with a V-ridge on top:
+
+\begin{enumerate}[label=(\roman*)]
+\item Braking deceleration drops to zero $\to$ tapered pins are no longer wedged
+\item Carrier's bottom ring contacts the V-ridge of the anvil collar
+\item Carrier's weight ($\sim$34~kN at $\frac{1}{6}g$, loaded) presses down on the V-ridge
+\item The V-shape forces the bottom ring halves apart laterally
+\item Separation propagates upward through the shell, tube, and top ring (all on the same parting line)
+\item Pins slide out of tapered sockets---no force retaining them
+\item Halves separate, each still containing $\sim$10~tons of rock in the outer annulus
+\item Loaded halves slide down gravity channels on opposite sides of the mountain
+\end{enumerate}
+
+The anvil is a fixed steel collar with a central hole for the cable and a V-ridge on top. The cable passes through the collar and continues to the bedrock anchor below. No actuators. No electronics. No springs. Gravity does all the work.
+
+\subsection{Carrier Spin}
+
+The helical winding of the MgB$_2$ wire creates a non-circular magnetic field pattern. Flux pinning locks the carrier's angular position to this pattern, resisting rotation around the cable axis. Any residual spin acquired during loading is damped during the 12-hour descent by the pinning restoring torque and eddy current dissipation. The carrier arrives at the anvil with negligible spin.
+
+If spin were present, the V-anvil and tapered pins are rotationally symmetric---they function at any carrier rotation angle.
+
+\subsection{Coriolis Lateral Force}
+
+The descending carrier experiences a Coriolis force perpendicular to the cable (tangential, in the Moon's orbital plane). At maximum descent speed (2,000~m/s), this force is:
+\begin{equation}
+F_{\text{Coriolis}} = 2 m \omega v = 2 \times 21{,}000 \times 2.66 \times 10^{-6} \times 2{,}000 = 224 \text{~N}
+\end{equation}
+The flux pinning restoring force along the full 3~m Alnico tube ($>$10~kN at modest pinning pressure over 2.83~m$^2$) exceeds the Coriolis force by a factor of $>$40. The carrier stays centered with enormous margin. The cable absorbs the lateral load (total from all 525 carriers: $\sim$59~kN) and transmits it to the anchor---a negligible stress on a cable carrying 2,040~kN of axial tension.
+
+% -------------------------------------------------------------------
+% 6. DESCENT PHYSICS
+% -------------------------------------------------------------------
+\section{Descent Physics}
+
+\subsection{The Terminal Velocity Problem}
+
+With passive Lenz's law braking (force proportional to speed), the carrier reaches a terminal velocity where braking force equals gravitational force:
+\begin{equation}
+v_{\text{term}}(h) = \frac{m \cdot g_{\text{eff}}(h)}{k}
+\end{equation}
+where $k$ is the braking coefficient (determined by the magnetic coupling geometry). Since $g_{\text{eff}}$ is highest at the lunar surface ($1.62$~m/s$^2$) and near zero at L1, the carrier naturally goes \emph{fastest at the bottom}---exactly where it must be slowest.
+
+\subsection{Variable-Helix Solution}
+
+The cable's MgB$_2$ helix pitch varies along its length, creating a position-dependent braking coefficient:
+
+\begin{center}
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Section} & \textbf{Length} & \textbf{Helix pitch} & \textbf{Effect} \\
+\midrule
+Upper cable & 56,950~km & 100~mm (open) & Light braking, fast cruise \\
+Transition zone & 200~km & 30~mm $\to$ 3~mm & Increasing braking \\
+Braking section & 50~km & 3~mm (dense) & Heavy braking, $\sim$8$g$ initial decel \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The braking force scales as the square of the helix density (more flux changes per meter $=$ more screening current $=$ more force). A 33$\times$ tighter helix gives $\sim$1,000$\times$ more braking force---sufficient to decelerate from cruise speed to 2~m/s over 50~km.
+
+\subsection{L1 Departure}
+
+Near L1, effective gravity is essentially zero ($g_{\text{eff}} < 10^{-5}$~m/s$^2$). A passive carrier starting from rest would take years to build speed. The carrier requires an initial electromagnetic push from the tether asteroid station---the only active element in the descent chain. Once the carrier reaches $\sim$10~m/s and enters the region of appreciable gravity ($\sim$1,000~km from L1), passive braking and gravity handle the remainder of the descent.
+
+\subsection{Descent Profile}
+
+\begin{center}
+\small
+\begin{tabular}{rccc}
+\toprule
+\textbf{Altitude (km)} & \textbf{$g_{\text{eff}}$ (m/s$^2$)} & \textbf{Speed (m/s)} & \textbf{Elapsed time} \\
+\midrule
+57,000 (L1 departure) & $\sim$0 & 10 (pushed) & 0 \\
+50,000 & 0.001 & $\sim$50 & $\sim$3~hrs \\
+20,000 & 0.010 & $\sim$200 & $\sim$8~hrs \\
+5,000 & 0.108 & $\sim$700 & $\sim$10~hrs \\
+1,000 & 0.654 & $\sim$1,200 & $\sim$11~hrs \\
+250 (enter transition) & 1.3 & $\sim$1,500 & $\sim$11.5~hrs \\
+50 (enter braking) & 1.54 & $\sim$100 & $\sim$12~hrs \\
+0 (surface) & 1.62 & $\sim$2 & $\sim$12.5~hrs \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Total transit: $\sim$12~hours. The carrier accelerates slowly near L1, reaches maximum speed in the lower cable where gravity is strongest, then decelerates rapidly in the 50~km braking section.
+
+% -------------------------------------------------------------------
+% 7. SURFACE TERMINAL
+% -------------------------------------------------------------------
+\section{Surface Terminal}
+
+\subsection{Mountain Top Anchor}
+
+The cable anchors at an elevated point near the sub-Earth coordinates (0\textdegree N, 0\textdegree E)---the only surface location directly below L1. A mountain top or crater rim provides:
+
+\begin{itemize}
+\item Gravity-assisted carrier clearing (halves slide downhill)
+\item Natural rock mass for anchoring (billions of tons)
+\item Vertical separation between terminal and base operations
+\item Clear mass driver trajectory from the summit
+\end{itemize}
+
+\subsection{The V-Anvil}
+
+The terminal has one component: a V-shaped steel block bolted to summit bedrock. The ridge of the V points upward, aligned with the cable. When a carrier settles onto the V:
+
+\begin{enumerate}[label=\arabic*.]
+\item Carrier weight on the ridge forces the halves apart
+\item Halves (still loaded with rock) slide down opposite faces of the V
+\item Each half enters a sloped channel cut into the mountainside
+\item Loaded halves slide under $\frac{1}{6}g$ downhill to the base
+\end{enumerate}
+
+\textbf{Carrier arrival rate:} one every 54~seconds. \textbf{Time on anvil:} $<$15~seconds (settle, split, clear). Margin: 39~seconds.
+
+\textbf{If a carrier fails to split:} the V-ridge is asymmetric---an unsplit carrier slides to one side into an overflow channel. The next carrier arrives to a clear anvil.
+
+\textbf{Emergency:} the anvil sits on a turntable (one moving part, the only one in the terminal). If the primary channels are blocked, rotating the anvil 90\textdegree\ directs carriers onto emergency overflow tracks leading to an open field. Manual rotation (hand crank) suffices.
+
+\subsection{Rock Disposal}
+
+At the base of the mountain, loaded carrier halves arrive via gravity channels. The rock is waste---the power has already been extracted during descent. Options:
+
+\begin{itemize}
+\item Pile up as tailings (12~million tons/year $=$ $\sim$4~km$^2$ spread 10~m thick per decade)
+\item Mass driver launches slag into distant craters
+\item Optional: feed to smelter for metal extraction (the rock is M-type asteroid material, rich in iron, nickel, and platinum group metals)
+\end{itemize}
+
+The smelter is a \emph{customer} of the power plant, not a component of it.
+
+% -------------------------------------------------------------------
+% 8. MASS DRIVER
+% -------------------------------------------------------------------
+\section{Mass Driver: Bucket Return and Export}
+
+Empty carrier halves are reassembled at the mountain base (guide fixture squeezes halves together, tapered pins seat under fixture pressure) and launched back to L1 via electromagnetic sled mass driver.
+
+\subsection{Sled Design}
+
+The carrier does not enter a coilgun barrel (the internal Alnico magnets would interact destructively with pulsed coil fields). Instead, the reassembled carrier sits in a non-magnetic cradle atop an electromagnetic sled:
+
+\begin{enumerate}[label=(\roman*)]
+\item Carrier placed in sled cradle at track base
+\item Sled accelerates at 200$g$ up the mountainside (1.4~km track, 1.2~seconds)
+\item At $\sim$2,330~m/s (tuned launch velocity---see Section~8.2), the sled brakes hard
+\item The carrier, no longer accelerating, continues ballistically (Newton's first law)
+\item No release mechanism---the sled stops, the carrier keeps going
+\item Sled regeneratively brakes, returns to start
+\item Carrier flies to L1 ($\sim$8~hours), caught by electromagnetic catcher at tether asteroid
+\end{enumerate}
+
+Steel carriers easily survive 200$g$. The Alnico magnets are shielded inside the steel shell, never exposed to the sled's drive fields.
+
+\subsection{Launch Velocity Tuning}
+
+The mass driver does not launch at full escape velocity (2,380~m/s). The carrier only needs to reach the tether asteroid at 62,000~km altitude, not escape to infinity. The minimum velocity to reach L1 is 2,323~m/s (set by the gravitational PE of 2,697~kJ/kg). Above L1, centrifugal force carries the carrier the remaining 5,000~km to the asteroid for free.
+
+The launch velocity is tuned to $\sim$2,330~m/s, giving an arrival speed of $\sim$120~m/s at the asteroid. This provides 40\% margin over the station-keeping momentum requirement (Section~4.1.1) while allowing a gentle electromagnetic catch---the difference between a parking maneuver and a collision. The energy cost is only 0.5~MW more than the minimum. The catcher design is dramatically simpler at 120~m/s than at 2,380~m/s.
+
+\subsection{Power Budget}
+
+\begin{center}
+\small
+\begin{tabular}{lr}
+\toprule
+\textbf{Operation} & \textbf{Power (MW)} \\
+\midrule
+Carrier return (67/hr $\times$ 2.83~GJ each) & 52 \\
+Waste disposal (mass driver launches slag) & $\sim$50 \\
+Optional: product export to L1 & $\sim$50 \\
+\midrule
+Total mass driver power & 100--152 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The mass driver consumes 10--15\% of the plant's 1~GW output.
+
+\subsection{Ground Queue (Fault Tolerance)}
+
+If the mass driver fails, empty carrier halves accumulate on the mountain base in a queue---a sloped rail track where steel boxes line up under gravity. A 1~km queue holds 15~hours of buffer ($\sim$1,000 carrier halves). Meanwhile, 525 loaded carriers remain in the descent pipeline, arriving for 8 more hours.
+
+Total system buffer: 12+~hours. The cable never stops generating power because the mass driver failure does not affect the descent chain. Carriers pile up at the base until the mass driver is repaired.
+
+% -------------------------------------------------------------------
+% 9. POWER EXTRACTION
+% -------------------------------------------------------------------
+\section{Power Extraction}
+
+Energy from descending carriers is stored as persistent current in the superconducting cable (SMES). Extraction to usable electricity uses standard technology from MRI and grid-scale SMES systems:
+
+\begin{enumerate}[label=(\roman*)]
+\item \textbf{Persistent current switch:} a short section of superconductor with a resistive heater. Activating the heater makes this section resistive, breaking the superconducting loop and forcing current through the external load. Standard in every MRI magnet for 40+ years.
+
+\item \textbf{Power converter:} DC-DC or DC-AC converter between the cable and loads. Controls extraction rate via voltage modulation: $P = V \times I$, $dI/dt = -V/L$.
+
+\item \textbf{Control system:} monitors cable current, schedules charge (descent) and discharge (loads) cycles, keeps current within safe operating limits.
+\end{enumerate}
+
+Hardware mass: $\sim$3~tons. All commercial technology.
+
+% -------------------------------------------------------------------
+% 10. ENERGY BUDGET
+% -------------------------------------------------------------------
+\section{Energy Budget}
+
+\subsection{Generation and Internal Consumption}
+
+\begin{center}
+\small
+\begin{tabular}{lr}
+\toprule
+\textbf{Income} & \textbf{MW} \\
+\midrule
+Descent braking (1,413~t/hr $\times$ 2.7~MJ/kg) & 1,060 \\
+\midrule
+\textbf{Internal consumption} & \\
+\midrule
+Mass driver (carrier return + waste disposal) & 100--152 \\
+L1 station (catcher, ferry, loading) & $\sim$10 \\
+Habitat, life support, misc & $\sim$5 \\
+\midrule
+\textbf{Net power available} & \textbf{$\sim$900} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The plant generates $\sim$1,060~MW gross with $\sim$15\% parasitic load, comparable to a terrestrial power plant.
+
+\subsection{Power Utilization}
+
+The $\sim$900~MW net output powers both the plant's own operations and an industrial ecosystem. Each consumer also provides a direct benefit to the generator:
+
+\begin{center}
+\small
+\begin{tabular}{lrl}
+\toprule
+\textbf{Activity} & \textbf{Power (MW)} & \textbf{Benefit to generator} \\
+\midrule
+Mechanical mining (at asteroid) & $\sim$50 & Eliminates metal vapor; protects cable \\
+Active cryocooling (surface junction) & $\sim$20 & Increases $T_c$ margin during lunar day \\
+Carrier reloading (at L1) & $\sim$10 & Automates 1,333~t/hr throughput \\
+Induction smelting (at base) & $\sim$400 & Turns waste rock into exportable metal \\
+Station-keeping (carrier momentum) & 0 & Free byproduct of carrier arrivals \\
+\midrule
+\textbf{Total industrial allocation} & $\sim$480 & \\
+\textbf{Remaining surplus} & $\sim$420 & Available for external loads \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The plant simultaneously generates electricity, mines asteroid material, smelts metals, and exports products---all from a single energy source (gravitational PE). The smelter alone (400~MW) processes the plant's own waste rock into the lunar colony's primary export: iron, nickel, and platinum group metals worth billions of dollars per year. The ``waste'' of the power plant is the feedstock of the refinery.
+
+The 415~MW surplus powers the lunar base: habitats, manufacturing, life support, mass driver launches of products to cislunar destinations, and future expansion.
+
+% -------------------------------------------------------------------
+% 11. COST AND SCHEDULE
+% -------------------------------------------------------------------
+\section{Cost and Schedule}
+
+\subsection{Cost Estimate}
+
+\begin{center}
+\small
+\begin{tabular}{lr}
+\toprule
+\textbf{Item} & \textbf{Cost (\$B)} \\
+\midrule
+Starship launches (1,080 flights $\times$ \$10M) & 10.8 \\
+Carbon fiber (30,000~tons $\times$ \$100/kg) & 3.0 \\
+MgB$_2$ wire (78,000~tons $\times$ \$23/kg after learning curve\footnotemark) & 1.8 \\
+MgB$_2$ factory scale-up investment & 2.0 \\
+Winding machine + L1 facility & 1.0 \\
+Tether asteroid redirect (5~Mt, solar tug) & 0.5 \\
+Mining asteroid redirect (120~Mt) & 2.0 \\
+Surface base (terminal, mass driver) & 2.5 \\
+Carrier fleet (1,400 clamshells + NdFeB) & 0.2 \\
+Mining equipment + ferry system & 1.5 \\
+Development + LEO experiments & 3.0 \\
+Mission operations (11~years construction) & 2.0 \\
+Contingency (30\%) & 9.4 \\
+\midrule
+\textbf{Total} & $\sim$\textbf{40} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\footnotetext{Current MgB$_2$ wire costs $\sim$\$200/kg at artisanal production volumes ($<$10~tons/year globally). Wright's Law (learning curve) at a conservative 20\% rate---comparable to optical fiber (22\%), solar panels (24\%), and lithium-ion batteries (18\%)---predicts a price of $\sim$\$23/kg after 78,000~tons of cumulative production (9.6~doublings). The \$2B factory scale-up investment during Phases~0--3 builds the production capacity. Raw materials (magnesium and boron) are abundant: 78,000~tons of MgB$_2$ wire requires 2.3\% of global magnesium production and 1.6\% of global boron production.}
+
+\subsection{Schedule}
+
+\begin{center}
+\small
+\begin{tabular}{lp{10cm}}
+\toprule
+\textbf{Year} & \textbf{Milestone} \\
+\midrule
+0--2 & Technology development, LEO experiments, build winding machine \\
+0--1 & NEA survey: identify tether and mining asteroid candidates \\
+1 & Launch solar electric tugs for asteroid redirects \\
+2--3 & Ship winding machine and first cable spools to L1 \\
+3 & Tether asteroid arrives 5,000~km above L1 \\
+3--9 & Continuous cable winding: 29~km/day, 102 Starship flights/year \\
+9 & Cable reaches lunar surface; anchor to mountain summit \\
+10 & Commission: test carriers, mass driver, power extraction \\
+10 & Mining asteroid arrives in L1 vicinity \\
+11 & Operations begin: first carriers descend \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Critical path:} cable winding (5.9~years). Everything else---asteroid redirects, surface construction, carrier manufacturing---fits within the winding period.
+
+\subsection{Comparison to Lunar Nuclear}
+
+\begin{center}
+\small
+\begin{tabular}{lcc}
+\toprule
+\textbf{Parameter} & \textbf{Gravity Plant} & \textbf{Nuclear (1~GW)} \\
+\midrule
+Capital cost & \$40B & \$50--70B \\
+Construction time & 11~years & 7--15~years \\
+Fuel & Asteroid rock (free) & Enriched uranium (\$100M/yr) \\
+Fuel launch risk & Carbon fiber (inert) & Enriched uranium (catastrophic) \\
+Heat rejection & None & 100,000~m$^2$ radiators \\
+Moving parts (generator) & Zero & Pumps, turbines, rods \\
+Technology readiness & TRL 2--3 & TRL 2--3 \\
+Single point of failure & Cable (meteorite) & No \\
+Scales to 10~GW & Thicker cable ($\sim$\$60B) & 10$\times$ everything ($\sim$\$600B) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Both technologies are at TRL~2--3 for lunar-scale deployment. Neither has been built. The gravity plant is cheaper, has no fuel launch risk, no radiator problem, and scales sublinearly. Its vulnerability is the cable---a single 62,000~km structure that a micrometeorite could sever.
+
+% -------------------------------------------------------------------
+% 12. RISK ASSESSMENT
+% -------------------------------------------------------------------
+\section{Risk Assessment}
+
+\subsection{Cable Severance (Critical)}
+
+The cable is a single point of failure. Mitigation strategies:
+
+\begin{itemize}
+\item \textbf{Redundant strands:} the cable is wound from 6+ parallel MgB$_2$ wires and 12 carbon fiber tows. A single-strand break does not sever the cable.
+\item \textbf{Whipple shielding:} a sacrificial outer sheath (aluminum foil or Kevlar wrap) absorbs micrometeorite kinetic energy before it reaches the structural fibers.
+\item \textbf{Monitoring:} distributed fiber-optic strain sensors detect damage early, allowing preemptive repair.
+\item \textbf{Repair capability:} robotic repair units stationed along the cable can splice damaged sections.
+\item \textbf{Spare cable:} manufacture and deploy a second cable in parallel as a backup.
+\end{itemize}
+
+\subsection{Carrier Jam at Terminal (Moderate)}
+
+The V-anvil is self-clearing: any object on the ridge slides to one side under gravity. An unsplit carrier enters the overflow channel. The next carrier arrives to a clear anvil. Emergency turntable provides a second degree of clearance.
+
+\subsection{Mass Driver Failure (Low Impact)}
+
+Carriers accumulate in the ground queue. Descent continues uninterrupted. Power generation is unaffected. Repair the mass driver, work through the backlog.
+
+\subsection{Mining Asteroid Exhaustion (Planned)}
+
+Consumption rate is known precisely ($\sim$12~Mt/yr). Begin redirecting a replacement asteroid 5~years before exhaustion. The tether asteroid is permanent and never consumed.
+
+\subsection{Carrier Fleet Attrition (Routine)}
+
+Carriers survive $\sim$500 cycles ($\sim$1~year). When the outer steel shell wears out, the cast Alnico Halbach tube is transferred to a fresh shell (fabricated from asteroid metal at the tether asteroid or on the surface), and the old shell joins the waste pile. The Alnico tube is a permanent asset---cast metal that survives indefinitely under mechanical shock. Only the cheap outer shell is consumed.
+
+% -------------------------------------------------------------------
+% 13. DEVELOPMENT ROADMAP
+% -------------------------------------------------------------------
+\section{Development Roadmap}
+
+The gravity power plant is at TRL~2--3 overall. No fundamental physics barriers exist, but five subsystems require significant development before full-scale construction. The following roadmap retires risks in order of difficulty, with each phase building on the previous one.
+
+\subsection{Phase 0: Ground Demonstrations (Years 0--3, \$500M)}
+
+Retire the three novel concepts on Earth before going to space:
+
+\begin{enumerate}[label=(\roman*)]
+\item \textbf{Carrier flux-pinning demo:} build a 100~m horizontal MgB$_2$ cable in a cryostat. Demonstrate a clamshell carrier riding it: flux pinning levitation, Lenz's law braking at 10--50~m/s, self-locking, V-anvil splitting. Measure braking coefficients, pinning forces, and carrier dynamics. This is the single most important experiment---it validates the core concept.
+
+\item \textbf{Variable helix braking:} wind the test cable with variable-pitch MgB$_2$ helix. Demonstrate that a carrier decelerates passively from 50~m/s to 1~m/s over the dense-helix section. Measure the braking profile and compare to theory.
+
+\item \textbf{Alnico Halbach tube:} cast and magnetize prototype half-tubes. Test at 200$g$ on a shock table for 1,000 cycles. Verify no demagnetization, no cracking, no debonding. Measure interior field and flux-pinning performance versus sintered NdFeB rings.
+
+\item \textbf{Mass driver sled:} build a 200~m electromagnetic sled track. Launch 1,000~kg steel payloads at 500~m/s (50$g$). Demonstrate sled regenerative braking and payload separation. Scale modeling validates the 1.4~km, 2,330~m/s lunar design.
+\end{enumerate}
+
+\subsubsection{Open physics questions for Phase 0 resolution}
+
+Several design assumptions require experimental validation during ground demonstrations:
+
+\begin{enumerate}[label=(\roman*)]
+\item \textbf{Variable helix braking scaling law:} the paper assumes braking force scales as the square of helix density (i.e., $F \propto (\dot{\Phi})^2$). For a Type~II superconductor in the mixed state, the force may scale linearly with $\dot{\Phi}$, not quadratically. If linear, the transition zone (200~km) may need to be significantly longer. The 100~m cryostat demo directly measures this scaling.
+
+\item \textbf{Alnico Halbach demagnetization margin:} the paper estimates 0.014~T screening field at the Alnico surface during braking, well below the 0.063~T coercivity. During heavy braking (8$g$, 100~m/s), the screening currents may be higher. The ground demo measures the actual field at the magnet surface during high-speed braking.
+
+\item \textbf{Cable energy buffer:} at $I = 10$~kA and $L = 50$~H, the cable stores 2.5~GJ---only $\sim$2.5 seconds at 1~GW extraction. The system operates with 525+ carriers continuously braking (charging the cable), so the buffer is continuously replenished. But startup and quench recovery require operating at reduced power until the persistent current rebuilds. The control dynamics of charge/discharge cycling need simulation and test.
+
+\item \textbf{Distributed quench heater mass:} the current estimate (200~kg for 6,200 heater units) is likely too low. Each unit requires a battery, activation circuit, and heater element surviving decades in space. A realistic estimate may be 5,000--10,000~kg (1--2~kg per unit). This does not affect feasibility but corrects the mass budget.
+\end{enumerate}
+
+\subsection{Phase 1: LEO Experiments (Years 3--6, \$2B)}
+
+Validate space-specific subsystems in low Earth orbit:
+
+\begin{enumerate}[label=(\roman*)]
+\item \textbf{Cable winding in microgravity:} deploy a winding machine on a free-flying platform. Wind 10~km of cable with variable helix pitch. Verify winding quality, epoxy cure, and spool changes in vacuum/microgravity. Duration: 6 months. This validates the 6-year L1 manufacturing campaign.
+
+\item \textbf{Cable deployment dynamics:} deploy 100~km of cable from a spool. Measure libration, oscillation modes, and tension profile. Compare to models. Validates the 62,000~km deployment from L1.
+
+\item \textbf{Carrier on deployed cable:} attach a clamshell carrier to the deployed cable. Demonstrate descent under Earth's gravity gradient, Lenz's law braking, and energy capture as persistent current. First end-to-end demonstration of the power generation cycle.
+
+\item \textbf{Superconductor thermal management:} validate the cable's thermal performance in the LEO thermal environment (eclipse cycling, solar heating). Verify MgB$_2$ remains below $T_c$ with passive radiative cooling.
+\end{enumerate}
+
+\subsection{Phase 2: Asteroid Technology (Years 3--10, \$3B)}
+
+Develop asteroid mining in parallel with cable technology:
+
+\begin{enumerate}[label=(\roman*)]
+\item \textbf{Asteroid prospecting mission:} visit 2--3 candidate M-type NEAs. Characterize composition, structure, spin rate, and mechanical properties. Select tether and mining asteroid targets. Builds on Psyche mission data (launching 2023, arriving 2029).
+
+\item \textbf{Asteroid mining demo:} land on a small M-type NEA ($<$50~m). Demonstrate three cutting/splitting techniques: solar concentrator melting, mechanical drilling with wedge-and-split, and controlled explosive fragmentation. Process 100~tons of material. Load into prototype carriers. This is the hardest development task---scaling from 121~grams (OSIRIS-REx) to 100~tons.
+
+\item \textbf{Asteroid redirect demo:} attach a solar electric tug to a 10~m boulder (from the mining demo) and redirect it to Earth-Moon L1. Demonstrate precise orbital placement. Validates the 75~m and 200~m redirects needed for the full system.
+
+\item \textbf{Microgravity material handling:} develop robotic systems for loading 20-ton rock charges into carriers at an asteroid. Test with the demo asteroid material. This is a novel industrial robotics problem---bulk solids handling in microgravity.
+\end{enumerate}
+
+\subsection{Phase 3: Lunar Surface (Years 6--10, \$2B)}
+
+\begin{enumerate}[label=(\roman*)]
+\item \textbf{Site survey:} high-resolution survey of the sub-Earth point (0\textdegree N, 0\textdegree E) from lunar orbit. Identify mountain or crater rim for the terminal. Map bedrock depth for anchoring.
+
+\item \textbf{Surface construction demo:} land at the chosen site. Drill rock bolts, install a prototype anvil, grade channels on the slope. Validate construction techniques in lunar gravity, vacuum, and regolith.
+
+\item \textbf{Mass driver prototype:} build and test a 200~m sled track on the lunar surface. Launch 100~kg test masses at 1,000~m/s. Validate electromagnetic launch, sled recovery, and power systems in the lunar environment.
+
+\item \textbf{Cryocooler validation:} install and operate a cryocooler at the cable anchor point. Maintain a test section of MgB$_2$ wire below $T_c$ through the full 29.5-day lunar thermal cycle (100--400~K surface temperature variation).
+\end{enumerate}
+
+\subsection{Phase 4: Full-Scale Construction (Years 10--21, \$25B)}
+
+The 11-year construction timeline from Section~11, executed after all subsystems are validated:
+
+\begin{enumerate}[label=(\roman*)]
+\item Redirect tether asteroid (5~Mt) to L1 + 5,000~km
+\item Redirect mining asteroid (120+~Mt) to nearby L1 orbit
+\item Ship winding machine and cable spools to L1
+\item Wind and deploy 62,000~km cable (5.9~years)
+\item Build surface terminal, mass driver, power extraction systems
+\item Commission carrier fleet, begin operations
+\end{enumerate}
+
+\subsection{Development Timeline Summary}
+
+\begin{center}
+\small
+\begin{tabular}{lccr}
+\toprule
+\textbf{Phase} & \textbf{Years} & \textbf{Duration} & \textbf{Cost (\$B)} \\
+\midrule
+0: Ground demos & 0--3 & 3 years & 0.5 \\
+1: LEO experiments & 3--6 & 3 years & 2.0 \\
+2: Asteroid technology & 3--10 & 7 years & 3.0 \\
+3: Lunar surface & 6--10 & 4 years & 2.0 \\
+4: Full-scale construction & 10--21 & 11 years & 25.0 \\
+\midrule
+\textbf{Total} & 0--21 & 21 years & 32.5 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Phases 1, 2, and 3 run in parallel. The critical path is asteroid technology development (Phase~2), which must produce a validated mining capability before full-scale construction begins. Total program: $\sim$21 years from first ground demo to first gigawatt, at $\sim$\$40B total investment.
+
+For comparison, the US nuclear power industry took 22 years from the first experimental reactor (EBR-I, 1951) to the first commercial gigawatt plant (Zion Unit 1, 1973), at an inflation-adjusted cost of $\sim$\$30B in cumulative R\&D and construction. The gravity power plant follows a comparable development arc for a comparable investment.
+
+% -------------------------------------------------------------------
+% 14. SCALING
+% -------------------------------------------------------------------
+\section{Scaling to Higher Power}
+
+The plant's power output scales linearly with throughput:
+
+\begin{center}
+\small
+\begin{tabular}{rrrr}
+\toprule
+\textbf{Power (GW)} & \textbf{Throughput (t/hr)} & \textbf{Cable diameter} & \textbf{Estimated cost (\$B)} \\
+\midrule
+0.1 & 133 & 10~mm & $\sim$15 \\
+1 & 1,333 & 20~mm & $\sim$55 \\
+5 & 6,667 & 35~mm & $\sim$80 \\
+10 & 13,333 & 45~mm & $\sim$100 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Cable mass scales roughly as the square of diameter; cable cost scales similarly. But all other infrastructure (tether asteroid, mass driver, terminal, L1 station) is shared. The marginal cost of additional power is dominated by cable material and launch---both of which exhibit economies of scale.
+
+At 10~GW, the gravity plant costs $\sim$\$100B. The nuclear equivalent (100 reactors, each with 10,000~m$^2$ of radiators) would cost $\sim$\$500--700B if it could be built at all.
+
+% -------------------------------------------------------------------
+% 14. WHAT THIS ENABLES
+% -------------------------------------------------------------------
+\section{From Power Plant to Colony Builder}
+
+\subsection{The 1~GW Baseline}
+
+The initial system generates 1~GW from 1,333~tons/hour of asteroid descent. The 400~MW smelter processes the plant's own waste rock into iron, nickel, and platinum group metals. The mass driver exports finished products to cislunar destinations. This is a self-contained industrial facility that pays for itself through metal exports while providing 415~MW of surplus power for the lunar base.
+
+\subsection{The 10~GW Colony Builder}
+
+At 10~GW (thicker cable, $\sim$\$65B), the system processes $\sim$120~million tons of M-type asteroid per year. With 4~GW allocated to smelting, the annual output is $\sim$40~million tons of structural steel---produced from already-metallic feedstock (no oxide reduction required), smelted in lunar $\frac{1}{6}g$ (slag separates, convection works, casting is feasible), and launched to orbit via mass driver.
+
+\subsubsection{Habitat sizing: spin loads and wall design}
+
+A spinning habitat has two sources of hoop stress: internal air pressure ($\sigma_p = P r / t$) and the wall's own centrifugal weight ($\sigma_w = \rho g r$, independent of wall thickness). For steel ($\rho = 7{,}800$~kg/m$^3$) at 1$g$ and 500~m radius, the self-weight stress alone is 38~MPa---15\% of steel's working stress. At 3,200~m radius (O'Neill's Island Three), self-weight stress reaches 245~MPa---98\% of steel's strength, with zero margin for air pressure. \textbf{Steel cannot build Island Three at any wall thickness.}
+
+The self-weight stress $\sigma_w = \rho \omega^2 r^2 = \rho g r$ applies to \emph{each individual fiber} of wall material, regardless of whether the wall is solid plate or an open truss. A truss reduces the wall's average density but does not reduce the stress in each fiber---every steel fiber has density 7,800~kg/m$^3$ regardless of arrangement. What the truss does is allow the use of \emph{higher-strength} material: cold-drawn wire at 900~MPa instead of as-cast plate at 250~MPa. The self-weight stress is the same; the stress budget is 3.6$\times$ larger.
+
+For a 2~km habitat ($r = 1{,}000$~m) with cold-drawn asteroid iron-nickel wire ($\sigma_{\text{allow}} = 600$~MPa at SF~$= 1.5$):
+\begin{equation}
+\sigma_w = \rho \cdot g \cdot r = 7{,}800 \times 9.81 \times 1{,}000 = 76.5 \text{~MPa} \quad (12.8\% \text{ of budget})
+\end{equation}
+This leaves 523.5~MPa (87.2\%) available for atmospheric pressure, interior mass, and shielding loads. The habitat does not fly apart---but the self-weight consumes a non-trivial fraction of the strength:
+
+\begin{center}
+\small
+\begin{tabular}{rrrrl}
+\toprule
+\textbf{Diameter} & \textbf{$\sigma_w$ (MPa)} & \textbf{\% of 600~MPa} & \textbf{Available} & \textbf{Verdict} \\
+\midrule
+0.5~km & 19 & 3.2\% & 96.8\% & comfortable \\
+1~km & 38 & 6.4\% & 93.6\% & comfortable \\
+2~km & 77 & 12.8\% & 87.2\% & comfortable \\
+3~km & 115 & 19.1\% & 80.9\% & comfortable \\
+4~km & 153 & 25.5\% & 74.5\% & workable \\
+6.4~km & 245 & 40.8\% & 59.2\% & tight \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+With 250~MPa solid plate, the 2~km habitat is impossible (self-weight $= 31\%$, but the plate must also carry all loads---no margin). With 900~MPa cable, the same habitat is comfortable. Island Three (6.4~km) is tight but structurally feasible---41\% for self-weight, 59\% for loads. The truss/cable approach does not reduce self-weight; it provides the stress budget to tolerate it.
+
+\textbf{Basalt fiber: available from day one.} The lunar regolith \emph{is} basalt. Melting it at 1,400\textdegree C (the smelter already operates at this temperature) and drawing fibers produces basalt fiber: $\sigma = 3{,}000$--$4{,}800$~MPa, $\rho = 2{,}700$~kg/m$^3$, specific strength 1,500~MYuri---\textbf{13$\times$ better than cold-drawn steel wire}. No imports, no chemistry, no waiting for industrial maturity. Add a fiber-drawing station to the existing smelter.
+
+With basalt fiber hoop cables at 2~km diameter: self-weight stress drops to 26.5~MPa (1.3\% of budget). Structural mass drops from $\sim$134~Mt to $\sim$12~Mt---an 11$\times$ reduction. The habitat wall becomes basalt fiber hoop cables (from regolith) + steel skins (from asteroid) + raw iron shielding (from asteroid). Each material does what it is best at: basalt carries the tension, steel seals the atmosphere, iron stops the radiation.
+
+\begin{center}
+\small
+\begin{tabular}{lrrrll}
+\toprule
+\textbf{Cable material} & \textbf{$\sigma$ (MPa)} & \textbf{$\rho$ (kg/m$^3$)} & \textbf{Sp.\ str.} & \textbf{Struct.\ mass} & \textbf{Source} \\
+\midrule
+Steel wire (cold-drawn) & 900 & 7,800 & 115 & 134~Mt & M-type asteroid \\
+\textbf{Basalt fiber} & \textbf{3,000} & \textbf{2,700} & \textbf{1,500} & \textbf{12~Mt} & \textbf{Lunar regolith} \\
+Carbon fiber & 7,000 & 1,800 & 3,889 & 7~Mt & C-type (complex chemistry) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+First-generation habitats may use steel wire (proven, available from the asteroid). But basalt fiber is producible from regolith using existing smelter infrastructure, and its 13$\times$ specific strength advantage makes it the preferred hoop cable material as soon as fiber-drawing capability is established---likely within the first years of gravity plant operation.
+
+The habitat wall is a 2~m deep truss-and-cable sandwich:
+
+\begin{enumerate}[label=(\roman*)]
+\item \textbf{Outer skin} (5~mm steel): gas-tight membrane, first impact layer.
+\item \textbf{Outer 1~m: raw asteroid rock} (unprocessed iron-nickel chunks packed between truss members). This is the radiation shield (750~g/cm$^2$ at $\rho = 7{,}500$~kg/m$^3$) and micrometeorite armor (1~m of iron stops everything $<$20~cm). \textbf{This rock is not smelted}---it is packed raw, directly from the asteroid.
+\item \textbf{Inner 1~m: utilities space} (pipes, wiring, water tanks, access corridors). Water tanks here add $\sim$50--100~g/cm$^2$ of additional radiation shielding.
+\item \textbf{Inner skin} (5~mm steel): interior surface.
+\item \textbf{Hoop cables} (cold-drawn asteroid iron-nickel wire, 800--1,000~MPa): woven through the truss, carrying all hoop tension. Cold-drawn wire is 3--4$\times$ stronger per kilogram than as-cast plate---same asteroid metal, processed through dies. This is 3,000-year-old metallurgy.
+\item \textbf{Truss members} (steel tubes at $\sim$10\% fill factor): provide stiffness and carry shear loads. Effective density $\sim$800~kg/m$^3$ vs.\ 7,800 for solid steel, reducing self-weight stress from 38~MPa to $\sim$4~MPa.
+\end{enumerate}
+
+\subsubsection{Radiation and impact protection}
+
+In space outside Earth's magnetosphere, galactic cosmic rays (GCR) deliver 600--1,000~mSv/year unshielded---1,000$\times$ the public exposure limit. The 1~m iron shielding layer provides 750~g/cm$^2$ of mass depth:
+
+\begin{itemize}
+\item GCR reduction: $\sim$95\%. Residual dose: 30--50~mSv/year (within radiation worker limits of 50~mSv/year).
+\item Water tanks in the inner wall add 50--100~g/cm$^2$, reducing the dose to 20--35~mSv/year.
+\item Solar particle events (SPE): the 1~m iron wall provides complete protection against all but the most extreme events.
+\item Micrometeorites: 1~m of iron stops all particles $<$20~cm diameter. The habitat is essentially immune to micrometeorite puncture---far superior to Whipple shielding.
+\end{itemize}
+
+\subsubsection{Mass budget per habitat}
+
+For the 2~km reference habitat:
+
+\begin{center}
+\small
+\begin{tabular}{llr}
+\toprule
+\textbf{Component} & \textbf{Processing} & \textbf{Mass (Mt)} \\
+\midrule
+Hoop cables (steel wire) & Smelted + drawn & 101 \\
+\quad \emph{or}: Hoop cables (basalt fiber) & \emph{Melted + drawn from regolith} & \emph{9} \\
+Skins (2 $\times$ 5~mm steel) & Smelted + rolled & 3 \\
+Truss framework & Smelted + formed & 30 \\
+\midrule
+\textbf{Total structural (steel cables)} & & \textbf{134} \\
+\textbf{Total structural (basalt cables)} & & \textbf{42} \\
+\midrule
+Radiation shielding (1~m iron chunks) & \textbf{Unprocessed} & 283 \\
+\midrule
+\textbf{Total per habitat (steel / basalt)} & & \textbf{417 / 325} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+With steel cables, 32\% requires smelting. With basalt fiber cables (from regolith), only 10\% of the asteroid mass requires smelting---the rest is raw shielding. Nature made the shielding 4.5~billion years ago; the robots just pack it into the walls.
+
+\subsubsection{The reference habitat: 2~km diameter}
+
+Scaling from 1~km to 2~km diameter yields 4$\times$ the living area at roughly the same mass per capita, with a lower, more comfortable spin rate (0.9~RPM vs.\ 1.3). The 2~km habitat is the practical sweet spot:
+
+\begin{center}
+\small
+\begin{tabular}{lr}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Dimensions & 2~km diameter $\times$ 5~km length \\
+Interior surface area & 31~km$^2$ \\
+Artificial gravity & 1$g$ at 0.9~RPM \\
+Population (mid-rise) & $\sim$200,000 \\
+Structural mass (smelted) & 134~Mt \\
+Shielding mass (raw rock) & 283~Mt \\
+Total & 417~Mt \\
+Wall self-weight stress & 76.5~MPa (12.8\% of cable budget) \\
+Build time at 10~GW & $\sim$3~years \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsubsection{One asteroid, one city}
+
+A single 600~m M-type asteroid (565~Mt raw) provides the full 417~Mt needed for one 2~km habitat: 134~Mt smelted into structural cable and skin, 283~Mt packed raw as radiation shielding, with material to spare. There are an estimated 100--200 M-type NEAs of this size in the near-Earth population.
+
+\begin{center}
+\textbf{One 600~m asteroid $=$ one city for 200,000 people.}
+\end{center}
+
+At 10~GW plant output, one habitat every $\sim$3~years. At 100~GW, one every $\sim$4~months. A 1~km M-type asteroid (2,618~Mt) yields 6--7 habitats housing over 1~million people.
+
+\subsubsection{Spin-up sequence}
+
+The habitat is spun up \emph{before} adding interior mass and shielding. The empty structural shell at 0.9~RPM experiences only the self-weight stress of the cables and truss ($\sim$4~MPa, 0.7\% of cable strength). Interior mass and shielding are added gradually while spinning---like filling a swimming pool. The loads increase smoothly and predictably. If the structural monitoring detects excessive stress, loading stops. The system is inherently self-limiting.
+
+\subsubsection{Lunar regolith: completing the bill of materials}
+
+The asteroid provides iron-nickel for structure and shielding. But a habitat needs more than steel. The gravity plant sits on the lunar surface with $\sim$1~GW of power and unlimited regolith outside the door. The same smelter complex that processes asteroid material can process lunar regolith into everything the habitats need that iron-nickel does not provide:
+
+\begin{center}
+\small
+\begin{tabular}{llr}
+\toprule
+\textbf{Product} & \textbf{Source mineral in regolith} & \textbf{Regolith fraction} \\
+\midrule
+Oxygen (atmosphere) & all silicates and oxides & 40\% by mass \\
+Silicon (solar cells, electronics) & SiO$_2$ (silica) & 21\% \\
+Aluminum (structures, wiring) & Al$_2$O$_3$ (alumina) & 8\% \\
+Glass (windows, fiber optics) & SiO$_2$ + fluxes & 21\% \\
+Titanium (high-strength parts) & FeTiO$_3$ (ilmenite) & 1--5\% \\
+Calcium (cement, ceramics) & CaO (lime) & 9\% \\
+Magnesium (alloys) & MgO (magnesia) & 6\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The asteroid provides the steel skeleton and radiation armor. The Moon provides glass, aluminum, titanium, oxygen, and ceramics. The gravity plant powers both processing chains with the same 1~GW. The habitats receive a complete bill of materials from two sources---\textbf{zero from Earth} after initial construction.
+
+This is the second half of the bootstrapping solution: the asteroid solves the steel and energy problem, the Moon solves the materials-diversity problem. Neither alone is sufficient; together they provide everything a self-sustaining habitat needs.
+
+\subsubsection{Habitat power and lighting}
+
+The habitat is a sealed steel cylinder with 1~m of iron shielding---no windows. All light is artificial. All power comes from solar panels on the exterior surface.
+
+\textbf{Power source:} thin-film silicon solar panels manufactured from lunar regolith (SiO$_2$ is 21\% of regolith). The habitat has 38~km$^2$ of exterior surface. Covering 25\% with panels at 20\% conversion efficiency in lunar orbit (1,360~W/m$^2$):
+
+\begin{equation}
+P_{\text{solar}} = 0.25 \times 38 \times 10^6 \times 1{,}360 \times 0.20 = 2{,}584 \text{~MW} \approx 2.6 \text{~GW}
+\end{equation}
+
+At Mars (590~W/m$^2$, 43\% of Earth): covering 50\% of the surface yields 2.3~GW---still adequate.
+
+\textbf{Power budget:}
+
+\begin{center}
+\small
+\begin{tabular}{lr}
+\toprule
+\textbf{System} & \textbf{Power (MW)} \\
+\midrule
+Agriculture lighting (9~km$^2$ LED grow lights at 200~W/m$^2$) & 1,800 \\
+Residential and commercial lighting & 200 \\
+Life support (air recycling, water, thermal control) & 50 \\
+Industry, transport, communications & 200 \\
+\midrule
+\textbf{Total demand} & $\sim$\textbf{2,250} \\
+\textbf{Solar supply} & $\sim$\textbf{2,600} \\
+\textbf{Margin} & 15\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Lighting:} LED grow lights for agriculture are more efficient than sunlight for photosynthesis---optimized red + blue spectrum delivers 40\% more photosynthetically active radiation per watt than broadband solar. The programmable day/night cycle (any desired duration) eliminates seasons, weather, and clouds. Residential lighting simulates a natural diurnal cycle.
+
+During lunar eclipses ($\sim$45~minutes per 2-hour orbit), battery storage maintains critical systems. The eclipse fraction is $<$4\% of orbit time.
+
+The solar panels, LED fixtures, and batteries are manufactured from the same lunar regolith pipeline that provides the habitat's glass, aluminum, and oxygen. The habitat's power system is fully bootstrapped---no Earth imports required.
+
+\subsubsection{Water, nitrogen, and volatiles: C-type asteroids}
+
+The M-type asteroid provides iron-nickel (structure and shielding) but no water, nitrogen, or carbon. The Moon provides oxygen but is essentially dry. The habitat's atmosphere (19~Mt of air, 78\% nitrogen) and water supply ($\sim$2~Mt) must come from a third source: \textbf{C-type (carbonaceous) asteroids}, the most common NEA type ($\sim$75\% of all near-Earth asteroids).
+
+\begin{center}
+\small
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Resource} & \textbf{C-type fraction} & \textbf{Per 1~km C-type} & \textbf{Habitat needs} \\
+\midrule
+Water (hydrated minerals) & 10--20\% & 80--160~Mt & $\sim$2~Mt \\
+Nitrogen (organics, NH$_3$) & 2--4\% & 16--31~Mt & $\sim$15~Mt \\
+Carbon (organics, CO$_2$) & 3--5\% & 24--39~Mt & $\sim$5~Mt \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+One 1~km C-type asteroid (785~Mt) provides all the volatiles for a single habitat. Several 300~m C-types serve equivalently.
+
+\textbf{Processing requires no trip to the lunar surface.} Unlike M-type steel processing (which requires lunar gravity for smelting, slag separation, and casting), C-type volatile extraction is simply \emph{heating rock}: water, nitrogen, and carbon compounds boil off at 200--600\textdegree C. No gravity required. The habitat processes C-type material in orbit using its own 2.6~GW of solar power:
+
+\begin{enumerate}[label=(\roman*)]
+\item Catch or ferry C-type chunks to the habitat
+\item Heat in a solar furnace or electric oven ($>$400\textdegree C)
+\item Collect outgassing: steam $\to$ condense to liquid water; NH$_3$/N$_2$ $\to$ atmosphere; CO$_2$/hydrocarbons $\to$ agriculture feedstock
+\item Dry residue (silicates) $\to$ additional shielding or discard
+\end{enumerate}
+
+This makes the habitat \emph{partially self-sufficient from day one}. Structural steel requires the lunar gravity plant. Volatiles do not---the habitat processes them independently in orbit.
+
+\subsubsection{Complete bill of materials}
+
+\begin{center}
+\small
+\begin{tabular}{llll}
+\toprule
+\textbf{Source} & \textbf{Provides} & \textbf{Size needed} & \textbf{Processing} \\
+\midrule
+M-type asteroid & Steel structure + shielding & 1 $\times$ 600~m & Lunar surface smelter \\
+C-type asteroid & Water + nitrogen + carbon & 1 $\times$ 1~km & In-orbit solar heating \\
+Lunar regolith & O$_2$, Si, Al, glass, Ti, ceramics & Unlimited & Lunar surface processing \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Three in-space sources provide all bulk materials. However, one critical category \textbf{must still come from Earth}:
+
+\begin{center}
+\small
+\begin{tabular}{llll}
+\toprule
+\textbf{Source} & \textbf{Provides} & \textbf{Volume} & \textbf{Duration} \\
+\midrule
+Earth & Robots (Optimus-class), electronics, & A few Starship & Until local semiconductor \\
+ & semiconductors, AI chips, sensors, & flights per year & fabrication is mature \\
+ & specialty chemicals, biological & & (decades) \\
+ & materials (seeds, cultures, medical) & & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+These are low-mass, high-value items---a few Starship flights per year, not hundreds. The gravity plant eliminates Earth dependency for bulk materials (steel, fuel, shielding, water, air, soil). Robots and electronics are the last Earth dependency and the hardest to replace with local manufacturing. Semiconductor fabrication from lunar silicon is theoretically possible but requires an industrial sophistication that will take decades to develop off-Earth. Until then, every habitat needs a steady supply of robots from Earth to build, maintain, and operate the system.
+
+A Mars-orbit habitat can eventually source C-type volatiles locally---Phobos and Deimos may be captured C-type asteroids, providing water, nitrogen, and carbon without any connection to the Earth-Moon system. But it will still need robots and electronics from Earth for the foreseeable future.
+
+\subsubsection{Lunar orbit, not Earth orbit}
+
+The construction site is \emph{lunar} orbit, not Earth orbit. The mass driver launches structural steel from the lunar surface directly to lunar orbit---a few hundred kilometers above the smelter, with no need to climb out of Earth's gravity well. This is not merely a convenience of logistics. A 2~km habitat is 400~million tons of steel and iron spinning at 0.9~RPM. In Earth orbit, any orbital decay terminates in the atmosphere---a catastrophic impact event. In lunar orbit, a failure drops the structure onto an uninhabited surface. The consequences are tragic for the residents and irrelevant to Earth. Placing the largest structures ever built in orbit around the body with no biosphere is not optional; it is the only responsible engineering choice.
+
+\subsection{Why This Is the Only Practical Path}
+
+The gravity power plant solves the O'Neill bootstrapping problem because it provides all three requirements simultaneously from a single system:
+
+\begin{enumerate}[label=\arabic*.]
+\item \textbf{Power} (10~GW)---from gravity acting on asteroid rock. No nuclear fuel, no radiators, no solar intermittency. The fuel is free and the generator has zero moving parts.
+\item \textbf{Material} (120~Mt/year of iron-nickel)---the same rock that generates the power. Already metallic (M-type asteroid), requiring only melting, not oxide reduction. Saves $\sim$14,000~MJ/ton compared to lunar regolith processing.
+\item \textbf{Industrial gravity} ($\frac{1}{6}g$)---the smelter is on the Moon, where slag separates, convection works, and metal can be cast, forged, and rolled. None of this works in microgravity.
+\end{enumerate}
+
+No other proposed system provides all three. Solar provides power but not material. Asteroid mining provides material but not gravity for processing. Nuclear provides power but requires an Earth-dependent fuel supply chain that cannot scale. Only the gravity power plant bootstraps from two Earth-delivered components (cable and carriers) to a fully self-sustaining industrial base.
+
+\subsection{The Uranium Argument}
+
+Earth's continental crust is the solar system's only concentrated source of uranium---a thin film of incompatible elements pushed to the surface by 4.5~billion years of plate tectonics and hydrothermal concentration. No other body has plate tectonics. No other body has liquid water. Lunar uranium is 100$\times$ more dilute than Earth's crust; asteroid uranium is 10,000$\times$ more dilute. Nuclear power anywhere except Earth requires \emph{permanently} importing fuel from the one planet that has it. The gravity power plant's fuel is the most common solid material in the solar system: iron-nickel rock.
+
+\subsection{A Shipyard for the Solar System}
+
+The first habitats are built in lunar orbit, where the mass driver can deliver structural steel directly. But the second generation need not stay at the Moon.
+
+\subsubsection{Departure: construction steel as propulsion}
+
+During construction in lunar orbit, the mass driver launches steel at 2,165~m/s---slightly faster than the 1,680~m/s needed for orbit. Each piece arrives with excess velocity that the habitat absorbs as momentum. As the habitat speeds up, the relative velocity of incoming steel \emph{decreases} (the steel is launched at a fixed speed from the surface). The correct physics gives a maximum delta-v of $\sim$440~m/s from a 2,165~m/s surface mass driver---enough to depart lunar orbit onto a slow interplanetary trajectory, but not enough for a fast Mars transfer.
+
+This is sufficient. The habitat does not need a fast transfer. It needs a \emph{slow} one.
+
+\subsubsection{The 10-year slow transfer}
+
+A Hohmann transfer to Mars takes 9~months and requires $\sim$1,500~m/s of delta-v---too much for the surface mass driver alone. But the habitat is a permanent structure. It does not care whether the trip takes 9~months or 10~years. A slow trajectory using gravitational assists from the Earth, Moon, and Sun can reach Mars with total delta-v of 200--400~m/s, well within the 440~m/s the surface mass driver provides for free during construction.
+
+The travel time is the construction time: autonomous robots (Optimus-class humanoid units) complete the interior fit-out, install life support, spin the habitat up to 1.3~RPM for artificial gravity, and commission all systems during the multi-year coast. The habitat arrives at Mars fully built, tested, and ready for occupancy.
+
+\textbf{Zero propellant is expended for the departure.} The construction steel provides the push. Every kilogram is structure; none is wasted as reaction mass.
+
+\subsubsection{Arrival: flip the habitat, catch slingshot steel}
+
+No infrastructure is needed at Mars before the habitat arrives. The habitat carries its own braking system---the same electromagnetic catcher used during construction in lunar orbit. The braking fuel is steel launched from the Moon, slingshot around Mars by gravity assist, and caught by the habitat from the front.
+
+\textbf{The sequence:}
+
+\begin{enumerate}[label=\arabic*.]
+\item \textbf{Months before arrival,} the lunar mass driver launches steel slugs on trajectories aimed at Mars. These slugs travel ahead of the habitat.
+
+\item \textbf{Each slug slingshots around Mars} via gravitational assist. At low approach velocities ($<$1~km/s), Mars provides 90--120\textdegree\ of trajectory deflection with closest approach of 3,000--15,000~km above the surface---well-understood orbital mechanics (Voyager, Cassini, etc.). The slug exits the slingshot heading \emph{back toward the approaching habitat}.
+
+\item \textbf{The habitat flips 180\textdegree} so its electromagnetic catcher faces forward (toward Mars). The habitat is a spinning cylinder---rotation about a perpendicular axis is a straightforward attitude maneuver.
+
+\item \textbf{The habitat catches each returning slug.} The catcher decelerates the slug over its 500~m electromagnetic track. Each catch transfers momentum: the habitat slows, the slug becomes part of the habitat.
+\end{enumerate}
+
+\textbf{Zero propellant is expended.} Every slug caught becomes radiation shielding, soil, or construction material inside the habitat. Nothing is thrown away. The braking fuel \emph{becomes part of the habitat.}
+
+\textbf{The arrival speed is a design choice.} Arriving faster means catching more slugs, which means more radiation shielding. Arriving slower means less braking, less shielding. The designer tunes the approach velocity to match the desired shielding mass:
+
+\begin{center}
+\small
+\begin{tabular}{rrrr}
+\toprule
+\textbf{Approach speed} & \textbf{Slugs caught} & \textbf{Braking months} & \textbf{Shielding mass} \\
+\midrule
+5~m/s & $\sim$1~Mt & $\sim$1 & thin \\
+25~m/s & $\sim$5~Mt & $\sim$3 & moderate \\
+50~m/s & $\sim$10~Mt & $\sim$6 & $\sim$1~m of hull coverage \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Mars orbit has significant radiation exposure (no planetary magnetosphere). A 50~m/s approach provides $\sim$10~Mt of shielding---adequate for permanent habitation---while still requiring only months of gentle braking at imperceptible deceleration.
+
+\textbf{No Phobos mass driver required.} No Mars infrastructure of any kind. The first habitat arrives at Mars using only the lunar mass driver (for slug launch), Mars's gravity (for the slingshot), and the habitat's own catcher (already built for construction). The Moon builds, launches, and brakes---Mars just provides the gravity assist.
+
+\subsubsection{The complete Mars delivery sequence}
+
+\begin{center}
+\small
+\begin{tabular}{lp{10cm}}
+\toprule
+\textbf{Year} & \textbf{Milestone} \\
+\midrule
+0 & 1~Mt seed structure assembled in lunar orbit \\
+0--0.6 & Mass driver launches steel at 2,165~m/s. Habitat catches, builds, gains 440~m/s. Construction is propulsion. \\
+0.6 & Habitat complete (22~Mt), departing lunar orbit \\
+0.6--1 & Gravitational assists from Earth/Moon boost to Mars-crossing trajectory \\
+1--10 & Slow coast. Interior fit-out. Spin up to 1.3~RPM. Systems commissioning. \\
+8--10 & Lunar mass driver launches steel slugs on Mars-slingshot trajectories. \\
+9.5 & Approach Mars. Habitat flips 180\textdegree. Catcher faces forward. \\
+9.5--10 & Months of gentle braking. Slingshot slugs caught = radiation shielding. \\
+10 & Habitat enters Mars orbit. Residents arrive via Starship. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Total propellant expended: zero.} At departure, the construction steel is the propulsion. At arrival, the braking regolith is the shielding. Every kilogram serves double duty. Nothing is wasted.
+
+\subsubsection{Mass budget from one 500~m asteroid}
+
+A single 600~m asteroid (565~Mt raw) provides the complete material for one 2~km habitat: 119~Mt smelted structural steel + 283~Mt raw shielding = 401~Mt total, with $\sim$160~Mt of material remaining for a second partial habitat or for export. A 1~km asteroid (2,618~Mt) builds 6--7 complete habitats.
+
+For the Mars-bound habitat, the construction steel provides departure propulsion (440~m/s from the mass driver) and the slingshot braking slugs become interior shielding at Mars. \textbf{Zero propellant expended. Every kilogram is structure or shielding.}
+
+\subsubsection{No Mars infrastructure required}
+
+Unlike every other Mars colonization proposal, this architecture requires \emph{zero pre-positioned infrastructure at Mars}. No Phobos mass driver. No fuel depots. No orbital stations. The first habitat arrives using only three things: the lunar mass driver (at the Moon), Mars's gravity (for the slingshot), and the habitat's own catcher (built during construction). The Moon does all the work. Mars just shows up.
+
+\subsubsection{The robot fleet}
+
+Each habitat carries $\sim$8,000 autonomous robots (Optimus-class humanoid units) that build the city during the 10-year transit. The fleet is sized by the construction workload:
+
+\begin{center}
+\small
+\begin{tabular}{lrp{6cm}}
+\toprule
+\textbf{Task} & \textbf{Robots} & \textbf{Work} \\
+\midrule
+Welding (structure assembly) & 1,200 & Catch steel sections, weld into structure (7-month blitz) \\
+Shielding (pack raw chunks) & 1,600 & Load iron-nickel chunks into wall cavities \\
+Interior construction & 3,600 & Floors, walls, plumbing, wiring, HVAC \\
+Agriculture & 1,000 & LED arrays, hydroponics, soil beds, planting \\
+Specialized systems & 500 & Life support, water treatment, electrical, commissioning \\
+\midrule
+\textbf{Total} & $\sim$\textbf{8,000} & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+At 70~kg each: 554~tons total. Six Starship flights. $\sim$\$400M at mass-production pricing. The robot fleet is the cheapest, lightest component of the habitat---a rounding error in the mass and cost budgets.
+
+Working 24/7 for 10~years, 8,000 robots are equivalent to $\sim$24,000 human construction workers on three shifts---a normal workforce for building a city of 200,000 on Earth. The robots are the last item that must come from Earth: semiconductors, sensors, and AI chips cannot yet be manufactured from asteroid iron and lunar regolith. A few Starship flights per year of robots and electronics are the system's final Earth dependency.
+
+\subsubsection{Timeline: one million at Mars}
+
+Starting construction in 2026:
+
+\begin{center}
+\small
+\begin{tabular}{lp{10cm}}
+\toprule
+\textbf{Year} & \textbf{Milestone} \\
+\midrule
+2026--2047 & Gravity plant development and construction (21 years) \\
+2047 & Plant operational at 1~GW. Begin scaling to 10~GW. \\
+2047--2050 & \textbf{First habitat built in lunar orbit} (proof of concept, commissioning, first residents) \\
+2050 & Second habitat: 1~Mt seed keel enters lunar orbit. Mass driver begins launching steel---every catch simultaneously builds the structure, packs shielding, and provides propulsion. Construction IS the transit: the habitat is complete when the last steel section is caught, at which point it is also on its Mars trajectory. Interior fit-out (atmosphere, agriculture, systems) continues during the remaining coast. \\
+2053 & Third habitat shell launched; robots building second en route \\
+2056 & Fourth launched; second nearing completion in transit \\
+2059 & Fifth launched; pipeline fully loaded \\
+2060 & \textbf{First habitat arrives at Mars orbit} (10-year transit). 200,000 capacity. \\
+2063 & Second habitat arrives at Mars \\
+2066 & Third habitat arrives \\
+2069 & Fourth habitat arrives \\
+$\sim$\textbf{2070} & \textbf{Five habitats in Mars orbit. One million people.} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+For comparison, conventional Mars colonization using Starship-to-surface requires launching every person, every supply, and every building component from Earth on chemical rockets. Mars transfer windows open every 26~months. Even at 100~Starships per window (10,000 people), reaching one million takes over 200~years. Residents live in pressurized tunnels at 0.38$g$---no confirmed long-term health outcomes, limited radiation shielding, limited agriculture, permanent dependence on Earth resupply.
+
+The gravity plant approach ships \emph{cities}, not people. Each habitat is a self-sufficient 31~km$^2$ city at full 1$g$ gravity, radiation-safe, impact-proof, with closed-loop agriculture---assembled during transit by autonomous robots, arriving at Mars ready for occupancy. Residents travel to their new city via Starship after it is in Mars orbit. Zero propellant is expended to deliver the habitat. One million people in five cities, orbiting Mars, by 2070.
+
+\subsubsection{Self-replicating architecture}
+
+The habitat that arrives at Mars is not merely a city. It is an \emph{industrial seed} that replicates the gravity power plant architecture at its destination.
+
+\textbf{The replication sequence:}
+
+\begin{enumerate}[label=\arabic*.]
+\item \textbf{Arrive at Mars.} The habitat (401~Mt, fully operational) enters Mars orbit. It has spent 10~years being built, charged with atmosphere and water, growing food, and commissioning all systems. It is a functioning city for 200,000 people.
+
+\item \textbf{Drop a cable to the surface.} The habitat manufactures a superconducting cable from onboard materials (or from supplies launched during departure) and lowers it to the Mars surface. The habitat itself---401~Mt in orbit---is the counterweight. No separate tether asteroid is needed. Mars's areostationary orbit is at 17,032~km altitude, and the lower Martian gravity (3.72~m/s$^2$) gives a cable taper ratio $<$2$\times$ with carbon fiber.
+
+\item \textbf{Mine Phobos.} Phobos (10.6~trillion~kg, likely a captured C-type asteroid) provides both fuel for the cable (iron-silicate rock descends, generating power) and volatiles (water, nitrogen, carbon for additional habitats). Phobos is in a 6,000~km Mars orbit---easily accessible from the habitat.
+
+\item \textbf{Power the Mars surface.} The descending Phobos material generates gigawatt-scale electricity at the Mars surface via the same Lenz's law braking mechanism. Mars now has continuous, high-capacity power---independent of the weak Martian sunlight (43\% of Earth's), the dust storms that block solar panels for months, and the enriched uranium it has no way to produce.
+
+\item \textbf{Build the next generation.} The Mars gravity plant smelts Phobos material, processes Mars regolith, and manufactures the next habitats. These are launched toward Jupiter, Saturn, or beyond---each one carrying the same capability to replicate the cycle at its destination.
+\end{enumerate}
+
+\textbf{Every gas giant has dozens of moons.} Every moon is a potential counterweight and material source. Every gravity well is a power source. The architecture works everywhere there is mass above a surface---which is everywhere in the solar system.
+
+The lunar gravity plant is not a power plant. It is the first node in a \emph{self-replicating industrial civilization} that propagates through the solar system using gravity as its energy source and local moons and asteroids as its material source. The Moon builds the first generation. Each habitat builds the next. The only thing that must ever come from Earth is the initial cable and carrier fleet---33~billion dollars of carbon fiber and wire. Everything after that comes from rocks and gravity.
+
+% -------------------------------------------------------------------
+% 18. CONCLUSION
+% -------------------------------------------------------------------
+\section{Conclusion}
+
+O'Neill's vision of space colonies has been waiting fifty years for someone to explain where the power and material come from. This paper proposes the answer: a superconducting cable from the lunar surface to Earth-Moon L1 that converts the gravitational potential energy of asteroid rock into electricity, while the same rock becomes the structural steel of the colonies.
+
+The system is dominated by passive mechanisms: gravity drives the carriers, Lenz's law provides braking, flux pinning locks the carriers shut and centers them on the cable, and shaped steel at the terminal splits and clears them. The only active components are the electromagnetic push at L1 departure, the mass driver for carrier return, and the power extraction electronics.
+
+At 1~GW baseline capacity, the system costs $\sim$\$40B---less than the \$50--70B required for equivalent lunar nuclear power, which faces unsolved problems of heat rejection in vacuum, enriched uranium launch risk, and supply chain dependency. At 10~GW, it produces one fully protected 2~km habitat (31~km$^2$, 200,000 residents, full 1$g$ at 0.9~RPM, radiation-safe, impact-proof) every $\sim$3~years from a single 600~m asteroid---at a cost of $\sim$\$100B. The nuclear equivalent (100 reactors with 1,000,000~m$^2$ of radiators, permanently dependent on enriched uranium launched from Earth) would cost \$500--700B if it could be built at all.
+
+The technology risk is real: a 62,000~km cable is a single point of failure, asteroid mining is at TRL~1, and the full system requires 21~years of development. But the physics is sound (Lenz's law, flux pinning, and gravity do not fail), the materials exist (commercial carbon fiber and MgB$_2$ wire), and the development cost (\$40B over 21~years) is comparable to what the US spent building its nuclear power industry from scratch.
+
+What makes this architecture unique is not any single component but the way they compose: the cable is the generator, the brake, and the battery. The carrier is the fuel container, the construction material, and the propulsion. The asteroid is the fuel, the shielding, and the counterweight. The habitat is the city, the factory, and the seed for the next gravity plant. Every element serves multiple purposes. Nothing is wasted. Nothing is thrown away. The system propagates itself from world to world using the two resources available everywhere in the solar system: rocks and gravity.
+
+\vspace{1cm}
+\noindent\textit{The Moon has no coal, no oil, no rivers, and no uranium worth mining. But it sits at the bottom of a gravitational potential well with iron-nickel asteroids at the top. This paper proposes building a pipe between them---and using what comes out to seed an industrial civilization across the solar system.}
+
+\end{document}

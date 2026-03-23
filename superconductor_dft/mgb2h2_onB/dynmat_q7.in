@@ -1,0 +1,4 @@
+&INPUT
+  fildyn = 'mgb2h2r.dyn7'
+  asr = 'crystal'
+/

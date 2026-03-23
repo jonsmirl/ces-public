@@ -1,0 +1,4 @@
+&DOS
+  prefix = 'mgb2h2_k20x20x14', outdir = './tmp_k20x20x14/'
+  fildos = 'dos_k20x20x14.dat', DeltaE = 0.05, degauss = 0.02
+/

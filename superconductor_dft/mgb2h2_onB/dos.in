@@ -1,0 +1,7 @@
+&DOS
+  prefix = 'mgb2h2'
+  outdir = './tmp/'
+  fildos = 'dos.dat'
+  DeltaE = 0.05
+  degauss = 0.02
+/

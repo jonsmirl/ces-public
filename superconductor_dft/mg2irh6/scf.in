@@ -1,0 +1,43 @@
+&CONTROL
+  calculation = 'scf'
+  prefix = 'mg2irh6'
+  pseudo_dir = '/home/jonsmirl/thesis/superconductor_dft/pseudo/'
+  outdir = './tmp/'
+  tprnfor = .true.
+  tstress = .true.
+/
+&SYSTEM
+  ibrav = 2
+  celldm(1) = 12.5828
+  nat = 9
+  ntyp = 3
+  ecutwfc = 60.0
+  ecutrho = 480.0
+  occupations = 'smearing'
+  smearing = 'mp'
+  degauss = 0.02
+  nosym = .false.
+/
+&ELECTRONS
+  conv_thr = 1.0d-10
+  mixing_beta = 0.3
+  electron_maxstep = 200
+/
+ATOMIC_SPECIES
+  Ir  192.217  Ir_pbe_v1.2.uspp.F.UPF
+  Mg   24.305  Mg.pbe-n-kjpaw_psl.0.3.0.UPF
+  H     1.008  H.pbe-kjpaw.UPF
+
+ATOMIC_POSITIONS {crystal}
+  Ir  0.000  0.000  0.000
+  Mg  0.250  0.250  0.250
+  Mg  0.750  0.750  0.750
+  H   0.267  0.000  0.000
+  H  -0.267  0.000  0.000
+  H   0.000  0.267  0.000
+  H   0.000 -0.267  0.000
+  H   0.000  0.000  0.267
+  H   0.000  0.000 -0.267
+
+K_POINTS {automatic}
+  12 12 12  0 0 0
