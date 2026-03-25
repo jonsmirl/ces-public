@@ -1,0 +1,72 @@
+\section{Surface Operations and Power Delivery}
+
+No cable touches the lunar surface. The gravity plant is an orbital facility; the surface receives only microwave energy and falling iron.
+
+\subsection{Cable Endpoint and Ring Disposal}
+
+The cable is free-hanging, with its lower endpoint 1~km above the sub-L1 point on the lunar surface. Rings arrive at ${\sim}$0~m/s, flux pinning vanishes (REBCO ends), and the half-rings separate and fall 1~km to the surface (${\sim}$57~m/s impact in $\frac{1}{6}g$). An electromagnetic deflection coil at the cable endpoint imparts a ${\sim}$20~m/s lateral kick to offset the impact 700~m from directly below the cable, keeping dust plumes away from the REBCO\@. Deflection power: ${\sim}$220~kW.
+
+The helical winding induces slow rotation (${\sim}$20--50~rpm) on descending rings. Centrifugal force (3.7~m/s$^2$ at the rim, $2.3\times$ lunar gravity) flings any debris from a disintegrating ring outward, protecting the cable. Ring imbalance vibration and deflection kick reactions cause the free-hanging cable endpoint to wander in a ${\sim}$1--6~km radius pattern (16-day pendulum period), naturally distributing impacts across a wide area and providing inherent safety for surface vehicles.
+
+\textbf{Ring arrival rate:} one every 27~seconds (133~rings/hour at 10~tons each).
+
+\subsection{Microwave Power Beaming}\label{sec:microwave}
+
+Power is extracted from the SMES at the L1 station and beamed to the lunar surface via a microwave phased array, eliminating the need for any physical cable to the ground.
+
+\paragraph{Antenna sizing.}
+For efficient microwave transmission over distance $D$ at wavelength $\lambda$, the transmit and receive antenna diameters must satisfy:
+\begin{equation}
+d_t \times d_r \geq \lambda \times D
+\end{equation}
+At 5.8~GHz ($\lambda = 0.052$~m) over 61{,}000~km (L1 to surface), with equal apertures: $d_t = d_r \approx$ \textbf{1.8~km diameter}.
+
+\paragraph{Transmit array (at L1).}
+A 1.8~km phased-array antenna at the L1 station---dipole elements on a lightweight wire-mesh frame in zero gravity. Mass: ${\sim}$7{,}500~tons (built from asteroid iron at L1). Electronically steerable (no mechanical pointing).
+
+\paragraph{Rectenna (on the surface).}
+A 1.8~km rectifying antenna---aluminum wire mesh on regolith. Mass: ${\sim}$1{,}200~tons. No moving parts, no cryogenics. Located $>$30~km from the sub-L1 impact zone.
+
+\paragraph{Efficiency.}
+End-to-end DC-to-DC: ${\sim}$70\% (no atmospheric absorption on the Moon). At 1~GW transmitted: \textbf{700~MW delivered to the surface.} The 300~MW sidelobe loss radiates harmlessly into space.
+
+\subsection{Lunar Surface Station}
+
+The surface station sits $>$30~km from the sub-L1 impact zone, beneath the rectenna:
+
+\begin{itemize}[nosep]
+\item \textbf{Rectenna} (1.8~km diameter): receives 700~MW
+\item \textbf{Smelter} (400~MW): processes iron collected from the impact zone
+\item \textbf{Mass driver} (50--120~MW): launches finished steel to lunar orbit for habitat construction and departure propulsion
+\item \textbf{Power distribution}: lunar base, habitats, manufacturing
+\end{itemize}
+
+Autonomous vehicles collect iron half-rings from the sweeping impact zone and deliver to the smelter. The pendulum sweep distributes impacts across a wide quarry; vehicles trail the moving drop point, working areas where impacts landed minutes to hours earlier. \textbf{The spent fuel of the power plant is the feedstock of the refinery.}
+
+% -------------------------------------------------------------------
+% 8. MASS DRIVER
+% -------------------------------------------------------------------
+\section{Mass Driver: Steel Export}
+
+The mass driver's single function: \textbf{launching finished steel products to lunar orbit for habitat construction and departure propulsion.} Powered by 50--120~MW of beamed microwave energy received at the surface rectenna.
+
+\subsection{Sled Design}
+
+Finished steel sections are loaded into non-magnetic cradles atop an electromagnetic sled:
+
+\begin{enumerate}[label=(\roman*)]
+\item Steel product placed in sled cradle at track base
+\item Sled accelerates at 200$g$ up the mountainside (1.4~km track, 1.2~seconds)
+\item At $\sim$2,330~m/s, the sled brakes hard
+\item The payload continues ballistically
+\item Sled regeneratively brakes, returns to start
+\item Payload flies to lunar orbit (${\sim}$8~hours), caught by habitat construction systems
+\end{enumerate}
+
+\subsection{Launch Velocity}
+
+The minimum velocity to reach L1 is 2,323~m/s (set by the gravitational PE of 2,697~kJ/kg). The launch velocity is tuned to ${\sim}$2,330~m/s for construction steel delivery, or higher for interplanetary trajectories.
+
+\subsection{Fault Tolerance}
+
+If the mass driver fails, the cable continues generating power and the L1 station continues smelting. Only the surface steel \emph{export} rate is affected---the orbital power and smelting operations are independent.
